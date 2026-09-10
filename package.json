@@ -8,7 +8,7 @@
   },
   "scripts": {
     "lint": "oxlint .",
-    "lint-fix": "eslint . --fix",
+    "lint-fix": "oxlint --fix .",
     "predev": " NODE_ENV=development npm run build:middlewarePaths",
     "dev": "next dev --webpack",
     "dev:turbopack": "next dev",
@@ -84,13 +84,14 @@
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.21",
     "axe-playwright": "^2.2.2",
+    "eslint-plugin-storybook": "10.6.0",
     "graphiql": "^5.2.4",
     "jest-fixed-jsdom": "^0.0.10",
     "msw": "^2.11.5",
     "msw-storybook-addon": "^2.0.4",
     "next": "^16.3.0",
     "next-router-mock": "^1.0.5",
-    "oxlint": "^1.76.0",
+    "oxlint": "^1.82.0",
     "oxlint-tsgolint": "^7.0.2001",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1",
@@ -107,8 +108,7 @@
     "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1",
-    "eslint-plugin-storybook": "10.6.0"
+    "typescript-eslint": "^8.46.1"
   },
   "allowScripts": {
     "esbuild": true,
