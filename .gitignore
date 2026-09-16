@@ -1,19 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Patterns here are deliberately UNROOTED. A leading `/` anchors to the repo root,
+# which stopped matching once the app moved to apps/commons/.
+
 # dependencies
-/node_modules
-/.pnp
+node_modules
+.pnp
 .pnp.js
 
 # testing
-/coverage
+coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store

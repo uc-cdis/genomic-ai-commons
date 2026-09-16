@@ -10,15 +10,31 @@ const themeFonts = require(`./config/${GEN3_COMMONS_NAME}/themeFonts.json`);
 const themeColorCSSVars = require(`./config/themeColorCSSVars.json`);
 const { typographyPlugin } = require('@gen3/frontend');
 
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * npm hoists workspace deps to the repo root, so a package sits here or two levels up.
+ * @param {string} name
+ * @returns {string}
+ */
+const pkgDir = (name) => {
+  const dir = ['node_modules', '../../node_modules']
+    .map((base) => path.resolve(__dirname, base, name))
+    .find(fs.existsSync);
+  if (!dir) throw new Error(`Cannot locate ${name} in node_modules`);
+  return dir;
+};
 
 module.exports = {
-  content: [
+   content: [
     './src/pages/**/*.{js,ts,jsx,tsx}',
     './src/components/**/*.{js,ts,jsx,tsx}',
     './src/features/**/*.{js,ts,jsx,tsx}',
-    './node_modules/@gen3/frontend/dist/index/esm/*.js',
-    './node_modules/@gen3/workspaces/dist/index/esm/*.js',
+    `${pkgDir('@gen3/frontend')}/dist/index/esm/*.js`,
+    `${pkgDir('@gen3/workspaces')}/dist/index/esm/*.js`,
   ],
+
   theme: {
     extend: {
       colors: {

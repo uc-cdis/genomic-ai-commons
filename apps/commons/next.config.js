@@ -2,6 +2,22 @@
 
 'use strict';
 const path = require('path');
+const fs = require('fs');
+
+
+/**
+ * npm hoists workspace deps to the repo root, so a package sits here or two levels up.
+ * @param {string} name
+ * @returns {string}
+ */
+const pkgDir = (name) => {
+  const dir = ['node_modules', '../../node_modules']
+    .map((base) => path.resolve(__dirname, base, name))
+    .find(fs.existsSync);
+  if (!dir) throw new Error(`Cannot locate ${name} in node_modules`);
+  return dir;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const dns = require('dns');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -23,23 +39,13 @@ const withMDX = require('@next/mdx')({
 });
 
 // get the version of the frontend package
-const packageJson = require(
-  path.resolve(
-    __dirname,
-    'node_modules',
-    '@gen3',
-    'frontend',
-    'package.json',
-  ),
-);
-
-
-console.log('version:', packageJson.version);
+const packageJson = require(path.join(pkgDir('@gen3/frontend'), 'package.json'));
 
 // Next configuration with support for writing API to existing common services
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  outputFileTracingRoot: path.join(__dirname, '../../'),
   env: {
     version: process.env.npm_package_version,
     NEXT_PUBLIC_GEN3_VERSION: packageJson.version,
@@ -63,10 +69,7 @@ const nextConfig = {
     // `@layer base` ("no matching @tailwind base directive"). Resolve it to nothing.
     config.resolve.alias = {
       ...config.resolve.alias,
-      [path.resolve(
-        __dirname,
-        'node_modules/@copilotkit/react-core/dist/v2/index.css',
-      )]: false,
+      [path.join(pkgDir('@copilotkit/react-core'), 'dist/v2/index.css')]: false
     };
     return config;
   },
