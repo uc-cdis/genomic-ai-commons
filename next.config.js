@@ -57,6 +57,17 @@ const nextConfig = {
     config.infrastructureLogging = {
       level: 'error',
     };
+    // @copilotkit/react-core/v2 side-imports an 87KB Tailwind 4 stylesheet for
+    // CopilotKit's own React components. We render none of them - the chat UI is
+    // Mantine throughout - and Tailwind 3's PostCSS plugin dies on its bare
+    // `@layer base` ("no matching @tailwind base directive"). Resolve it to nothing.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      [path.resolve(
+        __dirname,
+        'node_modules/@copilotkit/react-core/dist/v2/index.css',
+      )]: false,
+    };
     return config;
   },
   async rewrites() {
@@ -71,12 +82,23 @@ const nextConfig = {
         destination: '/icons/kernels/logo-64.png',
       },
     ];
+
+    // The revproxy gives /api/ to sheepdog, so /api/copilotkit never reaches us; serve
+    // the runtime off a path `location /` already routes here.
+    const chatRuntimeRewrite = [
+      {
+        source: '/copilot-runtime',
+        destination: '/api/copilotkit',
+      },
+    ];
+
     if (isDev) {
       const GEN3_TARGET =
         process.env.NEXT_PUBLIC_GEN3_API_TARGET || 'https://localhost';
 
       return [
         ...workspaceApiRewrite,
+         ...chatRuntimeRewrite,
         { source: '/_status', destination: `${GEN3_TARGET}/_status` },
         { source: '/user/:path*', destination: `${GEN3_TARGET}/user/:path*` },
         {
@@ -88,6 +110,10 @@ const nextConfig = {
           source: '/ai-search/:path*',
           destination: `${GEN3_TARGET}/ai-search/:path*`,
         },
+        // Chat's payload cache. In production the portal shares a host with /qag, so this
+        // path is same-origin and the session cookie clears the revproxy on its own; here
+        // it isn't, which is why dev sends a bearer built from credentials_token instead.
+        { source: '/qag/:path*', destination: `${GEN3_TARGET}/qag/:path*` },
         {
           source: '/authz/:path*',
           destination: `${GEN3_TARGET}/authz/:path*`,
@@ -124,7 +150,7 @@ const nextConfig = {
         },
       ];
     } else {
-      return workspaceApiRewrite;
+      return [...workspaceApiRewrite, ...chatRuntimeRewrite];
     }
   },
   async headers() {

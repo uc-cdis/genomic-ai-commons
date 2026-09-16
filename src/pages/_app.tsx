@@ -33,6 +33,7 @@ import drsHostnames from '../../config/drsHostnames.json';
 import { loadContent } from '@/lib/content/loadContent';
 import Loading from '../components/Loading';
 import DatadogInit from '@/components/DatadogInit';
+import { ChatRuntimeProvider } from '@/features/chat/ChatRuntimeProvider';
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_AXE === '1') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
@@ -111,7 +112,9 @@ const Gen3App = ({
             modalsConfig={modalsConfig}
             protectedRoutesConfig={protectedRoutes}
           >
-            <Component {...pageProps} />
+            <ChatRuntimeProvider>
+              <Component {...pageProps} />
+            </ChatRuntimeProvider>
           </Gen3Provider>
         </MantineProvider>
       </Suspense>
