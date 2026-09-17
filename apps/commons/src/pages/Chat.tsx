@@ -17,7 +17,7 @@ const ChatLoading = () => (
 // graph this page is evaluated with on the server: _app never renders on the server,
 // but the page module is still required there because getServerSideProps lives in it.
 const Chat = dynamic(
-  () => import('@/features/chat/ui').then((m) => m.Chat),
+  () => import('@gen3/chat/ui').then((m) => m.Chat),
   { ssr: false, loading: () => <ChatLoading /> },
 );
 

@@ -7,7 +7,7 @@ import { useGetCSRFQuery } from '@gen3/core';
 import Loading from '@/components/Loading';
 
 const ChatProvider = dynamic(
-  () => import('./core/ChatProvider').then((m) => m.ChatProvider),
+  () => import('@gen3/chat').then((m) => m.ChatProvider),
   { ssr: false, loading: () => <Loading /> },
 );
 

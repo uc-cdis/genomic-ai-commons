@@ -1,11 +1,20 @@
 {
   "name": "genomic-ai-commons",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev":       "npm run dev   -w @gen3/commons-portal-app-base",
-    "build":     "npm run build -w @gen3/commons-portal-app-base",
-    "lint":      "oxlint .",
-    "typecheck": "tsc --noEmit -p apps/commons"
+    "predev": "npm run build -w @gen3/chat",
+    "dev": "concurrently -k -n chat,app -c blue,green \"npm:dev:chat\" \"npm:dev:app\"",
+    "dev:chat": "npm run dev   -w @gen3/chat",
+    "dev:app": "npm run dev   -w @gen3/commons-portal-app-base",
+    "build": "npm run build -w @gen3/chat && npm run build -w @gen3/commons-portal-app-base",
+    "lint": "oxlint .",
+    "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

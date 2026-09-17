@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { QAG_VERSION } from "@/lib/copilot/qagVersion";
+import { QAG_VERSION } from "../../qagVersion";
 
 export interface PayloadState {
   data: string | null;

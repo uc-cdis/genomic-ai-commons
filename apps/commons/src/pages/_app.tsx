@@ -25,6 +25,9 @@ import { registerCohortTableCustomCellRenderers } from '@/lib/CohortBuilder/Cust
 import { registerCustomExplorerDetailsPanels } from '@/lib/CohortBuilder/FileDetailsPanel';
 
 import '../styles/globals.css';
+// Carries the [data-chat-shell] height rule and KaTeX's stylesheet. Without it the
+// transcript is not a scroll container and math renders unstyled.
+import '@gen3/chat/styles.css';
 import '@fontsource/montserrat';
 import '@fontsource/source-sans-pro';
 import '@fontsource/poppins';
@@ -33,7 +36,7 @@ import drsHostnames from '../../config/drsHostnames.json';
 import { loadContent } from '@/lib/content/loadContent';
 import Loading from '../components/Loading';
 import DatadogInit from '@/components/DatadogInit';
-import { ChatRuntimeProvider } from '@/features/chat/ChatRuntimeProvider';
+import { ChatRuntimeProvider } from '@/chat/ChatRuntimeProvider';
 
 if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_AXE === '1') {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports

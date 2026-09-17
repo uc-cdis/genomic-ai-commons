@@ -1,4 +1,4 @@
-import { QAG_VERSION } from './qagVersion';
+import { QAG_VERSION } from '../qagVersion';
 
 /**
  * AG-UI endpoint of the agent that owns the model, e.g. `<commons>/qag/v3/agui/`.
