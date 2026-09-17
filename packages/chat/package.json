@@ -2,15 +2,10 @@
   "name": "@gen3/chat",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/",
-    "dev": "tsc -p tsconfig.build.json --watch",
-    "typecheck": "tsc --noEmit -p tsconfig.build.json"
-  },
+  "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -26,6 +21,19 @@
     },
     "./styles.css": "./dist/styles.css"
   },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "typecheck": "tsc --noEmit -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "idb": "^8.0.3",
+    "katex": "^0.16.28",
+    "react-markdown": "^10.1.0",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0"
+  },
   "peerDependencies": {
     "@ag-ui/client": "^0.0.59",
     "@copilotkit/react-core": "^1.72.0",
@@ -37,13 +45,5 @@
     "react": "^19.2",
     "react-dom": "^19.2",
     "recharts": ">=3"
-  },
-  "dependencies": {
-    "idb": "^8.0.3",
-    "katex": "^0.16.28",
-    "react-markdown": "^10.1.0",
-    "rehype-katex": "^7.0.1",
-    "remark-gfm": "^4.0.1",
-    "remark-math": "^6.0.0"
   }
 }

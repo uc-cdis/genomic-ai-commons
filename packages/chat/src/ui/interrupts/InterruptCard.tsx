@@ -33,12 +33,7 @@ export interface InterruptCardProps {
   decision?: InterruptDecision;
 }
 
-export function InterruptCard({
-  interrupt,
-  toolCall,
-  actions,
-  decision,
-}: InterruptCardProps) {
+export function InterruptCard({ interrupt, toolCall, actions, decision }: InterruptCardProps) {
   const { onApprove, onDeny, submitting } = actions;
   const entry = resolveInterruptRenderer(interrupt);
   const Body = entry?.Body ?? GenericInterruptBody;

@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/nextjs';
+import type { Meta, StoryObj } from "@storybook/nextjs";
 
-import Loading from './Loading';
+import Loading from "./Loading";
 
 const meta = {
   component: Loading,

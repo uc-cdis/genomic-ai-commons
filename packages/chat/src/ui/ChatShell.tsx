@@ -13,7 +13,6 @@ export interface ChatShellProps {
 const MOBILE_BAR_HEIGHT = 52;
 const SIDEBAR_WIDTH = 340;
 
-
 export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) {
   const theme = useMantineTheme();
   const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);

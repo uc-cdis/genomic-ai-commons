@@ -2,21 +2,14 @@ import type {
   AuthorizedRoutesConfig,
   Fonts,
   RegisteredIcons,
-  TenStringArray
-} from '@gen3/frontend';
-import {
-  ContentSource,
-  DefaultAuthorizedRoutesConfig
-} from '@gen3/frontend';
-import { GEN3_COMMONS_NAME } from '@gen3/core';
+  TenStringArray,
+} from "@gen3/frontend";
+import { ContentSource, DefaultAuthorizedRoutesConfig } from "@gen3/frontend";
+import { GEN3_COMMONS_NAME } from "@gen3/core";
 
 export const loadContent = async () => {
-  const modals = await ContentSource.getContentDatabase().get(
-    `${GEN3_COMMONS_NAME}/modals.json`,
-  );
-  const session = await ContentSource.getContentDatabase().get(
-    `${GEN3_COMMONS_NAME}/session.json`,
-  );
+  const modals = await ContentSource.getContentDatabase().get(`${GEN3_COMMONS_NAME}/modals.json`);
+  const session = await ContentSource.getContentDatabase().get(`${GEN3_COMMONS_NAME}/session.json`);
 
   const fonts = await ContentSource.getContentDatabase().get(
     `${GEN3_COMMONS_NAME}/themeFonts.json`,
@@ -28,7 +21,7 @@ export const loadContent = async () => {
 
   const protectedRoutes = await ContentSource.getContentDatabase().get<AuthorizedRoutesConfig>(
     `${GEN3_COMMONS_NAME}/authz.json`,
-  )
+  );
 
   const colors = Object.fromEntries(
     Object.entries(themeColors).map(([key, values]) => [
@@ -37,14 +30,11 @@ export const loadContent = async () => {
     ]),
   );
 
-  const icons = await ContentSource.getContentDatabase().getAll(
-    `icons/`,
-    '\\.json',
-  );
+  const icons = await ContentSource.getContentDatabase().getAll(`icons/`, "\\.json");
 
   return {
     modalsConfig: modals,
-    sessionConfig: 'sessionConfig' in session ? session.sessionConfig : session,
+    sessionConfig: "sessionConfig" in session ? session.sessionConfig : session,
     fonts: fonts as Fonts,
     colors: colors,
     icons: icons as RegisteredIcons[],

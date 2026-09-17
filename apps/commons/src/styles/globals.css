@@ -1,10 +1,10 @@
-@import 'graphiql/style.css';
-@import '@graphiql/react/style.css';
+@import "graphiql/style.css";
+@import "@graphiql/react/style.css";
 
-@import '@mantine/core/styles.css';
-@import '@mantine/notifications/styles.css';
+@import "@mantine/core/styles.css";
+@import "@mantine/notifications/styles.css";
 
-@import 'mantine-react-table-open/styles.css';
+@import "mantine-react-table-open/styles.css";
 
 @import "tailwindcss/base";
 @import "tailwindcss/components";
@@ -17,6 +17,5 @@
 }
 
 /* The [data-chat-shell] height rule moved to @gen3/chat/styles.css, imported in _app.tsx. */
-
 
 @tailwind variants;

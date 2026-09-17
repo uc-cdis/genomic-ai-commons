@@ -27,9 +27,7 @@ export interface UseChatInterrupts {
 }
 
 /** Deny resolves, not cancels - cancel can't carry a reason. */
-type ResumeResponse =
-  | { status: "resolved"; payload?: unknown }
-  | { status: "cancelled" };
+type ResumeResponse = { status: "resolved"; payload?: unknown } | { status: "cancelled" };
 
 function toResponse(decision: InterruptDecision): ResumeResponse {
   return decision.approved
@@ -132,7 +130,6 @@ export function useChatInterrupts(
 
       submittingRef.current = true;
       setSubmitting(true);
-
 
       putResolved([...resolvedRef.current, { interrupt: toChatInterrupt(target), decision }]);
 

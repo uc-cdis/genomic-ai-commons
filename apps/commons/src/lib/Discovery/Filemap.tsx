@@ -1,14 +1,10 @@
-import React from 'react';
-import type {
-  CellRenderFunctionProps,
-  ReactEChartsProps} from '@gen3/frontend';
-import {
-  ReactECharts
-} from '@gen3/frontend';
-import { Button, Popover, Text } from '@mantine/core';
-import { isArray } from 'lodash';
-import { useDeepCompareMemo } from 'use-deep-compare';
-import { useDisclosure } from '@mantine/hooks';
+import React from "react";
+import type { CellRenderFunctionProps, ReactEChartsProps } from "@gen3/frontend";
+import { ReactECharts } from "@gen3/frontend";
+import { Button, Popover, Text } from "@mantine/core";
+import { isArray } from "lodash";
+import { useDeepCompareMemo } from "use-deep-compare";
+import { useDisclosure } from "@mantine/hooks";
 
 /**
  * Represents a manifest item.
@@ -45,7 +41,7 @@ interface BarChartData {
 const countTypes = (data: Array<ManifestItem>): BarChartData[] => {
   const counts: Record<string, number> = {};
   data.forEach((item: ManifestItem) => {
-    const filetype = item.file_name.split('.').pop();
+    const filetype = item.file_name.split(".").pop();
     if (!filetype) return;
     counts[filetype] = counts[filetype] ? counts[filetype] + 1 : 1;
   });
@@ -66,16 +62,9 @@ const useProcessManifestToChart = (
   values: Array<ManifestItem>,
   showLabel = true,
   showToolip = false,
-): ReactEChartsProps['option'] | undefined => {
-  const chartDefinition = useDeepCompareMemo(():
-    | ReactEChartsProps['option']
-    | undefined => {
-    if (
-      values === undefined ||
-      values === null ||
-      !isArray(values) ||
-      values.length === 0
-    ) {
+): ReactEChartsProps["option"] | undefined => {
+  const chartDefinition = useDeepCompareMemo((): ReactEChartsProps["option"] | undefined => {
+    if (values === undefined || values === null || !isArray(values) || values.length === 0) {
       return undefined;
     }
 
@@ -89,40 +78,40 @@ const useProcessManifestToChart = (
         bottom: 2,
       },
       tooltip: {
-        trigger: 'item',
+        trigger: "item",
         show: showToolip,
-        formatter: '{a} - {c}%',
-        position: 'right',
+        formatter: "{a} - {c}%",
+        position: "right",
         z: 100,
       },
       xAxis: {
-        type: 'value',
+        type: "value",
         show: false,
       },
       yAxis: {
-        type: 'category',
+        type: "category",
         data: data.map((d) => d.name),
         show: false,
       },
       series: data.map((d) => ({
-        type: 'bar',
-        stack: 'total',
+        type: "bar",
+        stack: "total",
         barWidth: 40,
         name: d.name,
         data: [d.value],
         label: {
           show: showLabel,
-          position: 'top',
+          position: "top",
           minMargin: 8,
-          formatter: '{a} - {c}%',
+          formatter: "{a} - {c}%",
         },
         labelLine: {
           show: true,
         },
         labelLayout: () => {
           return {
-            y: '35%',
-            moveOverlap: 'shiftX',
+            y: "35%",
+            moveOverlap: "shiftX",
           };
         },
       })),
@@ -153,7 +142,7 @@ export const FilemapPopup = ({ value }: CellRenderFunctionProps) => {
           {value[0].length}
         </Button>
       </Popover.Target>
-      <Popover.Dropdown style={{ pointerEvents: 'none' }}>
+      <Popover.Dropdown style={{ pointerEvents: "none" }}>
         <div style={{ width: 380 }}>
           <ReactECharts option={chartDefinition} />
         </div>
@@ -176,10 +165,7 @@ export const FilemapInline = ({ value }: CellRenderFunctionProps) => {
   }
   return (
     <div className="w-16">
-      <ReactECharts
-        option={chartDefinition}
-        style={{ width: '80px', height: '32px' }}
-      />
+      <ReactECharts option={chartDefinition} style={{ width: "80px", height: "32px" }} />
     </div>
   );
 };

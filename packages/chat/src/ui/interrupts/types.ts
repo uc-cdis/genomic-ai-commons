@@ -1,7 +1,6 @@
 import type { ComponentType } from "react";
 import type { ChatInterrupt, InterruptDecision, ToolCall } from "../../core";
 
-
 export interface InterruptView {
   interrupt: ChatInterrupt;
   decision?: InterruptDecision;

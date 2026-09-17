@@ -22,9 +22,7 @@ export const createChatHandler = ({
   verifyToken,
   endpoint = "/copilot-runtime",
 }: ChatHandlerOptions) => {
-  let endpointHandler: ReturnType<
-    typeof copilotRuntimeNextJSPagesRouterEndpoint
-  > | null = null;
+  let endpointHandler: ReturnType<typeof copilotRuntimeNextJSPagesRouterEndpoint> | null = null;
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
@@ -47,10 +45,7 @@ export const createChatHandler = ({
       // agent dying mid-answer hangs the socket. Destroy instead.
       res.once("pipe", (source: NodeJS.ReadableStream) => {
         source.on("error", (streamError: Error) => {
-          console.error(
-            "[copilotkit] Agent stream failed mid-response:",
-            streamError,
-          );
+          console.error("[copilotkit] Agent stream failed mid-response:", streamError);
           if (!res.writableEnded) res.destroy();
         });
       });

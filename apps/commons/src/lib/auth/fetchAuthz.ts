@@ -1,8 +1,4 @@
-import {
-  type AuthzResourceResponse,
-  GEN3_AUTHZ_API,
-  GEN3_AUTHZ_SERVICE,
-} from '@gen3/core/server';
+import { type AuthzResourceResponse, GEN3_AUTHZ_API, GEN3_AUTHZ_SERVICE } from "@gen3/core/server";
 
 const DEFAULT_TTL_SECONDS = 360;
 
@@ -18,16 +14,14 @@ export async function fetchArboristResources(
 ): Promise<string[]> {
   const headers: Record<string, string> = {
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-    credentials: 'include',
+    credentials: "include",
   };
 
-  const url = useService
-    ? `${GEN3_AUTHZ_SERVICE}/auth/resources`
-    : `${GEN3_AUTHZ_API}/resources`;
+  const url = useService ? `${GEN3_AUTHZ_SERVICE}/auth/resources` : `${GEN3_AUTHZ_API}/resources`;
   const res = await fetch(url, { headers, next: { revalidate: revalidate } });
   if (!res.ok) {
     console.error(
-      'commons:fetchArboristResources Arborist /resource failed:',
+      "commons:fetchArboristResources Arborist /resource failed:",
       res.status,
       await res.text(),
     );

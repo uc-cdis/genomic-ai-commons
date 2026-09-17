@@ -43,13 +43,8 @@ export function ToolCallPanel({
   onToggle,
 }: ToolCallPanelProps) {
   return (
-   <Paper withBorder radius="sm" bg="var(--mantine-color-default)" style={{ overflow: "hidden" }}>
-      <UnstyledButton
-        onClick={onToggle}
-        aria-expanded={isExpanded}
-        w="100%"
-        display="block"
-      >
+    <Paper withBorder radius="sm" bg="var(--mantine-color-default)" style={{ overflow: "hidden" }}>
+      <UnstyledButton onClick={onToggle} aria-expanded={isExpanded} w="100%" display="block">
         <Group
           justify="space-between"
           p="xs"

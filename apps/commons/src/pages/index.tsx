@@ -1,25 +1,18 @@
-import React from 'react';
-import {
-  Image,
-  SimpleGrid,
-} from '@mantine/core';
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
-import {
-  getNavPageLayoutPropsFromConfig,
-  NavPageLayout
-} from '@gen3/frontend';
-import type { GetServerSideProps } from 'next';
-import InfoCard from '@/components/InfoCard';
+import React from "react";
+import { Image, SimpleGrid } from "@mantine/core";
+import type { NavPageLayoutProps } from "@gen3/frontend";
+import { getNavPageLayoutPropsFromConfig, NavPageLayout } from "@gen3/frontend";
+import type { GetServerSideProps } from "next";
+import InfoCard from "@/components/InfoCard";
 
 const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   return (
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Genomic AI Commons',
-        content: 'Landing page',
-        key: 'gac-landing-page',
+        title: "Genomic AI Commons",
+        content: "Landing page",
+        key: "gac-landing-page",
       }}
     >
       <div className="flex flex-col w-full">
@@ -27,10 +20,9 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
           <div
             className="px-[8em] py-24 relative h-[449px] z-4"
             style={{
-              backgroundImage:
-                'url(/images/frequency-wave-7776034_1920-gdc.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundImage: "url(/images/frequency-wave-7776034_1920-gdc.png)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             {/* Overlay for opacity */}
@@ -41,24 +33,21 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
                 Genomic AI Commons
               </div>
               <div className="justify-start text-white text-2xl font-semibold font-['Poppins'] mt-3 mb-8">
-                Powerful AI tools available alongside core data commons
-                capabilities.
+                Powerful AI tools available alongside core data commons capabilities.
               </div>
               <div className="w-[1040px] h-20 justify-start">
                 <span className="text-white text-sm font-bold font-['Poppins']">
                   The Genomic AI commons
                 </span>
                 <span className="text-white text-sm font-normal font-['Poppins']">
-                  {' '}
-                  is a cloud-based data platform with a governance structure and
-                  architecture for managing, analyzing, and sharing data and AI
-                  resources supporting: multi-modal AI embeddings, AI
-                  inferencing, building AI models, and natural language
-                  interactions. One over-arching mission of the Genomic AI
-                  Commons is to make readily accessible small to midscale AI
-                  models trained over high-quality data leveraging affordable
-                  compute resources without sacrificing performance comparable
-                  to high-cost frontier models.
+                  {" "}
+                  is a cloud-based data platform with a governance structure and architecture for
+                  managing, analyzing, and sharing data and AI resources supporting: multi-modal AI
+                  embeddings, AI inferencing, building AI models, and natural language interactions.
+                  One over-arching mission of the Genomic AI Commons is to make readily accessible
+                  small to midscale AI models trained over high-quality data leveraging affordable
+                  compute resources without sacrificing performance comparable to high-cost frontier
+                  models.
                 </span>
               </div>
               {/*--
@@ -89,12 +78,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
             <div className="text-center justify-start text-[#111111] text-2xl font-semibold font-['Poppins']">
               Core Services
             </div>
-            <SimpleGrid
-              cols={3}
-              spacing="xl"
-              verticalSpacing="xl"
-              className="mt-8"
-            >
+            <SimpleGrid cols={3} spacing="xl" verticalSpacing="xl" className="mt-8">
               <InfoCard
                 title="FAIR Data"
                 description="CTDS and Gen3 remain globally recognized leaders in FAIR data sharing platforms ensuring secure AI-ready data."
@@ -134,9 +118,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
 };
 
 // TODO: replace this with a custom getServerSideProps function
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   return {
     props: {
       ...(await getNavPageLayoutPropsFromConfig()),

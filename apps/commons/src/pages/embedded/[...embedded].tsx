@@ -1,16 +1,12 @@
-import React from 'react';
-import type { GetServerSideProps } from 'next';
-import type { NextRouter} from 'next/dist/client/router';
-import { useRouter } from 'next/dist/client/router';
-import dynamic from 'next/dynamic';
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
-import {
-  getNavPageLayoutPropsFromConfig,
-  NavPageLayout
-} from '@gen3/frontend';
+import React from "react";
+import type { GetServerSideProps } from "next";
+import type { NextRouter } from "next/dist/client/router";
+import { useRouter } from "next/dist/client/router";
+import dynamic from "next/dynamic";
+import type { NavPageLayoutProps } from "@gen3/frontend";
+import { getNavPageLayoutPropsFromConfig, NavPageLayout } from "@gen3/frontend";
 
-const EmbeddedApp = dynamic(() => import('../../components/EmbeddedApp'));
+const EmbeddedApp = dynamic(() => import("../../components/EmbeddedApp"));
 
 const EmbeddedAppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   const router = useRouter();
@@ -20,9 +16,9 @@ const EmbeddedAppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Gen3 AI Application',
-        content: 'AI Application',
-        key: 'gen3-ai-app-page',
+        title: "Gen3 AI Application",
+        content: "AI Application",
+        key: "gen3-ai-app-page",
       }}
     >
       <EmbeddedApp app={app} />
@@ -32,16 +28,13 @@ const EmbeddedAppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
 
 const getEmbeddedName = (router: NextRouter): string => {
   const { embedded } = router.query;
-  if (typeof embedded === 'string') return embedded;
-  else if (typeof embedded === 'object') return embedded.join('/');
+  if (typeof embedded === "string") return embedded;
+  else if (typeof embedded === "object") return embedded.join("/");
 
-
-  return 'notFound';
+  return "notFound";
 };
 
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   try {
     return {
       props: {
@@ -60,9 +53,9 @@ export const getServerSideProps: GetServerSideProps<
         },
         footerProps: {},
         headerMetadata: {
-          title: 'Gen3 AI Application',
-          content: 'AI Application',
-          key: 'gen3-ai-app-page',
+          title: "Gen3 AI Application",
+          content: "AI Application",
+          key: "gen3-ai-app-page",
         },
       },
     };

@@ -1,9 +1,9 @@
-import React from 'react';
-import Script from 'next/script';
+import React from "react";
+import Script from "next/script";
 
 const EmbeddedApp = ({ app }: { app: string }) => {
   const url = new URL(`https://${app}`);
-  const isGradio = url.searchParams.get('type') === 'gradio';
+  const isGradio = url.searchParams.get("type") === "gradio";
 
   if (isGradio) {
     return (
@@ -23,11 +23,7 @@ const EmbeddedApp = ({ app }: { app: string }) => {
 
   return (
     <div className="m-2 w-full">
-      <iframe
-        src={`https://${app}/`}
-        className="w-full h-full"
-        title={app}
-      />
+      <iframe src={`https://${app}/`} className="w-full h-full" title={app} />
     </div>
   );
 };

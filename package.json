@@ -12,9 +12,14 @@
     "dev:app": "npm run dev   -w @gen3/commons-portal-app-base",
     "build": "npm run build -w @gen3/chat && npm run build -w @gen3/commons-portal-app-base",
     "lint": "oxlint .",
-    "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons"
+    "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons",
+    "lint-fix": "oxlint --fix .",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check ."
   },
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.5",
+    "oxfmt": "^0.68.0",
+    "oxlint": "^1.82.0"
   }
 }

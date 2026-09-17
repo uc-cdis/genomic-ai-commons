@@ -1,3 +1,3 @@
-import { sessionLogout } from '@gen3/frontend/server';
+import { sessionLogout } from "@gen3/frontend/server";
 
 export default sessionLogout;

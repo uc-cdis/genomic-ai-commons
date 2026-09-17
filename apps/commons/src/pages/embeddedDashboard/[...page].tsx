@@ -1,22 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import type { GetServerSideProps } from 'next';
-import type { NextRouter} from 'next/dist/client/router';
-import { useRouter } from 'next/dist/client/router';
-import { getNavPageLayoutPropsFromConfig } from '@gen3/frontend';
-import {
-  NavPageLayout,
-  type NavPageLayoutProps,
-} from '@gen3/frontend';
+import React, { useEffect, useRef, useState } from "react";
+import type { GetServerSideProps } from "next";
+import type { NextRouter } from "next/dist/client/router";
+import { useRouter } from "next/dist/client/router";
+import { getNavPageLayoutPropsFromConfig } from "@gen3/frontend";
+import { NavPageLayout, type NavPageLayoutProps } from "@gen3/frontend";
 
-const DashboardContentApp = ({
-  headerProps,
-  footerProps,
-}: NavPageLayoutProps) => {
+const DashboardContentApp = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   const router = useRouter();
   const path = getDashboardPath(router);
-  const [urlStatus, setUrlStatus] = useState<'loading' | 'valid' | 'notfound'>(
-    'loading',
-  );
+  const [urlStatus, setUrlStatus] = useState<"loading" | "valid" | "notfound">("loading");
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null!);
 
@@ -27,69 +19,65 @@ const DashboardContentApp = ({
       try {
         // Access iframe document
         if (iframe) {
-          const iframeDoc =
-            iframe.contentDocument || iframe.contentWindow?.document;
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
 
           // Find all anchor tags and add target="_blank"
-          const links = iframeDoc?.querySelectorAll('a');
+          const links = iframeDoc?.querySelectorAll("a");
           links?.forEach((link: any) => {
-            link.setAttribute('target', '_blank');
-            link.setAttribute('rel', 'noreferrer');
+            link.setAttribute("target", "_blank");
+            link.setAttribute("rel", "noreferrer");
           });
         }
       } catch (error) {
-        console.error('Cannot access iframe content:', error);
+        console.error("Cannot access iframe content:", error);
       }
     };
 
     if (iframe) {
-      iframe.addEventListener('load', handleLoad);
-      return () => iframe.removeEventListener('load', handleLoad);
+      iframe.addEventListener("load", handleLoad);
+      return () => iframe.removeEventListener("load", handleLoad);
     }
   }, []);
 
   const checkUrl = async () => {
     try {
       const response = await fetch(`${router.basePath}/dashboard/${path}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Range: 'bytes=0-0',
+          Range: "bytes=0-0",
         },
       });
 
       if (response.ok) {
-        setUrlStatus('valid');
+        setUrlStatus("valid");
       } else {
-        setUrlStatus('notfound');
+        setUrlStatus("notfound");
       }
     } catch (error) {
-      console.error('Failed to check dashboard URL:', error);
-      await router.replace('/404');
+      console.error("Failed to check dashboard URL:", error);
+      await router.replace("/404");
     }
   };
 
   // Check if the dashboard URL exists
   if (!path) {
-    setUrlStatus('notfound');
+    setUrlStatus("notfound");
   } else {
     checkUrl();
   }
 
-
   // Show loading state while checking URL
-  if (urlStatus === 'loading') {
+  if (urlStatus === "loading") {
     return (
       <NavPageLayout
         {...{ headerProps, footerProps }}
         headerMetadata={{
-          title: 'Gen3 Dashboard Page',
-          content: 'Gen3 Dashboard Content',
-          key: 'gen3-dashboard-page',
+          title: "Gen3 Dashboard Page",
+          content: "Gen3 Dashboard Content",
+          key: "gen3-dashboard-page",
         }}
       >
-        <div className="flex w-full h-full items-center justify-center">
-          Loading...
-        </div>
+        <div className="flex w-full h-full items-center justify-center">Loading...</div>
       </NavPageLayout>
     );
   }
@@ -102,9 +90,9 @@ const DashboardContentApp = ({
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Gen3 Dashboard Page',
-        content: 'Gen3 Dashboard Content',
-        key: 'gen3-dashboard-page',
+        title: "Gen3 Dashboard Page",
+        content: "Gen3 Dashboard Content",
+        key: "gen3-dashboard-page",
       }}
     >
       <div className="flex justify-items-center w-full">
@@ -126,15 +114,13 @@ const DashboardContentApp = ({
 const getDashboardPath = (router: NextRouter): string | null => {
   const { page: dashboard } = router.query;
 
-  if (typeof dashboard === 'string') return dashboard;
-  else if (typeof dashboard === 'object') return dashboard.join('/');
+  if (typeof dashboard === "string") return dashboard;
+  else if (typeof dashboard === "object") return dashboard.join("/");
 
   return null;
 };
 
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   try {
     return {
       props: {

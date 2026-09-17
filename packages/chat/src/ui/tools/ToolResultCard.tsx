@@ -11,7 +11,6 @@ export interface ToolResultCardProps {
   trailing?: boolean;
 }
 
-
 export function ToolResultCard({
   toolCall,
   result,

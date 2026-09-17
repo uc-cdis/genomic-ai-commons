@@ -1,8 +1,4 @@
-import {
-  AiSearchPage,
-  AISearchPageGetServerSideProps as getServerSideProps,
-} from '@gen3/frontend';
-
+import { AiSearchPage, AISearchPageGetServerSideProps as getServerSideProps } from "@gen3/frontend";
 
 export default AiSearchPage;
 

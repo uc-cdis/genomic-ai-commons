@@ -65,7 +65,6 @@ function SurvivalBody({ data }: { data: SurvivalData }) {
   );
 }
 
-
 function SurvivalToolResultImpl({ result }: ToolRendererProps) {
   const ref = useMemo(() => (result ? readPayloadRef(result) : null), [result]);
   // Unconditional: a null id just idles the hook.

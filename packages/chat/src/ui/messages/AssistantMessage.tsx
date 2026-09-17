@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { Fragment, useState } from "react";
 import { Stack } from "@mantine/core";
@@ -19,7 +19,6 @@ export interface AssistantMessageProps {
   interruptActions: InterruptActions;
   isRunning: boolean;
 }
-
 
 export function AssistantMessage({
   message,
@@ -62,9 +61,7 @@ export function AssistantMessage({
         );
       })}
 
-      {message.content && (
-        <MessageBubble message={{ ...message, toolCalls: undefined }} />
-      )}
+      {message.content && <MessageBubble message={{ ...message, toolCalls: undefined }} />}
     </Stack>
   );
 }

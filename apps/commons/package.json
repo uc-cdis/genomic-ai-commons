@@ -2,10 +2,6 @@
   "name": "@gen3/commons-portal-app-base",
   "version": "0.12.69",
   "private": "true",
-  "engines": {
-    "npm": ">=11.16.0",
-    "node": ">=24.18.1"
-  },
   "scripts": {
     "lint": "oxlint .",
     "lint-fix": "oxlint --fix .",
@@ -100,7 +96,6 @@
     "msw-storybook-addon": "^2.0.4",
     "next": "^16.3.0",
     "next-router-mock": "^1.0.5",
-    "oxlint": "^1.82.0",
     "oxlint-tsgolint": "^7.0.2001",
     "postcss": "^8.5.6",
     "postcss-import": "^16.1.1",
@@ -118,6 +113,10 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1"
+  },
+  "engines": {
+    "node": ">=24.18.1",
+    "npm": ">=11.16.0"
   },
   "allowScripts": {
     "esbuild": true,

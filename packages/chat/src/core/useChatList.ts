@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { type ChatRecord, listChats, renameChat, deleteChat, clearAllChats } from "./db";
-import { reportError } from "./errors"
-
+import { reportError } from "./errors";
 
 export interface UseChatList {
   chats: ChatRecord[];
@@ -22,12 +21,11 @@ export function useChatList(): UseChatList {
     try {
       setChats(await listChats());
     } catch (err) {
-      reportError("db", err)
+      reportError("db", err);
     } finally {
       setLoading(false);
     }
   }, []);
-
 
   // Client-side only - IndexedDB doesn't exist during the server render.
   useEffect(() => {
@@ -35,37 +33,37 @@ export function useChatList(): UseChatList {
     void refresh();
   }, [refresh]);
 
-  const rename = useCallback(async (id: string, title: string) => {
-    try {
-      await renameChat(id, title);
-      await refresh();
-    } catch (err) {
-      reportError("db", err);
-    }
-  }, [refresh]);
+  const rename = useCallback(
+    async (id: string, title: string) => {
+      try {
+        await renameChat(id, title);
+        await refresh();
+      } catch (err) {
+        reportError("db", err);
+      }
+    },
+    [refresh],
+  );
 
   const remove = useCallback(
     async (id: string) => {
       try {
         await deleteChat(id); // TODO: surface the returned boolean as a notification
         await refresh();
-      }
-      catch (err) {
+      } catch (err) {
         reportError("db", err);
       }
-
     },
     [refresh],
   );
 
   const clear = useCallback(async () => {
-     try {
-    await clearAllChats();
-    await refresh();
-     }
-     catch (err) {
- reportError("db", err);
-     }
+    try {
+      await clearAllChats();
+      await refresh();
+    } catch (err) {
+      reportError("db", err);
+    }
   }, [refresh]);
 
   return { chats, loading, refresh, rename, remove, clear };

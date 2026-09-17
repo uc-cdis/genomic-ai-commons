@@ -1,17 +1,17 @@
 /** @type {import('tailwindcss').Config} */
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const plugin = require('tailwindcss/plugin');
+const plugin = require("tailwindcss/plugin");
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { GEN3_COMMONS_NAME } = require('@gen3/core');
+const { GEN3_COMMONS_NAME } = require("@gen3/core");
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable @typescript-eslint/no-require-imports */
 const themeFonts = require(`./config/${GEN3_COMMONS_NAME}/themeFonts.json`);
 const themeColorCSSVars = require(`./config/themeColorCSSVars.json`);
-const { typographyPlugin } = require('@gen3/frontend');
+const { typographyPlugin } = require("@gen3/frontend");
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 /**
  * npm hoists workspace deps to the repo root, so a package sits here or two levels up.
@@ -19,7 +19,7 @@ const path = require('path');
  * @returns {string}
  */
 const pkgDir = (name) => {
-  const dir = ['node_modules', '../../node_modules']
+  const dir = ["node_modules", "../../node_modules"]
     .map((base) => path.resolve(__dirname, base, name))
     .find(fs.existsSync);
   if (!dir) throw new Error(`Cannot locate ${name} in node_modules`);
@@ -27,55 +27,55 @@ const pkgDir = (name) => {
 };
 
 module.exports = {
-   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx}',
-    './src/components/**/*.{js,ts,jsx,tsx}',
-    './src/features/**/*.{js,ts,jsx,tsx}',
-    `${pkgDir('@gen3/frontend')}/dist/index/esm/*.js`,
-    `${pkgDir('@gen3/workspaces')}/dist/index/esm/*.js`,
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/features/**/*.{js,ts,jsx,tsx}",
+    `${pkgDir("@gen3/frontend")}/dist/index/esm/*.js`,
+    `${pkgDir("@gen3/workspaces")}/dist/index/esm/*.js`,
   ],
 
   theme: {
     extend: {
       colors: {
         heal: {
-          primary: '#99286B',
-          secondary: '#402264',
-          light_purple: '#F6EFF1',
-          purple: '#532565',
-          magenta: '#982568',
-          red: '#981F32',
-          coral: '#BF362E',
-          orange: '#E07C3E',
-          dark_gray: '#373A3C',
-          medium_gray: '#818A91',
-          light_gray: '#DDDDDD',
-          blue: '#0044B3',
+          primary: "#99286B",
+          secondary: "#402264",
+          light_purple: "#F6EFF1",
+          purple: "#532565",
+          magenta: "#982568",
+          red: "#981F32",
+          coral: "#BF362E",
+          orange: "#E07C3E",
+          dark_gray: "#373A3C",
+          medium_gray: "#818A91",
+          light_gray: "#DDDDDD",
+          blue: "#0044B3",
         },
         midrc: {
-          secondary: '#421C52',
+          secondary: "#421C52",
         },
         gen3: {
-          secondary: '#3283C8',
-          primary: '#05B8EE',
-          lime: '#7EC500',
-          iris: '#AD91FF',
-          rose: '#E74C3C',
-          bee: '#F4B940',
-          pink: '#FF7ABC',
-          highlight_orange: '#EF8523',
-          highlight_orange_light: '#FF9635',
-          mint: '#26D9B1',
-          coal: '#4A4A4A',
-          cloud: '#F5F5F5',
-          gray: '#606060',
-          lightgray: '#9B9B9B',
-          smoke: '#D1D1D1',
-          silver: '#E7E7E7',
-          black: '#000000',
-          white: '#FFFFFF',
-          titanium: '#707070',
-          obsidian: '#757575',
+          secondary: "#3283C8",
+          primary: "#05B8EE",
+          lime: "#7EC500",
+          iris: "#AD91FF",
+          rose: "#E74C3C",
+          bee: "#F4B940",
+          pink: "#FF7ABC",
+          highlight_orange: "#EF8523",
+          highlight_orange_light: "#FF9635",
+          mint: "#26D9B1",
+          coal: "#4A4A4A",
+          cloud: "#F5F5F5",
+          gray: "#606060",
+          lightgray: "#9B9B9B",
+          smoke: "#D1D1D1",
+          silver: "#E7E7E7",
+          black: "#000000",
+          white: "#FFFFFF",
+          titanium: "#707070",
+          obsidian: "#757575",
         },
         ...themeColorCSSVars,
       },
@@ -84,30 +84,30 @@ module.exports = {
         content: themeFonts.content,
       },
       fontSize: {
-        tiny: '0.625rem',
+        tiny: "0.625rem",
       },
       borderWidth: {
-        DEFAULT: '1px',
-        0: '0',
-        1: '1px',
-        2: '2px',
-        3: '3px',
-        4: '4px',
-        6: '6px',
-        8: '8px',
+        DEFAULT: "1px",
+        0: "0",
+        1: "1px",
+        2: "2px",
+        3: "3px",
+        4: "4px",
+        6: "6px",
+        8: "8px",
       },
       height: {
-        '100px': '100px',
-        '200px': '200px',
-        workspace: '100vh',
+        "100px": "100px",
+        "200px": "200px",
+        workspace: "100vh",
       },
       screens: {
-        sm: '640px',
-        md: '768px',
-        lg: '1024px',
-        xl: '1280px',
-        '2xl': '1420px',
-        '3xl': '1536px',
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1280px",
+        "2xl": "1420px",
+        "3xl": "1536px",
       },
     },
   },
@@ -115,37 +115,37 @@ module.exports = {
     extend: {},
   },
   plugins: [
-    require('@tailwindcss/forms'),
+    require("@tailwindcss/forms"),
     typographyPlugin,
-    require('@tailwindcss/forms')({
-      strategy: 'class',
+    require("@tailwindcss/forms")({
+      strategy: "class",
     }),
     plugin(function ({ addVariant }) {
       // add mantine.dev variants
-      addVariant('api-checked', '&[api-checked]');
-      addVariant('api-active', '&[api-active]');
-      addVariant('api-selected', '&[api-selected]');
-      addVariant('api-hovered', '&[api-hovered]');
-      addVariant('api-disabled', '&[api-disabled]');
-      addVariant('api-in-range', '&[api-in-range]');
-      addVariant('api-first-in-range', '&[api-first-in-range]');
-      addVariant('api-last-in-range', '&[api-last-in-range]');
-      addVariant('data-checked', '&[data-checked]');
-      addVariant('data-active', '&[data-active]');
-      addVariant('data-selected', '&[data-selected]');
-      addVariant('data-hovered', '&[data-hovered]');
-      addVariant('data-disabled', '&[data-disabled]');
-      addVariant('data-in-range', '&[data-in-range]');
-      addVariant('data-first-in-range', '&[data-first-in-range]');
-      addVariant('data-last-in-range', '&[data-last-in-range]');
-      addVariant('data-with-icon', '&[data-with-icon]');
+      addVariant("api-checked", "&[api-checked]");
+      addVariant("api-active", "&[api-active]");
+      addVariant("api-selected", "&[api-selected]");
+      addVariant("api-hovered", "&[api-hovered]");
+      addVariant("api-disabled", "&[api-disabled]");
+      addVariant("api-in-range", "&[api-in-range]");
+      addVariant("api-first-in-range", "&[api-first-in-range]");
+      addVariant("api-last-in-range", "&[api-last-in-range]");
+      addVariant("data-checked", "&[data-checked]");
+      addVariant("data-active", "&[data-active]");
+      addVariant("data-selected", "&[data-selected]");
+      addVariant("data-hovered", "&[data-hovered]");
+      addVariant("data-disabled", "&[data-disabled]");
+      addVariant("data-in-range", "&[data-in-range]");
+      addVariant("data-first-in-range", "&[data-first-in-range]");
+      addVariant("data-last-in-range", "&[data-last-in-range]");
+      addVariant("data-with-icon", "&[data-with-icon]");
     }),
     plugin(function ({ addUtilities }) {
       const newUtilities = {
-        '.nextImageFillFix': {
-          width: 'auto !important',
-          right: 'auto !important',
-          'min-width': '0 !important',
+        ".nextImageFillFix": {
+          width: "auto !important",
+          right: "auto !important",
+          "min-width": "0 !important",
         },
       };
       addUtilities(newUtilities);
@@ -153,57 +153,57 @@ module.exports = {
     plugin(function ({ addComponents }) {
       // TODO remove these
       addComponents({
-        '.heal-btn': {
-          display: 'inline-block',
-          textAlign: 'center',
-          padding: '0.375rem 1rem',
-          fontSize: '1rem',
-          lineHeight: '1.5',
-          fontWeight: '600',
-          textTransform: 'uppercase',
-          color: '#ffffff',
-          border: '4px solid transparent',
-          borderRadius: '7px',
-          backgroundColor: '#982568',
-          '&:hover, &:focus': {
-            backgroundColor: '#ffffff',
-            borderColor: '#982568',
-            color: '#982568',
+        ".heal-btn": {
+          display: "inline-block",
+          textAlign: "center",
+          padding: "0.375rem 1rem",
+          fontSize: "1rem",
+          lineHeight: "1.5",
+          fontWeight: "600",
+          textTransform: "uppercase",
+          color: "#ffffff",
+          border: "4px solid transparent",
+          borderRadius: "7px",
+          backgroundColor: "#982568",
+          "&:hover, &:focus": {
+            backgroundColor: "#ffffff",
+            borderColor: "#982568",
+            color: "#982568",
           },
         },
-        '.heal-btn-purple': {
-          backgroundColor: '#532565',
-          '&:hover, &:focus': {
-            color: '#532565',
-            borderColor: '#532565',
-            backgroundColor: '#ffffff',
+        ".heal-btn-purple": {
+          backgroundColor: "#532565",
+          "&:hover, &:focus": {
+            color: "#532565",
+            borderColor: "#532565",
+            backgroundColor: "#ffffff",
           },
         },
-        '.heal-btn-rev': {
-          color: '#982568',
-          borderColor: '#982568',
-          backgroundColor: '#ffffff',
-          '&:hover, &:focus': {
-            backgroundColor: '#982568',
-            borderColor: 'transparent',
-            color: '#ffffff',
+        ".heal-btn-rev": {
+          color: "#982568",
+          borderColor: "#982568",
+          backgroundColor: "#ffffff",
+          "&:hover, &:focus": {
+            backgroundColor: "#982568",
+            borderColor: "transparent",
+            color: "#ffffff",
           },
         },
-        '.heal-link-footer': {
-          color: '#FFFFFF',
-          '&:hover, &:focus': {
-            color: '#c0b3c5',
+        ".heal-link-footer": {
+          color: "#FFFFFF",
+          "&:hover, &:focus": {
+            color: "#c0b3c5",
           },
         },
       });
     }),
   ],
   safelist: [
-    'accent-warm',
-    'text-tiny',
-    'text-xxs',
-    'text-xxxs',
-    'h-20',
+    "accent-warm",
+    "text-tiny",
+    "text-xxs",
+    "text-xxxs",
+    "h-20",
     {
       pattern:
         /bg-(primary|secondary|accent|accent-warm|accent-cool|base)-(min|lightest|lighter|light|dark|darker|darkest|max)/,

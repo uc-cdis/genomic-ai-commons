@@ -15,10 +15,7 @@
       "label": "Remote Kernel Runtime",
       "tier": "remote",
       "description": " Attach to remote compute for longer sessions and larger workloads.",
-      "features": [
-        "Persistent sessions and gateway routing",
-        "Designed for heavier workloads"
-      ],
+      "features": ["Persistent sessions and gateway routing", "Designed for heavier workloads"],
       "buttonLabel": "Launch Remote Workspace",
       "baseColor": "#42f5d422",
       "runningLabel": {

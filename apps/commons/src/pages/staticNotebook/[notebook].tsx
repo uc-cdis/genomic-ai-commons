@@ -1,20 +1,16 @@
-import React from 'react';
-import type { GetServerSideProps } from 'next';
-import type { NextRouter} from 'next/dist/client/router';
-import { useRouter } from 'next/dist/client/router';
+import React from "react";
+import type { GetServerSideProps } from "next";
+import type { NextRouter } from "next/dist/client/router";
+import { useRouter } from "next/dist/client/router";
 
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
+import type { NavPageLayoutProps } from "@gen3/frontend";
 import {
   getNavPageLayoutPropsFromConfig,
   NavPageLayout,
   StaticNotebookIFrame,
-} from '@gen3/frontend';
+} from "@gen3/frontend";
 
-const StaticNotebookApp = ({
-  headerProps,
-  footerProps,
-}: NavPageLayoutProps) => {
+const StaticNotebookApp = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   const router = useRouter();
   const notebook = getNotebookName(router);
 
@@ -22,9 +18,9 @@ const StaticNotebookApp = ({
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Gen3 Static Notebook Page',
-        content: 'Static Notebook',
-        key: 'gen3-static-notebook-page',
+        title: "Gen3 Static Notebook Page",
+        content: "Static Notebook",
+        key: "gen3-static-notebook-page",
       }}
     >
       <StaticNotebookIFrame notebook={notebook} />
@@ -34,15 +30,13 @@ const StaticNotebookApp = ({
 
 const getNotebookName = (router: NextRouter): string => {
   const { notebook } = router.query;
-  if (typeof notebook === 'string') return notebook;
-  else if (typeof notebook === 'object') return notebook[0];
+  if (typeof notebook === "string") return notebook;
+  else if (typeof notebook === "object") return notebook[0];
 
-  return 'notFound';
+  return "notFound";
 };
 
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   try {
     return {
       props: {

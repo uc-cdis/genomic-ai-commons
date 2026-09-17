@@ -1,6 +1,6 @@
-import { jwtVerify } from 'jose';
-import { getAccessToken } from '@/lib/auth/getLoginStatus';
-import { getVerificationKey } from '@/lib/auth/verificationKey';
+import { jwtVerify } from "jose";
+import { getAccessToken } from "@/lib/auth/getLoginStatus";
+import { getVerificationKey } from "@/lib/auth/verificationKey";
 
 /**
  * Verify the caller's Gen3 session from the request cookie. Other proxies hand the token to a Gen3 service that validates it; an
@@ -21,7 +21,7 @@ export const authenticateCopilotRequest = async (
     await jwtVerify(token, key); // rejects an expired token too
   } catch (error) {
     console.error(
-      '[copilotkit] Access token verification failed:',
+      "[copilotkit] Access token verification failed:",
       error instanceof Error ? error.message : error,
     );
     return null;

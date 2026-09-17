@@ -28,12 +28,12 @@ export function ChatInput({
 }: ChatInputProps) {
   const [value, setValue] = useState("");
 
-const send = () => {
-  const trimmed = value.trim();
-  if (!trimmed || isRunning || blockedReason) return;
-  onSend(trimmed);
-  setValue("");
-};
+  const send = () => {
+    const trimmed = value.trim();
+    if (!trimmed || isRunning || blockedReason) return;
+    onSend(trimmed);
+    setValue("");
+  };
 
   // Width and gutter belong to the column this sits in, not to the composer.
   return (

@@ -17,13 +17,7 @@ export interface UserMessageProps {
   onRetry: () => void;
 }
 
-export function UserMessage({
-  message,
-  durationMs,
-  canRewind,
-  onEdit,
-  onRetry,
-}: UserMessageProps) {
+export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }: UserMessageProps) {
   const [draft, setDraft] = useState<string | null>(null);
   const editing = draft !== null;
 
@@ -68,62 +62,61 @@ export function UserMessage({
     );
   }
 
-
   return (
     <>
       <MessageBubble message={message} />
 
       <Group justify="space-between" gap="xs" wrap="nowrap" align="center">
-  <div>
-    {durationMs !== undefined && (
-      <RunStatusBanner isRunning={false} durationMs={durationMs} />
-    )}
-  </div>
+        <div>
+          {durationMs !== undefined && (
+            <RunStatusBanner isRunning={false} durationMs={durationMs} />
+          )}
+        </div>
 
-    <Group gap={4} wrap="nowrap">
-      <CopyButton value={message.content} timeout={2000}>
-        {({ copied, copy }) => (
-          <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="top">
-            <ActionIcon
-              variant="subtle"
-              color={copied ? "teal" : "gray"}
-              size="sm"
-              aria-label={copied ? "Copied to clipboard" : "Copy message"}
-              onClick={copy}
-            >
-              {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
-            </ActionIcon>
-          </Tooltip>
-        )}
-      </CopyButton>
+        <Group gap={4} wrap="nowrap">
+          <CopyButton value={message.content} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="top">
+                <ActionIcon
+                  variant="subtle"
+                  color={copied ? "teal" : "gray"}
+                  size="sm"
+                  aria-label={copied ? "Copied to clipboard" : "Copy message"}
+                  onClick={copy}
+                >
+                  {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
 
-      {canRewind && (
-        <>
-          <Tooltip label="Edit" withArrow position="top">
-            <ActionIcon
-              variant="default"
-              size="sm"
-              aria-label="Edit message"
-              onClick={startEditing}
-            >
-              <IconPencil size={14} />
-            </ActionIcon>
-          </Tooltip>
+          {canRewind && (
+            <>
+              <Tooltip label="Edit" withArrow position="top">
+                <ActionIcon
+                  variant="default"
+                  size="sm"
+                  aria-label="Edit message"
+                  onClick={startEditing}
+                >
+                  <IconPencil size={14} />
+                </ActionIcon>
+              </Tooltip>
 
-          <Tooltip label="Try again" withArrow position="top">
-            <ActionIcon
-              variant="default"
-              size="sm"
-              aria-label="Retry this message"
-              onClick={onRetry}
-            >
-              <IconRefresh size={14} />
-            </ActionIcon>
-          </Tooltip>
-        </>
-      )}
-    </Group>
-  </Group>
+              <Tooltip label="Try again" withArrow position="top">
+                <ActionIcon
+                  variant="default"
+                  size="sm"
+                  aria-label="Retry this message"
+                  onClick={onRetry}
+                >
+                  <IconRefresh size={14} />
+                </ActionIcon>
+              </Tooltip>
+            </>
+          )}
+        </Group>
+      </Group>
     </>
   );
 }

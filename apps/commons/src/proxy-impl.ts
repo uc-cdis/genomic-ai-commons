@@ -1,27 +1,23 @@
-import type { NextRequest} from 'next/server';
-import { NextResponse } from 'next/server';
-import { getRouteConfig } from './lib/auth/arboristConfig';
-import {
-  getAccessToken,
-  getLoginStatus,
-  type LoginStatus,
-} from './lib/auth/getLoginStatus';
-import { fetchArboristResources } from './lib/auth/fetchAuthz';
-import type { RouteConfig } from '@gen3/frontend/server';
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { getRouteConfig } from "./lib/auth/arboristConfig";
+import { getAccessToken, getLoginStatus, type LoginStatus } from "./lib/auth/getLoginStatus";
+import { fetchArboristResources } from "./lib/auth/fetchAuthz";
+import type { RouteConfig } from "@gen3/frontend/server";
 
-const WILDCARD_ROUTE_KEY = '*';
+const WILDCARD_ROUTE_KEY = "*";
 
 function getRouteRuleForPath(pathname: string, routeConfig: RouteConfig) {
   // handle wildcards
   // get subdirectory
-  const pathParts = pathname.split('/');
+  const pathParts = pathname.split("/");
   // has subdirectory
   if (pathParts.length > 2) {
     const startsWithPath = `/${pathParts[1]}`;
     // look through config for subdirectory
-    const routeConfigMatch = Object.keys(routeConfig).find(key => key.startsWith(startsWithPath));
+    const routeConfigMatch = Object.keys(routeConfig).find((key) => key.startsWith(startsWithPath));
     // check if subdirectory ends with wildcard
-    if (routeConfigMatch && routeConfigMatch.endsWith('(.*)')) {
+    if (routeConfigMatch && routeConfigMatch.endsWith("(.*)")) {
       return routeConfig?.[routeConfigMatch];
     }
   }
@@ -29,7 +25,7 @@ function getRouteRuleForPath(pathname: string, routeConfig: RouteConfig) {
 }
 
 function isLoggedIn(loginStatus: LoginStatus) {
-  return loginStatus.status === 'issued';
+  return loginStatus.status === "issued";
 }
 
 export async function proxy(req: NextRequest) {
@@ -39,7 +35,7 @@ export async function proxy(req: NextRequest) {
 
   // check if there is a wildcard route
   if (!rule) {
-    rule = getRouteRuleForPath('*', routeConfig);
+    rule = getRouteRuleForPath("*", routeConfig);
   }
 
   // Public route: not listed in Arborist config
@@ -54,14 +50,14 @@ export async function proxy(req: NextRequest) {
   }
 
   // Gen3 login check
-  const loginStatus = await getLoginStatus(req.headers.get('Cookie') || '');
+  const loginStatus = await getLoginStatus(req.headers.get("Cookie") || "");
   const loggedIn = isLoggedIn(loginStatus);
 
   // Enforce login if required
   if (!loggedIn) {
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/Login';
-    loginUrl.searchParams.set('referer', pathname);
+    loginUrl.pathname = "/Login";
+    loginUrl.searchParams.set("referer", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
@@ -73,20 +69,19 @@ export async function proxy(req: NextRequest) {
   }
 
   // Authz is enabled, AND route has authzResources → check Arborist resources
-  const tokenFromCookie =
-    getAccessToken(req.headers.get('Cookie') || '') ?? null;
+  const tokenFromCookie = getAccessToken(req.headers.get("Cookie") || "") ?? null;
 
   // Let the server-side helper resolve resources using the active Gen3 session.
   const resources = await fetchArboristResources(
     tokenFromCookie,
-    process.env.NODE_ENV === 'production',
+    process.env.NODE_ENV === "production",
   );
 
   const allowed = rule?.authz!.some((needed) => resources.includes(needed));
   if (!allowed) {
     // Already logged in if required; they just lack authz for this resource
     const forbiddenUrl = req.nextUrl.clone();
-    forbiddenUrl.pathname = '/403';
+    forbiddenUrl.pathname = "/403";
     return NextResponse.rewrite(forbiddenUrl);
   }
 

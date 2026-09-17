@@ -33,7 +33,9 @@ export function ReasoningBlock({
         </Group>
       </UnstyledButton>
       <Collapse expanded={opened}>
-        <Text size="sm" mt="xs" c="dimmed">{content}</Text>
+        <Text size="sm" mt="xs" c="dimmed">
+          {content}
+        </Text>
       </Collapse>
     </>
   );

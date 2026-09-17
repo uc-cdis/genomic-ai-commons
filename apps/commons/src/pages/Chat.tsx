@@ -1,11 +1,7 @@
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
-import {
-  getNavPageLayoutPropsFromConfig,
-  NavPageLayout
-} from '@gen3/frontend';
-import type { GetServerSideProps } from 'next';
-import dynamic from 'next/dynamic';
+import type { NavPageLayoutProps } from "@gen3/frontend";
+import { getNavPageLayoutPropsFromConfig, NavPageLayout } from "@gen3/frontend";
+import type { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 
 const ChatLoading = () => (
   <div className="flex items-center justify-center h-full w-full">
@@ -16,10 +12,10 @@ const ChatLoading = () => (
 // Chat reaches @copilotkit/react-core through useChat. Keep it out of the module
 // graph this page is evaluated with on the server: _app never renders on the server,
 // but the page module is still required there because getServerSideProps lives in it.
-const Chat = dynamic(
-  () => import('@gen3/chat/ui').then((m) => m.Chat),
-  { ssr: false, loading: () => <ChatLoading /> },
-);
+const Chat = dynamic(() => import("@gen3/chat/ui").then((m) => m.Chat), {
+  ssr: false,
+  loading: () => <ChatLoading />,
+});
 
 const ChatPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   return (
@@ -27,9 +23,9 @@ const ChatPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
       {...{ headerProps, footerProps }}
       mainProps={{ fixed: true }}
       headerMetadata={{
-        title: 'Genomic AI Commons Chat',
-        content: 'AI Chat',
-        key: 'gac-chat-page',
+        title: "Genomic AI Commons Chat",
+        content: "AI Chat",
+        key: "gac-chat-page",
       }}
     >
       <Chat agentId="default" />
@@ -37,9 +33,7 @@ const ChatPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   return {
     props: {
       ...(await getNavPageLayoutPropsFromConfig()),

@@ -55,11 +55,7 @@
           "searchBar": {
             "enabled": true,
             "inputSubtitle": "Search studies by keywords",
-            "searchableTextFields": [
-              "study_description",
-              "_unique_id",
-              "full_name"
-            ]
+            "searchableTextFields": ["study_description", "_unique_id", "full_name"]
           },
           "tagSearchDropdown": {
             "enabled": true,

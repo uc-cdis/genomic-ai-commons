@@ -1,21 +1,8 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
-import {
-  Badge,
-  Box,
-  Collapse,
-  Divider,
-  Group,
-  Paper,
-  Text,
-  UnstyledButton,
-} from "@mantine/core";
-import {
-  IconChevronDown,
-  IconChevronUp,
-  IconReportAnalytics,
-} from "@tabler/icons-react";
+import { Badge, Box, Collapse, Divider, Group, Paper, Text, UnstyledButton } from "@mantine/core";
+import { IconChevronDown, IconChevronUp, IconReportAnalytics } from "@tabler/icons-react";
 import type { ToolRendererProps } from "../types";
 import { MarkdownContent } from "../../messages/MarkdownContent";
 import { parseAgentReport } from "./parse";

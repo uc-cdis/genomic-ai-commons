@@ -1,11 +1,11 @@
 {
-  "mapping" : {
-    "source" : {
+  "mapping": {
+    "source": {
       "id": "prom",
       "label": "Prometheus",
-      "description" : "PROject for Military Exposures and Toxin History Evaluation in US Service Members"
+      "description": "PROject for Military Exposures and Toxin History Evaluation in US Service Members"
     },
-    "external" : [
+    "external": [
       {
         "id": "GDC",
         "label": "Genomic Data Commons",

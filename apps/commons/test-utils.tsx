@@ -1,15 +1,13 @@
-import type { ComponentType, ReactElement } from 'react';
-import React from 'react';
+import type { ComponentType, ReactElement } from "react";
+import React from "react";
 import type {
   RenderHookOptions,
   RenderHookResult,
   RenderOptions,
-  RenderResult} from '@testing-library/react';
-import {
-  render,
-  renderHook
-} from '@testing-library/react';
-import { CoreProvider, gen3Api, useCoreDispatch } from '@gen3/core';
+  RenderResult,
+} from "@testing-library/react";
+import { render, renderHook } from "@testing-library/react";
+import { CoreProvider, gen3Api, useCoreDispatch } from "@gen3/core";
 
 const ResetCoreProvider = () => {
   const dispatch = useCoreDispatch();
@@ -29,9 +27,7 @@ const ResetCoreProvider = () => {
  *
  *       TODO: Add additional providers
  */
-const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <CoreProvider>
       <ResetCoreProvider />
@@ -40,10 +36,7 @@ const AllTheProviders: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-): RenderResult =>
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, "wrapper">): RenderResult =>
   render(ui, { wrapper: AllTheProviders as ComponentType, ...options });
 
 // Custom renderHook wrapper
@@ -57,5 +50,5 @@ const customRenderHook = <Result, Props>(
   });
 };
 
-export * from '@testing-library/react';
+export * from "@testing-library/react";
 export { customRender as render, customRenderHook as renderHook };

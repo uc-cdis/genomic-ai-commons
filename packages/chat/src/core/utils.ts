@@ -6,11 +6,11 @@ import type { ChatInterrupt, ChatMessage, ToolCall } from "./types";
 export function toChatMessage(message: Message): ChatMessage[] {
   if (message.role === "user") {
     const text = extractText(message.content);
-    if(!text) return [];
-    return [{id: message.id, role: "user", content: text}]
+    if (!text) return [];
+    return [{ id: message.id, role: "user", content: text }];
   }
 
-  if(message.role === "assistant") {
+  if (message.role === "assistant") {
     const text = extractText(message.content);
     const toolCalls: ToolCall[] = (message.toolCalls ?? []).map((tc) => ({
       id: tc.id,
@@ -23,7 +23,6 @@ export function toChatMessage(message: Message): ChatMessage[] {
     return [{ id: message.id, role: "assistant", content: text, toolCalls }];
   }
 
-
   if (message.role === "reasoning") {
     const text = typeof message.content === "string" ? message.content : "";
     if (!text) return [];
@@ -32,17 +31,18 @@ export function toChatMessage(message: Message): ChatMessage[] {
   }
 
   if (message.role === "tool") {
-    return [{
-      id: message.id,
-      role: "tool",
-      toolCallId: message.toolCallId,
-      content: unwrapToolResult(message.content)
-    }];
+    return [
+      {
+        id: message.id,
+        role: "tool",
+        toolCallId: message.toolCallId,
+        content: unwrapToolResult(message.content),
+      },
+    ];
   }
 
-  return []
+  return [];
 }
-
 
 /** Arguments arrive as a growing string, so they only parse once complete. */
 function parseArgs(raw: string): Record<string, unknown> | null {
@@ -108,7 +108,6 @@ function extractText(content: unknown): string {
   return "";
 }
 
-
 /** Index of the most recent user message, or -1 if there is none. */
 export function lastUserIndex(messages: Message[]): number {
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -116,7 +115,6 @@ export function lastUserIndex(messages: Message[]): number {
   }
   return -1;
 }
-
 
 /**
  * Interrupt -> ChatInterrupt. Total, unlike toChatMessage's drop-the-empties
@@ -142,11 +140,7 @@ export function toChatInterrupt(interrupt: Interrupt): ChatInterrupt {
 function advertisesEditedArgs(schema: unknown): boolean {
   if (typeof schema !== "object" || schema === null) return false;
   const properties = (schema as { properties?: unknown }).properties;
-  return (
-    typeof properties === "object" &&
-    properties !== null &&
-    "editedArgs" in properties
-  );
+  return typeof properties === "object" && properties !== null && "editedArgs" in properties;
 }
 
 /** expiresAt is ISO-8601 on the wire. Junk dates count as no expiry. */

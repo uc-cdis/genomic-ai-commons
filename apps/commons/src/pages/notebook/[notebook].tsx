@@ -1,14 +1,10 @@
-import React from 'react';
-import type { GetServerSideProps } from 'next';
-import type { NextRouter} from 'next/dist/client/router';
-import { useRouter } from 'next/dist/client/router';
+import React from "react";
+import type { GetServerSideProps } from "next";
+import type { NextRouter } from "next/dist/client/router";
+import { useRouter } from "next/dist/client/router";
 
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
-import {
-  NavPageLayout,
-  getNavPageLayoutPropsFromConfig,
-} from '@gen3/frontend';
+import type { NavPageLayoutProps } from "@gen3/frontend";
+import { NavPageLayout, getNavPageLayoutPropsFromConfig } from "@gen3/frontend";
 
 const AppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   const router = useRouter();
@@ -18,9 +14,9 @@ const AppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Gen3 Notebook Page',
-        content: 'Jupyter Notebook',
-        key: 'gen3-notebook-page',
+        title: "Gen3 Notebook Page",
+        content: "Jupyter Notebook",
+        key: "gen3-notebook-page",
       }}
     >
       <div className="flex justify-items-center w-full">
@@ -30,7 +26,7 @@ const AppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
           width="100%"
           height="100%"
           title="client notebook"
-         />
+        />
       </div>
     </NavPageLayout>
   );
@@ -38,15 +34,13 @@ const AppsPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
 
 const getNotebookName = (router: NextRouter): string => {
   const { notebook } = router.query;
-  if (typeof notebook === 'string') return notebook;
-  else if (typeof notebook === 'object') return notebook[0];
+  if (typeof notebook === "string") return notebook;
+  else if (typeof notebook === "object") return notebook[0];
 
-  return 'notFound';
+  return "notFound";
 };
 
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   try {
     return {
       props: {

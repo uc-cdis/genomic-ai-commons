@@ -45,9 +45,7 @@ export function ConversationItem({
       style={{
         borderRadius: "var(--mantine-radius-sm)",
         backgroundColor: active ? "var(--mantine-color-body)" : "transparent",
-        border: active
-          ? "1px solid var(--mantine-color-default-border)"
-          : "1px solid transparent",
+        border: active ? "1px solid var(--mantine-color-default-border)" : "1px solid transparent",
       }}
     >
       {editing ? (

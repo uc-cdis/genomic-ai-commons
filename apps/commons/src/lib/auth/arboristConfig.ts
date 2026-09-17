@@ -1,8 +1,8 @@
 /**
  * Frontend server side api to extract the frontend-protected resources
  */
-import { GEN3_COMMONS_NAME } from '@gen3/core/server';
-import type { AuthorizedRoutesConfig } from '@gen3/frontend/server';
+import { GEN3_COMMONS_NAME } from "@gen3/core/server";
+import type { AuthorizedRoutesConfig } from "@gen3/frontend/server";
 
 let cachedConfig: AuthorizedRoutesConfig | null = null;
 
@@ -18,8 +18,6 @@ export async function getRouteConfig(): Promise<AuthorizedRoutesConfig> {
       `Failed to load ../../../config/${GEN3_COMMONS_NAME}/authz.json, ensure you have the config/authz.json file in your commons config directory`,
       e,
     );
-    throw Error(
-      '`Failed to load ../../../config/${GEN3_COMMONS_NAME}/authz.json',
-    );
+    throw Error("`Failed to load ../../../config/${GEN3_COMMONS_NAME}/authz.json");
   }
 }

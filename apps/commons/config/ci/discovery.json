@@ -83,11 +83,11 @@
         }
       },
       "aggregations": [
-          {
-              "name": "Studies",
-              "field": "project_number",
-              "type": "count"
-          }
+        {
+          "name": "Studies",
+          "field": "project_number",
+          "type": "count"
+        }
       ],
       "tagSelector": {
         "title": "Tags by category",

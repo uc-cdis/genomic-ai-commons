@@ -16,8 +16,16 @@ import type { SurvivalCurve, SurvivalPoint } from "./parse";
 
 // schemeCategory10, darkened to clear 4.5:1 contrast for normal text.
 export const textColors = [
-  "#1F77B4", "#BD5800", "#258825", "#D62728", "#8E5FB9",
-  "#8C564B", "#D42BA1", "#757575", "#7A7A15", "#10828E",
+  "#1F77B4",
+  "#BD5800",
+  "#258825",
+  "#D62728",
+  "#8E5FB9",
+  "#8C564B",
+  "#D42BA1",
+  "#757575",
+  "#7A7A15",
+  "#10828E",
 ];
 
 export const MINIMUM_CASES = 10;
@@ -45,13 +53,7 @@ function renderCensorTick(props: { cx?: number; cy?: number; key?: Key | null })
   );
 }
 
-function SurvivalTooltip({
-  active,
-  payload,
-}: {
-  active?: boolean;
-  payload?: { payload: Row }[];
-}) {
+function SurvivalTooltip({ active, payload }: { active?: boolean; payload?: { payload: Row }[] }) {
   const point = payload?.[0]?.payload;
   if (!active || !point || !point.submitterId) return null;
 
@@ -98,7 +100,7 @@ export const SurvivalPlot = memo(function SurvivalPlot({
   return (
     <ResponsiveContainer width="100%" height={height} minWidth={320}>
       <LineChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 8 }}>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} horizontalValues={Y_TICKS_COARSE}/>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} horizontalValues={Y_TICKS_COARSE} />
         <XAxis
           type="number"
           dataKey="time"

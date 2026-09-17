@@ -25,8 +25,8 @@ export function EmptyState({ onSelect, disabled }: EmptyStateProps) {
           Ask GDC About Cancer Data
         </Title>
         <Text size="lg" textWrap="wrap">
-          Use GDC Query Augmented Generation (QAG) to ask questions about
-          harmonized cancer datasets, clinical progression, and therapy response.
+          Use GDC Query Augmented Generation (QAG) to ask questions about harmonized cancer
+          datasets, clinical progression, and therapy response.
         </Text>
       </Stack>
 

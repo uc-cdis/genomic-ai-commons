@@ -32,8 +32,8 @@
             "whatever_lab_result_value"
           ],
           "fieldsConfig": {
-            "gender" : {
-              "type" : "multiselect"
+            "gender": {
+              "type": "multiselect"
             }
           }
         }
@@ -43,20 +43,14 @@
       "enabled": true,
       "detailsConfig": {
         "panel": "default",
-        "mode" : "click",
+        "mode": "click",
         "idField": "submitter_id",
         "title": "Row Details"
       },
       "pageLimit": {
         "limit": 10000
       },
-      "fields": [
-        "project",
-        "gender",
-        "race",
-        "ethnicity",
-        "whatever_lab_result_value"
-      ],
+      "fields": ["project", "gender", "race", "ethnicity", "whatever_lab_result_value"],
       "columns": {
         "whatever_lab_result_value": {
           "sortable": false
@@ -76,7 +70,7 @@
             "leftIcon": "datafile",
             "rightIcon": "download",
             "action": "data-json",
-            "actionArgs" : {
+            "actionArgs": {
               "filename": "MIDRC_Series_table.json",
               "rootPath": "gen3_discovery"
             }
@@ -88,7 +82,7 @@
             "leftIcon": "datafile",
             "rightIcon": "download",
             "action": "data-csv",
-            "actionArgs" : {
+            "actionArgs": {
               "filename": "data_table.csv"
             }
           }

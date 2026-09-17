@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Anchor,
   Group,
@@ -10,17 +10,14 @@ import {
   ActionIcon,
   Tooltip,
   Button,
-} from '@mantine/core';
-import { useGeneralGQLQuery, GEN3_FENCE_API } from '@gen3/core';
+} from "@mantine/core";
+import { useGeneralGQLQuery, GEN3_FENCE_API } from "@gen3/core";
 import {
   ErrorCard,
   type TableDetailsPanelProps,
   ExplorerTableDetailsPanelFactory,
-} from '@gen3/frontend';
-import {
-  MdContentCopy as IconCopy,
-  MdCheck as IconCheck,
-} from 'react-icons/md';
+} from "@gen3/frontend";
+import { MdContentCopy as IconCopy, MdCheck as IconCheck } from "react-icons/md";
 
 // a definition of the query response
 interface QueryResponse {
@@ -35,10 +32,7 @@ interface QueryResponse {
  */
 const isQueryResponse = (obj: any): obj is QueryResponse => {
   // Considering that the data property can be optional
-  return (
-    typeof obj === 'object' &&
-    (obj.data === undefined || typeof obj.data === 'object')
-  );
+  return typeof obj === "object" && (obj.data === undefined || typeof obj.data === "object");
 };
 
 /**
@@ -48,24 +42,14 @@ const isQueryResponse = (obj: any): obj is QueryResponse => {
  * @param {string} index - The index to extract the data from.
  * @returns {Record<string, any>} - The extracted data as a key-value pair object.
  */
-const extractData = (
-  data: QueryResponse,
-  index: string,
-): Record<string, any> => {
+const extractData = (data: QueryResponse, index: string): Record<string, any> => {
   if (data === undefined || data === null) return {};
   if (data.data === undefined || data.data === null) return {};
 
-  return Array.isArray(data.data[index]) && data.data[index].length > 0
-    ? data.data[index][0]
-    : {};
+  return Array.isArray(data.data[index]) && data.data[index].length > 0 ? data.data[index][0] : {};
 };
 
-export const FileDetailsPanel = ({
-  id,
-  index,
-  tableConfig,
-  onClose,
-}: TableDetailsPanelProps) => {
+export const FileDetailsPanel = ({ id, index, tableConfig, onClose }: TableDetailsPanelProps) => {
   // get the idField from the configuration
   const idField = tableConfig.detailsConfig?.idField;
   // call the general Guppy GQL which takes an object { query: string, variables: object }
@@ -90,13 +74,11 @@ export const FileDetailsPanel = ({
 
   // handle misconfiguration
   if (!idField) {
-    return (
-      <ErrorCard message={'idField not configure in Tables Details Config'} />
-    );
+    return <ErrorCard message={"idField not configure in Tables Details Config"} />;
   }
   // show data error if graphql fails
   if (isError) {
-    return <ErrorCard message={'Error occurred while fetching data'} />;
+    return <ErrorCard message={"Error occurred while fetching data"} />;
   }
 
   // process guppy response
@@ -113,17 +95,15 @@ export const FileDetailsPanel = ({
           if field is one that we want a link for make it an Anchor otherwise
           render as text.
          */}
-        {field === 'object_id' ? (
+        {field === "object_id" ? (
           <Anchor
-            href={`${GEN3_FENCE_API}/data/download/${
-              value ? (value as string) : ''
-            }?redirect=true`}
+            href={`${GEN3_FENCE_API}/data/download/${value ? (value as string) : ""}?redirect=true`}
             target="_blank"
           >
-            {value ? (value as string) : ''}
+            {value ? (value as string) : ""}
           </Anchor>
         ) : (
-          <Text>{value ? (value as string) : ''}</Text>
+          <Text>{value ? (value as string) : ""}</Text>
         )}
       </td>
     </tr>
@@ -144,12 +124,8 @@ export const FileDetailsPanel = ({
       <Group justify="flex-end">
         <CopyButton value={JSON.stringify(queryData)} timeout={2000}>
           {({ copied, copy }) => (
-            <Tooltip
-              label={copied ? 'Copied' : 'Copy'}
-              withArrow
-              position="right"
-            >
-              <ActionIcon color={copied ? 'accent.4' : 'gray'} onClick={copy}>
+            <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="right">
+              <ActionIcon color={copied ? "accent.4" : "gray"} onClick={copy}>
                 {copied ? <IconCheck size="1rem" /> : <IconCopy size="1rem" />}
               </ActionIcon>
             </Tooltip>

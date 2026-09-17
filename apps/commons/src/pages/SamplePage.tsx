@@ -1,21 +1,17 @@
-import React from 'react';
-import { Center, Text, Paper } from '@mantine/core';
-import type {
-  NavPageLayoutProps} from '@gen3/frontend';
-import {
-  NavPageLayout,
-  getNavPageLayoutPropsFromConfig,
-} from '@gen3/frontend';
-import type { GetServerSideProps } from 'next';
+import React from "react";
+import { Center, Text, Paper } from "@mantine/core";
+import type { NavPageLayoutProps } from "@gen3/frontend";
+import { NavPageLayout, getNavPageLayoutPropsFromConfig } from "@gen3/frontend";
+import type { GetServerSideProps } from "next";
 
 const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
   return (
     <NavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
-        title: 'Gen3 Sample Page',
-        content: 'Sample Data',
-        key: 'gen3-sample-page',
+        title: "Gen3 Sample Page",
+        content: "Sample Data",
+        key: "gen3-sample-page",
       }}
     >
       <div className="w-full m-10">
@@ -23,8 +19,8 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
           <Paper shadow="md" p="xl" withBorder>
             <Text>This is a example custom page in Gen3</Text>
             <Text>
-              You can add your own content here, and add a link to this page in
-              the navigation bar by editing the config file in navigation.json
+              You can add your own content here, and add a link to this page in the navigation bar
+              by editing the config file in navigation.json
             </Text>
           </Paper>
         </Center>
@@ -34,9 +30,7 @@ const SamplePage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
 };
 
 // TODO: replace this with a custom getServerSideProps function
-export const getServerSideProps: GetServerSideProps<
-  NavPageLayoutProps
-> = async () => {
+export const getServerSideProps: GetServerSideProps<NavPageLayoutProps> = async () => {
   return {
     props: {
       ...(await getNavPageLayoutPropsFromConfig()),

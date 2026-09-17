@@ -3,13 +3,7 @@
 import { useMemo } from "react";
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
-import type {
-  ChatInterrupt,
-  ChatMessage,
-  ResolvedInterrupt,
-  Timings,
-  ToolCall,
-} from "../../core";
+import type { ChatInterrupt, ChatMessage, ResolvedInterrupt, Timings, ToolCall } from "../../core";
 import { MessageItem } from "./MessageItem";
 import { RunStatusBanner } from "./RunStatusBanner";
 import { JumpToLatest } from "./JumpToLatest";
@@ -46,10 +40,7 @@ function summaryCardsFor(message: ChatMessage): Row[] {
 
 /** Answers does this message close a turn. */
 function endsTurn(message: ChatMessage): boolean {
-  return (
-    message.role === "user" ||
-    (message.role === "assistant" && message.content.length > 0)
-  );
+  return message.role === "user" || (message.role === "assistant" && message.content.length > 0);
 }
 
 export function MessageList({
@@ -134,10 +125,7 @@ export function MessageList({
   }, [interrupts, resolvedInterrupts]);
 
   return (
-    <Box
-      pos="relative"
-      style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}
-    >
+    <Box pos="relative" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       <ScrollArea
         flex={1}
         mih={0}
@@ -145,15 +133,7 @@ export function MessageList({
         viewportRef={viewportRef}
         onScrollPositionChange={onScrollPositionChange}
       >
-        <Stack
-          ref={contentRef}
-          gap="md"
-          px="lg"
-          py="md"
-          maw={CHAT_MAX_WIDTH}
-          mx="auto"
-          w="100%"
-        >
+        <Stack ref={contentRef} gap="md" px="lg" py="md" maw={CHAT_MAX_WIDTH} mx="auto" w="100%">
           {rows.map((row) =>
             row.kind === "message" ? (
               <MessageItem

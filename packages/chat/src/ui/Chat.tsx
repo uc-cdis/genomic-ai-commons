@@ -126,9 +126,7 @@ export function Chat({ agentId }: ChatProps) {
                 onSend={sendMessage}
                 onStop={stopRun}
                 placeholder={
-                  awaitingApproval
-                    ? BLOCKED_BY_APPROVAL
-                    : "Ask me a question about GDC data ..."
+                  awaitingApproval ? BLOCKED_BY_APPROVAL : "Ask me a question about GDC data ..."
                 }
                 models={models}
                 model={model}

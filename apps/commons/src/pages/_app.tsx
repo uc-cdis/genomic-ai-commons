@@ -1,13 +1,9 @@
-import type { AppProps, AppContext, AppInitialProps } from 'next/app';
-import App from 'next/app';
-import React, { useState, useEffect, useRef, Suspense } from 'react';
-import { MantineProvider, mergeThemeOverrides } from '@mantine/core';
+import type { AppProps, AppContext, AppInitialProps } from "next/app";
+import App from "next/app";
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { MantineProvider, mergeThemeOverrides } from "@mantine/core";
 
-import type {
-  RegisteredIcons,
-  SessionConfiguration,
-  TenStringArray,
-  Fonts} from '@gen3/frontend';
+import type { RegisteredIcons, SessionConfiguration, TenStringArray, Fonts } from "@gen3/frontend";
 import {
   type AuthorizedRoutesConfig,
   createMantineTheme,
@@ -18,31 +14,35 @@ import {
   registerCohortDiscoveryApp,
   registerExplorerDefaultCellRenderers,
   registerMetadataSchemaApp,
-  registerIGVApp
-} from '@gen3/frontend';
-import { registerDefaultRemoteSupport, setDRSHostnames } from '@gen3/core';
-import { registerCohortTableCustomCellRenderers } from '@/lib/CohortBuilder/CustomCellRenderers';
-import { registerCustomExplorerDetailsPanels } from '@/lib/CohortBuilder/FileDetailsPanel';
+  registerIGVApp,
+} from "@gen3/frontend";
+import { registerDefaultRemoteSupport, setDRSHostnames } from "@gen3/core";
+import { registerCohortTableCustomCellRenderers } from "@/lib/CohortBuilder/CustomCellRenderers";
+import { registerCustomExplorerDetailsPanels } from "@/lib/CohortBuilder/FileDetailsPanel";
 
-import '../styles/globals.css';
+import "../styles/globals.css";
 // Carries the [data-chat-shell] height rule and KaTeX's stylesheet. Without it the
 // transcript is not a scroll container and math renders unstyled.
-import '@gen3/chat/styles.css';
-import '@fontsource/montserrat';
-import '@fontsource/source-sans-pro';
-import '@fontsource/poppins';
+import "@gen3/chat/styles.css";
+import "@fontsource/montserrat";
+import "@fontsource/source-sans-pro";
+import "@fontsource/poppins";
 
-import drsHostnames from '../../config/drsHostnames.json';
-import { loadContent } from '@/lib/content/loadContent';
-import Loading from '../components/Loading';
-import DatadogInit from '@/components/DatadogInit';
-import { ChatRuntimeProvider } from '@/chat/ChatRuntimeProvider';
+import drsHostnames from "../../config/drsHostnames.json";
+import { loadContent } from "@/lib/content/loadContent";
+import Loading from "../components/Loading";
+import DatadogInit from "@/components/DatadogInit";
+import { ChatRuntimeProvider } from "@/chat/ChatRuntimeProvider";
 
-if (typeof window !== 'undefined' && process.env.NODE_ENV !== 'production' && process.env.NEXT_PUBLIC_AXE === '1') {
+if (
+  typeof window !== "undefined" &&
+  process.env.NODE_ENV !== "production" &&
+  process.env.NEXT_PUBLIC_AXE === "1"
+) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-  const ReactDOM = require('react-dom');
+  const ReactDOM = require("react-dom");
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-  const axe = require('@axe-core/react');
+  const axe = require("@axe-core/react");
   axe(React, ReactDOM, 1000);
 }
 
@@ -93,21 +93,20 @@ const Gen3App = ({
       const mergedTheme = mergeThemeOverrides(gen3ThemeDynamic);
       setMantineTheme(mergedTheme);
       setMantineTheme(mergedTheme);
-      console.log('Gen3 App initialized');
+      console.log("Gen3 App initialized");
     }
   }, []);
 
   return (
     <React.Fragment>
       <Suspense fallback={<Loading />}>
-        {publicConfig?.dataDogAppId != null &&
-          publicConfig?.dataDogClientToken != null && (
-            <DatadogInit
-              appId={publicConfig.dataDogAppId}
-              clientToken={publicConfig.dataDogClientToken}
-              dataCommons={publicConfig.dataCommons}
-            />
-          )}
+        {publicConfig?.dataDogAppId != null && publicConfig?.dataDogClientToken != null && (
+          <DatadogInit
+            appId={publicConfig.dataDogAppId}
+            clientToken={publicConfig.dataDogClientToken}
+            dataCommons={publicConfig.dataCommons}
+          />
+        )}
         <MantineProvider theme={mantineTheme}>
           <Gen3Provider
             icons={icons}
@@ -126,14 +125,12 @@ const Gen3App = ({
 };
 
 // TODO: replace with page router
-Gen3App.getInitialProps = async (
-  context: AppContext,
-): Promise<Gen3AppProps & AppInitialProps> => {
+Gen3App.getInitialProps = async (context: AppContext): Promise<Gen3AppProps & AppInitialProps> => {
   const ctx = await App.getInitialProps(context);
   const publicConfig: PublicConfig = {
     dataDogAppId: process.env.DATADOG_APPLICATION_ID || null,
     dataDogClientToken: process.env.DATADOG_CLIENT_TOKEN || null,
-    dataCommons: process.env.DATACOMMONS || 'commons_frontend_app',
+    dataCommons: process.env.DATACOMMONS || "commons_frontend_app",
   };
 
   try {
@@ -144,14 +141,14 @@ Gen3App.getInitialProps = async (
       publicConfig,
     };
   } catch (error: any) {
-    console.error('Provider Wrapper error loading config', error.toString());
+    console.error("Provider Wrapper error loading config", error.toString());
   }
   // return default
   return {
     ...ctx,
     icons: [
       {
-        prefix: 'gen3',
+        prefix: "gen3",
         lastModified: 0,
         icons: {},
         width: 0,
@@ -160,9 +157,9 @@ Gen3App.getInitialProps = async (
     ],
     colors: {},
     fonts: {
-      heading: ['Poppins', 'sans-serif'],
-      content: ['Poppins', 'sans-serif'],
-      fontFamily: 'Poppins',
+      heading: ["Poppins", "sans-serif"],
+      content: ["Poppins", "sans-serif"],
+      fontFamily: "Poppins",
     },
     modalsConfig: {},
     sessionConfig: {},

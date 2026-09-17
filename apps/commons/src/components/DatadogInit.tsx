@@ -1,4 +1,4 @@
-import { datadogRum } from '@datadog/browser-rum';
+import { datadogRum } from "@datadog/browser-rum";
 
 interface DatadogInitProps {
   appId: string;
@@ -13,13 +13,13 @@ const DatadogInit = ({ appId, clientToken, dataCommons }: DatadogInitProps) => {
   datadogRum.init({
     applicationId: appId,
     clientToken: clientToken,
-    site: 'ddog-gov.com',
-    service: 'frontend-framework',
+    site: "ddog-gov.com",
+    service: "frontend-framework",
     env: `${dataCommons}`,
-    version: process.env.version || 'unknown',
+    version: process.env.version || "unknown",
     sessionSampleRate: 100,
     sessionReplaySampleRate: 0,
-    defaultPrivacyLevel: 'mask-user-input',
+    defaultPrivacyLevel: "mask-user-input",
   });
 
   return null;

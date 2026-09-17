@@ -21,17 +21,12 @@ export interface SurvivalData {
   pValue?: number;
 }
 
-export type ParseResult =
-  | { ok: true; data: SurvivalData }
-  | { ok: false; reason: string };
-
+export type ParseResult = { ok: true; data: SurvivalData } | { ok: false; reason: string };
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
-const isFiniteNumber = (v: unknown): v is number =>
-  typeof v === "number" && Number.isFinite(v);
-
+const isFiniteNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 
 // One curve from the API result. Drops any donor missing time, survivalEstimate,
 // or censored.
@@ -53,7 +48,7 @@ function toCurve(raw: unknown, index: number): SurvivalCurve | null {
     };
     if (typeof d.submitter_id === "string") point.submitterId = d.submitter_id;
     if (typeof d.project_id === "string") {
-      point.projectId = d.project_id
+      point.projectId = d.project_id;
     }
     rows.push(point);
   }
@@ -82,9 +77,7 @@ export function parseSurvivalResult(content: string): ParseResult {
   if (!isRecord(raw)) return { ok: false, reason: "unexpected result shape" };
   if (!Array.isArray(raw.results)) return { ok: false, reason: "missing results array" };
 
-  const curves = raw.results
-    .map(toCurve)
-    .filter((c): c is SurvivalCurve => c !== null);
+  const curves = raw.results.map(toCurve).filter((c): c is SurvivalCurve => c !== null);
 
   const stats = isRecord(raw.overallStats) ? raw.overallStats : undefined;
   const pValue = stats && isFiniteNumber(stats.pValue) ? stats.pValue : undefined;

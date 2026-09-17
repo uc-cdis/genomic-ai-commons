@@ -4,11 +4,11 @@
     {
       "id": "exportTerra",
       "label": "Export: Terra",
-      "rightIcon" : "gen3:send",
-      "buttonLabel" : "Export",
-      "actionFunction" : "export-pfb-to-url",
-      "parameters" : {
-        "targetURLTemplate" : "https://platform.sb.biodatacatalyst.nhlbi.nih.gov/import/pfb?URL={{PRESIGNED_URL}}&source=bdc"
+      "rightIcon": "gen3:send",
+      "buttonLabel": "Export",
+      "actionFunction": "export-pfb-to-url",
+      "parameters": {
+        "targetURLTemplate": "https://platform.sb.biodatacatalyst.nhlbi.nih.gov/import/pfb?URL={{PRESIGNED_URL}}&source=bdc"
       },
       "itemRules": [
         {
@@ -31,11 +31,11 @@
     {
       "id": "exportTo7Bridges",
       "label": "Export: Seven Bridges",
-      "rightIcon" : "gen3:send",
-      "buttonLabel" : "Export",
-      "actionFunction" : "export-pfb-to-url",
-      "parameters" : {
-        "targetURLTemplate" : "https://platform.sb.biodatacatalyst.nhlbi.nih.gov/import/pfb?URL={{PRESIGNED_URL}}&source=bdc"
+      "rightIcon": "gen3:send",
+      "buttonLabel": "Export",
+      "actionFunction": "export-pfb-to-url",
+      "parameters": {
+        "targetURLTemplate": "https://platform.sb.biodatacatalyst.nhlbi.nih.gov/import/pfb?URL={{PRESIGNED_URL}}&source=bdc"
       },
       "itemRules": [
         {

@@ -1,5 +1,5 @@
-import { importSPKI, type KeyObject } from 'jose';
-import { fetchJWTKey } from '@gen3/frontend/server';
+import { importSPKI, type KeyObject } from "jose";
+import { fetchJWTKey } from "@gen3/frontend/server";
 
 /**
  * Fence's RS256 public key, cached in-process.
@@ -20,21 +20,19 @@ export const invalidateVerificationKey = () => {
   cached = null;
 };
 
-export const getVerificationKey = async (): Promise<
-  KeyObject | CryptoKey | null
-> => {
+export const getVerificationKey = async (): Promise<KeyObject | CryptoKey | null> => {
   if (cached && Date.now() - cached.fetchedAt < JWK_TTL_MS) {
     return cached.key;
   }
   try {
-    const pem = await fetchJWTKey(process.env.NODE_ENV === 'production');
+    const pem = await fetchJWTKey(process.env.NODE_ENV === "production");
     if (!pem) return null;
-    const key = await importSPKI(pem, 'RS256');
+    const key = await importSPKI(pem, "RS256");
     cached = { key, fetchedAt: Date.now() };
     return key;
   } catch (error) {
     console.error(
-      '[auth] Failed to fetch Fence JWT key:',
+      "[auth] Failed to fetch Fence JWT key:",
       error instanceof Error ? error.message : error,
     );
     return null;

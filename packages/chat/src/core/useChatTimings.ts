@@ -5,7 +5,7 @@ import type { AbstractAgent } from "@copilotkit/react-core/v2";
 export interface UseChatTimings {
   timings: Timings;
   startTurn: (turnId: string) => void; // call in sendMessage, before the run
-  reset: () => void;                   // call in clearMessages
+  reset: () => void; // call in clearMessages
 }
 
 // timestamp is optional on BaseEvent. Mixing server and client clocks skews a
@@ -20,14 +20,10 @@ export function useChatTimings(agent: AbstractAgent): UseChatTimings {
   });
 
   const pendingTurnIdRef = useRef<string | null>(null); // message the next run is for
-  const activeTurnRef = useRef<
-    { id: string; runId?: string; startTs: number } | null
-  >(null); // the run being timed right now
+  const activeTurnRef = useRef<{ id: string; runId?: string; startTs: number } | null>(null); // the run being timed right now
 
   // Per reasoning block: start time, plus the time of its last token.
-  const reasoningRef = useRef<Map<string, { start: number; lastContent: number }>>(
-    new Map(),
-  );
+  const reasoningRef = useRef<Map<string, { start: number; lastContent: number }>>(new Map());
   const toolEndRef = useRef<Map<string, number>>(new Map()); // tool END time, held until its RESULT
 
   useEffect(() => {
@@ -45,8 +41,7 @@ export function useChatTimings(agent: AbstractAgent): UseChatTimings {
         const ts = tsOf(event);
         const active = activeTurnRef.current;
         const turnMatches =
-          active != null &&
-          (active.runId == null || active.runId === event.runId);
+          active != null && (active.runId == null || active.runId === event.runId);
 
         // Close out any reasoning block that never got its END.
         const reasoningPatch: Record<string, number> = {};
@@ -91,9 +86,7 @@ export function useChatTimings(agent: AbstractAgent): UseChatTimings {
 
       onReasoningMessageContentEvent({ event }) {
         // Ref, not state - this fires per token and must not re-render.
-        const rec = event.messageId
-          ? reasoningRef.current.get(event.messageId)
-          : undefined;
+        const rec = event.messageId ? reasoningRef.current.get(event.messageId) : undefined;
         if (rec) rec.lastContent = tsOf(event);
       },
 

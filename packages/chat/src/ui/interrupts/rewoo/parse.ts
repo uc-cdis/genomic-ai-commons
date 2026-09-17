@@ -16,22 +16,17 @@ export interface RewooPlan {
   steps: RewooStep[];
 }
 
-export type ParseResult =
-  | { ok: true; data: RewooPlan }
-  | { ok: false; reason: string };
+export type ParseResult = { ok: true; data: RewooPlan } | { ok: false; reason: string };
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
 
-const str = (v: unknown): string | null =>
-  typeof v === "string" && v.length > 0 ? v : null;
+const str = (v: unknown): string | null => (typeof v === "string" && v.length > 0 ? v : null);
 
 const strArray = (v: unknown): string[] =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 
-export function parseRewooPlan(
-  metadata: Record<string, unknown> | null,
-): ParseResult {
+export function parseRewooPlan(metadata: Record<string, unknown> | null): ParseResult {
   if (!isRecord(metadata)) return { ok: false, reason: "no metadata" };
   if (!Array.isArray(metadata.plan)) return { ok: false, reason: "missing plan array" };
 

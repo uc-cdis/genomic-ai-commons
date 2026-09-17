@@ -23,7 +23,6 @@ export function RewooPlanBody(props: InterruptRendererProps) {
   const parsed = useMemo(() => parseRewooPlan(interrupt.metadata), [interrupt.metadata]);
   const [showArgs, setShowArgs] = useState(false);
 
-
   if (!parsed.ok) return <GenericInterruptBody {...props} />;
 
   const { steps } = parsed.data;
@@ -45,9 +44,7 @@ export function RewooPlanBody(props: InterruptRendererProps) {
                     {index + 1}
                   </Text>
                 </ThemeIcon>
-                {!last && (
-                  <Box flex={1} w={2} bg="var(--mantine-color-default-border)" />
-                )}
+                {!last && <Box flex={1} w={2} bg="var(--mantine-color-default-border)" />}
               </Stack>
 
               <Stack gap={6} flex={1} pt={2} pb={last ? 0 : "md"} style={{ minWidth: 0 }}>
@@ -68,12 +65,7 @@ export function RewooPlanBody(props: InterruptRendererProps) {
                         withArrow
                         label={`Later steps refer to this result as ${step.evidenceId}`}
                       >
-                        <Badge
-                          size="xs"
-                          variant="light"
-                          ff="monospace"
-                          style={{ cursor: "help" }}
-                        >
+                        <Badge size="xs" variant="light" ff="monospace" style={{ cursor: "help" }}>
                           → {step.evidenceId}
                         </Badge>
                       </Tooltip>

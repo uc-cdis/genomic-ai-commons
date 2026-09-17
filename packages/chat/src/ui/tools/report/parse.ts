@@ -6,9 +6,7 @@ export interface AgentReport {
   status: string | null;
 }
 
-export type ParseResult =
-  | { ok: true; data: AgentReport }
-  | { ok: false; reason: string };
+export type ParseResult = { ok: true; data: AgentReport } | { ok: false; reason: string };
 
 const isRecord = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);

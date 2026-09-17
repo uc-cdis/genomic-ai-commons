@@ -16,7 +16,7 @@ import { useChatInterrupts } from "./useChatInterrupts";
 import { useChatPersistence } from "./useChatPersistence";
 import { useChatList } from "./useChatList";
 import type { ChatRecord } from "./db";
-import { reportError, subscribeToChatErrors, type ChatError } from "./errors"
+import { reportError, subscribeToChatErrors, type ChatError } from "./errors";
 
 export interface UseChatApi {
   messages: ChatMessage[];
@@ -60,7 +60,7 @@ export interface UseChatApi {
 
 // The single headless facade for the chat surface. /ui consumes this hook and
 // the ChatMessage type, nothing else.
-export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
+export function useChat({ agentId = "default" }: { agentId?: string }): UseChatApi {
   const { agent } = useAgent({ agentId });
   const { copilotkit } = useCopilotKit();
 
@@ -92,8 +92,11 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     clear: clearInterrupts,
   } = useChatInterrupts(agent, copilotkit, model);
   const { chats, loading: chatsLoading, refresh, rename, remove, clear } = useChatList();
-  const { chatId, onUserMessage, newChat, openChat } =
-    useChatPersistence(agent, refresh, getResolvedInterrupts);
+  const { chatId, onUserMessage, newChat, openChat } = useChatPersistence(
+    agent,
+    refresh,
+    getResolvedInterrupts,
+  );
 
   const awaitingApproval = interrupts.length > 0;
 
@@ -108,7 +111,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
       reportError("connect", err);
     });
   }, [agent, copilotkit]);
-
 
   useEffect(() => {
     const sub = agent.subscribe({
@@ -133,7 +135,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     return () => sub.unsubscribe();
   }, [agent]);
 
-
   // CopilotKit-level failures - tool execution, transport - that never become agent
   // events. Subscribing directly because the v2 <CopilotKit> wrapper destructures
   // onError away and never forwards it to the provider.
@@ -145,7 +146,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     });
     return () => sub.unsubscribe();
   }, [copilotkit]);
-
 
   // Translate the agent's buffer into our own shape, so /ui never sees an AG-UI
   // or CopilotKit type. Both deps are load-bearing: a run reassigns the array, a local
@@ -166,7 +166,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
       .runAgent({ agent, forwardedProps: { model } })
       .catch((err) => reportError("run", err));
   }, [agent, copilotkit, model]);
-
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -203,7 +202,6 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     }
   }, [agent, copilotkit]);
 
-
   const last = agent.messages[agent.messages.length - 1];
   // An open approval leaves isRunning false, so without that guard Retry and Edit both
   // light up next to the card and blow up on the pre-flight check.
@@ -220,17 +218,11 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     runCurrent();
   }, [agent, runCurrent, startTurn, awaitingApproval]);
 
-
   const editAndRerun = useCallback(
     (text: string) => {
       // Check before setMessages: it truncates the buffer, so a blocked edit would
       // destroy the transcript on its way to failing.
-      if (
-        agent.isRunning ||
-        agent.pendingInterrupts.length > 0 ||
-        awaitingApproval ||
-        !text.trim()
-      )
+      if (agent.isRunning || agent.pendingInterrupts.length > 0 || awaitingApproval || !text.trim())
         return;
       const idx = lastUserIndex(agent.messages);
       if (idx < 0) return;
@@ -251,12 +243,10 @@ export function useChat({agentId = "default"}:{agentId?: string}): UseChatApi {
     clearInterrupts();
   }, [resetTimings, clearInterrupts]);
 
-
   const clearMessages = useCallback(() => {
     newChat();
     resetLocalState();
   }, [newChat, resetLocalState]);
-
 
   const selectChat = useCallback(
     async (id: string) => {

@@ -1,2 +1,2 @@
-import { credentialsLogin } from '@gen3/frontend';
+import { credentialsLogin } from "@gen3/frontend";
 export default credentialsLogin;

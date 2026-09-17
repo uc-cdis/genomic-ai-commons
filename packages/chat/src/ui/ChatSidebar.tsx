@@ -25,7 +25,7 @@ export function ChatSidebar({
   onNewConversation,
   onSelect,
   onRename,
-  onDelete
+  onDelete,
 }: ChatSidebarProps) {
   const groups = groupChatsByDay(chats);
   const isDraft = !loading && !chats.some((chat) => chat.id === activeChatId);
@@ -45,7 +45,6 @@ export function ChatSidebar({
       >
         New conversation
       </Button>
-
 
       <ScrollArea flex={1} mih={0} type="auto" offsetScrollbars>
         {loading ? (

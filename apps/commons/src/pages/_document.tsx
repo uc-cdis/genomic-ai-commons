@@ -1,6 +1,6 @@
-import React from 'react';
-import { Head, Html, Main, NextScript } from 'next/document';
-import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
+import React from "react";
+import { Head, Html, Main, NextScript } from "next/document";
+import { ColorSchemeScript, mantineHtmlProps } from "@mantine/core";
 
 export default function Document() {
   return (
@@ -10,8 +10,8 @@ export default function Document() {
         <ColorSchemeScript defaultColorScheme="auto" />
       </Head>
       <body>
-      <Main />
-      <NextScript />
+        <Main />
+        <NextScript />
       </body>
     </Html>
   );

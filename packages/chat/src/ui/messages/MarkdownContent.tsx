@@ -16,19 +16,13 @@ const components: Components = {
   ),
 };
 const remarkPlugins: Options["remarkPlugins"] = [remarkGfm, remarkMath];
-const rehypePlugins: Options["rehypePlugins"] = [
-  [rehypeKatex, { output: "mathml" }],
-];
+const rehypePlugins: Options["rehypePlugins"] = [[rehypeKatex, { output: "mathml" }]];
 
 // One memo, on `content`, and that's the whole story: a message that isn't the one
 // streaming skips the parse entirely. A second boundary used to sit under this one,
 // because a 100ms sampler held the parsed source steady while `content` moved per token.
 // The sampler is gone, so the two change together and the inner memo could never hit.
-export const MarkdownContent = memo(function MarkdownContent({
-  content,
-}: {
-  content: string;
-}) {
+export const MarkdownContent = memo(function MarkdownContent({ content }: { content: string }) {
   return (
     <Typography fz="sm" className="chat-markdown">
       <ReactMarkdown

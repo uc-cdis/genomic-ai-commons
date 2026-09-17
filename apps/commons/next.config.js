@@ -1,9 +1,8 @@
 // @ts-check
 
-'use strict';
-const path = require('path');
-const fs = require('fs');
-
+"use strict";
+const path = require("path");
+const fs = require("fs");
 
 /**
  * npm hoists workspace deps to the repo root, so a package sits here or two levels up.
@@ -11,7 +10,7 @@ const fs = require('fs');
  * @returns {string}
  */
 const pkgDir = (name) => {
-  const dir = ['node_modules', '../../node_modules']
+  const dir = ["node_modules", "../../node_modules"]
     .map((base) => path.resolve(__dirname, base, name))
     .find(fs.existsSync);
   if (!dir) throw new Error(`Cannot locate ${name} in node_modules`);
@@ -19,18 +18,18 @@ const pkgDir = (name) => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const dns = require('dns');
+const dns = require("dns");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { withJupyterWorkspaces } = require('@gen3/workspaces/server');
+const { withJupyterWorkspaces } = require("@gen3/workspaces/server");
 
-dns.setDefaultResultOrder('ipv4first');
+dns.setDefaultResultOrder("ipv4first");
 
-const basePath = process.env.BASE_PATH || '';
+const basePath = process.env.BASE_PATH || "";
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = process.env.NODE_ENV === "development";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const withMDX = require('@next/mdx')({
+const withMDX = require("@next/mdx")({
   extension: /\.(md|mdx)$/,
   options: {
     remarkPlugins: [],
@@ -39,21 +38,21 @@ const withMDX = require('@next/mdx')({
 });
 
 // get the version of the frontend package
-const packageJson = require(path.join(pkgDir('@gen3/frontend'), 'package.json'));
+const packageJson = require(path.join(pkgDir("@gen3/frontend"), "package.json"));
 
 // Next configuration with support for writing API to existing common services
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  outputFileTracingRoot: path.join(__dirname, '../../'),
+  output: "standalone",
+  outputFileTracingRoot: path.join(__dirname, "../../"),
   env: {
     version: process.env.npm_package_version,
     NEXT_PUBLIC_GEN3_VERSION: packageJson.version,
   },
   reactStrictMode: true,
-  pageExtensions: ['mdx', 'md', 'jsx', 'js', 'tsx', 'ts'],
+  pageExtensions: ["mdx", "md", "jsx", "js", "tsx", "ts"],
   basePath: basePath,
-  transpilePackages: ['@gen3/core', '@gen3/frontend', '@gen3/workspaces'],
+  transpilePackages: ["@gen3/core", "@gen3/frontend", "@gen3/workspaces"],
   logging: {
     fetches: {
       fullUrl: true,
@@ -61,7 +60,7 @@ const nextConfig = {
   },
   webpack: (config) => {
     config.infrastructureLogging = {
-      level: 'error',
+      level: "error",
     };
     // @copilotkit/react-core/v2 side-imports an 87KB Tailwind 4 stylesheet for
     // CopilotKit's own React components. We render none of them - the chat UI is
@@ -69,20 +68,19 @@ const nextConfig = {
     // `@layer base` ("no matching @tailwind base directive"). Resolve it to nothing.
     config.resolve.alias = {
       ...config.resolve.alias,
-      [path.join(pkgDir('@copilotkit/react-core'), 'dist/v2/index.css')]: false
+      [path.join(pkgDir("@copilotkit/react-core"), "dist/v2/index.css")]: false,
     };
     return config;
   },
   async rewrites() {
     const workspaceApiRewrite = [
       {
-        source: '/workspace-api/:path*',
-        destination: '/api/:path*',
+        source: "/workspace-api/:path*",
+        destination: "/api/:path*",
       },
       {
-        source:
-          '/lw-workspace/proxy/jeg-proxy/kernelspecs/python_tf_kubernetes/logo-64x64.png',
-        destination: '/icons/kernels/logo-64.png',
+        source: "/lw-workspace/proxy/jeg-proxy/kernelspecs/python_tf_kubernetes/logo-64x64.png",
+        destination: "/icons/kernels/logo-64.png",
       },
     ];
 
@@ -90,65 +88,64 @@ const nextConfig = {
     // the runtime off a path `location /` already routes here.
     const chatRuntimeRewrite = [
       {
-        source: '/copilot-runtime',
-        destination: '/api/copilotkit',
+        source: "/copilot-runtime",
+        destination: "/api/copilotkit",
       },
     ];
 
     if (isDev) {
-      const GEN3_TARGET =
-        process.env.NEXT_PUBLIC_GEN3_API_TARGET || 'https://localhost';
+      const GEN3_TARGET = process.env.NEXT_PUBLIC_GEN3_API_TARGET || "https://localhost";
 
       return [
         ...workspaceApiRewrite,
-         ...chatRuntimeRewrite,
-        { source: '/_status', destination: `${GEN3_TARGET}/_status` },
-        { source: '/user/:path*', destination: `${GEN3_TARGET}/user/:path*` },
+        ...chatRuntimeRewrite,
+        { source: "/_status", destination: `${GEN3_TARGET}/_status` },
+        { source: "/user/:path*", destination: `${GEN3_TARGET}/user/:path*` },
         {
-          source: '/guppy/:path*',
+          source: "/guppy/:path*",
           destination: `${GEN3_TARGET}/guppy/:path*`,
         },
-        { source: '/mds/:path*', destination: `${GEN3_TARGET}/mds/:path*` },
+        { source: "/mds/:path*", destination: `${GEN3_TARGET}/mds/:path*` },
         {
-          source: '/ai-search/:path*',
+          source: "/ai-search/:path*",
           destination: `${GEN3_TARGET}/ai-search/:path*`,
         },
         // Chat's payload cache. In production the portal shares a host with /qag, so this
         // path is same-origin and the session cookie clears the revproxy on its own; here
         // it isn't, which is why dev sends a bearer built from credentials_token instead.
-        { source: '/qag/:path*', destination: `${GEN3_TARGET}/qag/:path*` },
+        { source: "/qag/:path*", destination: `${GEN3_TARGET}/qag/:path*` },
         {
-          source: '/authz/:path*',
+          source: "/authz/:path*",
           destination: `${GEN3_TARGET}/authz/:path*`,
         },
         {
-          source: '/lw-workspace/:path*',
+          source: "/lw-workspace/:path*",
           destination: `${GEN3_TARGET}/lw-workspace/:path*`,
         },
         {
-          source: '/api/v0/submission/:path*',
+          source: "/api/v0/submission/:path*",
           destination: `${GEN3_TARGET}/api/v0/submission/:path*`,
         },
-        { source: '/wts/:path*', destination: `${GEN3_TARGET}/wts/:path*` },
+        { source: "/wts/:path*", destination: `${GEN3_TARGET}/wts/:path*` },
         {
-          source: '/library/lists/:path*',
+          source: "/library/lists/:path*",
           destination: `${GEN3_TARGET}/library/lists/:path*`,
         },
-        { source: '/job/:path*', destination: `${GEN3_TARGET}/job/:path*` },
+        { source: "/job/:path*", destination: `${GEN3_TARGET}/job/:path*` },
         {
-          source: '/manifests/:path*',
+          source: "/manifests/:path*",
           destination: `${GEN3_TARGET}/manifests/:path*`,
         },
         {
-          source: '/requestor/:path*',
+          source: "/requestor/:path*",
           destination: `${GEN3_TARGET}/requestor/:path*`,
         },
         {
-          source: '/index/:path*',
+          source: "/index/:path*",
           destination: `${GEN3_TARGET}/index/:path*`,
         },
         {
-          source: '/login',
+          source: "/login",
           destination: `${GEN3_TARGET}/login`,
         },
       ];
@@ -159,31 +156,31 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)?', // Matches all pages
+        source: "/(.*)?", // Matches all pages
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
           },
         ],
       },
       {
-        source: '/Workspaces/(.*)?',
+        source: "/Workspaces/(.*)?",
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            key: "X-Frame-Options",
+            value: "SAMEORIGIN",
           },
           {
-            key: 'Cross-Origin-Embedder-Policy',
+            key: "Cross-Origin-Embedder-Policy",
             // 'credentialless' is less strict than 'require-corp' — allows
             // cross-origin iframes without CORP headers, needed in dev when
             // the remote Jupyter server doesn't send COEP headers.
-            value: isDev ? 'credentialless' : 'require-corp',
+            value: isDev ? "credentialless" : "require-corp",
           },
           {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin',
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
           },
         ],
       },
