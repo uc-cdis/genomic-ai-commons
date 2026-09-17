@@ -15,7 +15,10 @@
     "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons",
     "lint-fix": "oxlint --fix .",
     "format": "oxfmt .",
-    "format:check": "oxfmt --check ."
+    "format:check": "oxfmt --check .",
+    "build:turbopack": "npm run build -w @gen3/chat && npm run build:turbopack -w @gen3/commons-portal-app-base",
+    "dev:webpack": "concurrently -k -n chat,app -c blue,green \"npm:dev:chat\" \"npm:dev:app:webpack\"",
+    "dev:app:webpack": "npm run dev:webpack -w @gen3/commons-portal-app-base"
   },
   "devDependencies": {
     "concurrently": "^10.0.5",

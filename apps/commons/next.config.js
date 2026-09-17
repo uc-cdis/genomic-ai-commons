@@ -52,7 +52,16 @@ const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ["mdx", "md", "jsx", "js", "tsx", "ts"],
   basePath: basePath,
-  transpilePackages: ["@gen3/core", "@gen3/frontend", "@gen3/workspaces"],
+  // Both are barrel files - importing one name otherwise compiles the whole package.
+  experimental: {
+    optimizePackageImports: ["@tabler/icons-react", "@gen3/frontend"],
+  },
+  // Turbopack ignores the webpack() hook, so kill the CopilotKit stylesheet here too.
+  turbopack: {
+    resolveAlias: {
+      "@copilotkit/react-core/dist/v2/index.css": "./empty.css",
+    },
+  },
   logging: {
     fetches: {
       fullUrl: true,

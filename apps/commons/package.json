@@ -6,8 +6,7 @@
     "lint": "oxlint .",
     "lint-fix": "oxlint --fix .",
     "predev": " NODE_ENV=development npm run build:middlewarePaths",
-    "dev": "next dev --webpack",
-    "dev:turbopack": "next dev",
+    "dev": "next dev",
     "prebuild": "NODE_ENV=production npm run build:middlewarePaths",
     "build": "next build --webpack",
     "build:volume": "npm run build:middlewarePathsMatchAll && next build --webpack",
@@ -27,7 +26,9 @@
     "build:jupyterlite:free": "gen3-build-jupyterlite free ./builds",
     "build:jupyterlite:remote": "gen3-build-jupyterlite remote ./builds",
     "build:jupyterlite:assets": "gen3-sync-jupyter-assets ./builds",
-    "build:jupyterlite": "npm run build:jupyterlite:setupenv && npm run build:jupyterlite:gen3sdk && npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets"
+    "build:jupyterlite": "npm run build:jupyterlite:setupenv && npm run build:jupyterlite:gen3sdk && npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets",
+    "build:turbopack": "next build",
+    "dev:webpack": "next dev --webpack"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.59",
