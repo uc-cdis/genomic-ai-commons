@@ -1,29 +1,31 @@
-
-
 This is the base REPOSITORY for Gen3.2 data commons.
 
-
 ## Getting Started
+
 Gen3 Data Commons using the Gen3 Frontend Framework is a matter of the following:
 
-* create a clone of [Gen3 Data Commons Application](https://github.com/uc-cdis/commons-frontend-app/)  
+- create a clone of [Gen3 Data Commons Application](https://github.com/uc-cdis/commons-frontend-app/)  
 
-* Configure the commons by editing the configuration files in the ```config```
+- Configure the commons by editing the configuration files in the `config`
 
-* Add your pages and content
+- Add your pages and content
 
-* Deploy via helm charts or Docker.
+- Deploy via helm charts or Docker.
 
 Changes to the Gen3 Data Commons Application can be pulled from the Common Frontend Repository. You need configure git to pull from the Common Frontend Repository.
+
 ```bash
 git remote add upstream https://github.com/uc-cdis/commons-frontend-app.git
 ```
+
 or
+
 ```bash
 git remote add upstream git@github.com:uc-cdis/commons-frontend-app.git
 ```
 
-changes to ```main``` can be pulled from the Common Frontend Repository by running:
+changes to `main` can be pulled from the Common Frontend Repository by running:
+
 ```bash
 git pull upstream main
 ```
@@ -43,6 +45,7 @@ npm install npm@11.16.0 -g
 ```
 
 Alternatively, you can use `nvm` to install the correct version of npm:
+
 ```bash
 nvm install 24.18.1
 ```
@@ -63,7 +66,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
 ## Docker
 
 You build a self-contained Docker image by:
@@ -71,25 +73,32 @@ You build a self-contained Docker image by:
 ```bash
 docker build -f Dockerfile.production .
 ```
+
 ## Updating a forked commons
 
 The following steps usually apply to update a forked commons.
 
 Get the changes from the parent fork:
+
 ```bash
 git remote add upstream git@github.com:uc-cdis/commons-frontend-app.git
 git fetch upstream
 ```
+
 Create a branch and merge changes from upstream:
+
 ```bash
 git merge upstream/main
 ```
-If the above has the error message:  "fatal: refusing to merge unrelated histories" error.
+
+If the above has the error message: "fatal: refusing to merge unrelated histories" error.
 This often happens when the repo was created as a template, not a fork.
-To resolve this, the ```--allow-unrelated-histories``` flag can be used during the merge operation. This flag forces Git to merge the branches despite lacking a common history.
+To resolve this, the `--allow-unrelated-histories` flag can be used during the merge operation. This flag forces Git to merge the branches despite lacking a common history.
+
 ```bash
 git merge upstream/main --allow-unrelated-histories
 ```
+
 If you use this flag, it is recommended that you carefully review the changes and resolve any conflicts before finalizing the merge.
 
 You will see merge conflicts. In general: **take the remote's version for everything except the config files**, as those are customized to the commons config. Resolve any remaining config issues and open a PR.

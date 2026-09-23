@@ -1,0 +1,2 @@
+/* Turbopack's resolveAlias maps to a module, not to `false` like webpack's alias does.
+   This is the empty stylesheet CopilotKit's Tailwind 4 sheet resolves to. */
