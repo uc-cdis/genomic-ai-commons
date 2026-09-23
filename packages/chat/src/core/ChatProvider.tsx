@@ -23,7 +23,6 @@ export function ChatProvider({ runtimeUrl, headers, children }: ChatProviderProp
       headers={headers ?? NO_HEADERS}
       useSingleEndpoint
       enableInspector={inspectorEnabled}
-      showDevConsole={false}
     >
       {children}
     </CopilotKit>

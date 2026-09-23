@@ -93,12 +93,12 @@ const nextConfig = {
       },
     ];
 
-    // The revproxy gives /api/ to sheepdog, so /api/copilotkit never reaches us; serve
-    // the runtime off a path `location /` already routes here.
+    // The revproxy gives /api/ to sheepdog, so a browser cannot reach /api/chat-runtime.
+    // Next still requires the route file to live under pages/api, hence the rewrite.
     const chatRuntimeRewrite = [
       {
-        source: "/copilot-runtime",
-        destination: "/api/copilotkit",
+        source: "/chat-runtime",
+        destination: "/api/chat-runtime",
       },
     ];
 

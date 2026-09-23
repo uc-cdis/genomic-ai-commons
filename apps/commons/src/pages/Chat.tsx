@@ -2,6 +2,7 @@ import type { NavPageLayoutProps } from "@gen3/frontend";
 import { getNavPageLayoutPropsFromConfig, NavPageLayout } from "@gen3/frontend";
 import type { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
+import { ChatRuntimeProvider } from "@/chat/ChatRuntimeProvider";
 
 const ChatLoading = () => (
   <div className="flex items-center justify-center h-full w-full">
@@ -28,7 +29,9 @@ const ChatPage = ({ headerProps, footerProps }: NavPageLayoutProps) => {
         key: "gac-chat-page",
       }}
     >
-      <Chat agentId="default" />
+      <ChatRuntimeProvider>
+        <Chat agentId="default" />
+      </ChatRuntimeProvider>
     </NavPageLayout>
   );
 };

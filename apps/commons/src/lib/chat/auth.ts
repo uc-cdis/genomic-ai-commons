@@ -8,7 +8,7 @@ import { getVerificationKey } from "@/lib/auth/verificationKey";
  *
  * Returns the token so the caller can forward it upstream, or null to 401.
  */
-export const authenticateCopilotRequest = async (
+export const authenticateChatRequest = async (
   cookie: string | undefined,
 ): Promise<string | null> => {
   const token = getAccessToken(cookie);
@@ -21,7 +21,7 @@ export const authenticateCopilotRequest = async (
     await jwtVerify(token, key); // rejects an expired token too
   } catch (error) {
     console.error(
-      "[copilotkit] Access token verification failed:",
+      "[chat-auth] access token verification failed:",
       error instanceof Error ? error.message : error,
     );
     return null;

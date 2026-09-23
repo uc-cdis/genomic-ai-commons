@@ -32,7 +32,6 @@ import drsHostnames from "../../config/drsHostnames.json";
 import { loadContent } from "@/lib/content/loadContent";
 import Loading from "../components/Loading";
 import DatadogInit from "@/components/DatadogInit";
-import { ChatRuntimeProvider } from "@/chat/ChatRuntimeProvider";
 
 if (
   typeof window !== "undefined" &&
@@ -114,9 +113,7 @@ const Gen3App = ({
             modalsConfig={modalsConfig}
             protectedRoutesConfig={protectedRoutes}
           >
-            <ChatRuntimeProvider>
-              <Component {...pageProps} />
-            </ChatRuntimeProvider>
+            <Component {...pageProps} />
           </Gen3Provider>
         </MantineProvider>
       </Suspense>

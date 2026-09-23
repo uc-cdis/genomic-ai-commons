@@ -29,7 +29,7 @@ export interface UseChatApi {
   /** True once the user stops a run, until the next run or chat switch. */
   stopped: boolean;
   timings: Timings;
-  /** Approvals the agent is parked on. Every run is blocked until answered. */
+  /** Approvals the agent is waiting on. Every run is blocked until answered. */
   interrupts: ChatInterrupt[];
   /** Separate from isRunning - nothing streams, but sending is still refused. */
   awaitingApproval: boolean;
@@ -39,8 +39,7 @@ export interface UseChatApi {
   interruptSubmitting: boolean;
   /** Record a decision. The resume fires once every open approval has one. */
   answerInterrupt: (id: string, decision: InterruptDecision) => void;
-  /** Aliases the agent will accept. /ui reads the list through here rather than
-   *  importing it, which keeps useChat the only runtime import across the seam. */
+  /** model aliases the agent accepts - /ui reads them here, not from models.ts */
   models: readonly string[];
   /** Sent as forwardedProps.model on every run. */
   model: string;
@@ -58,30 +57,25 @@ export interface UseChatApi {
   deleteAllChats: () => Promise<void>;
 }
 
-// The single headless facade for the chat surface. /ui consumes this hook and
-// the ChatMessage type, nothing else.
+// headless facade for the chat UI - /ui imports this and ChatMessage, nothing else
 export function useChat({ agentId = "default" }: { agentId?: string }): UseChatApi {
   const { agent } = useAgent({ agentId });
   const { copilotkit } = useCopilotKit();
 
   const [error, setError] = useState<ChatError | null>(null);
   const [stopped, setStopped] = useState(false);
-  // addMessage pushes into the existing array, so the messages memo below can't see a
-  // prompt we added ourselves. Bumped from onNewMessage.
+  // re-runs the messages memo after our own addMessage, which only pushes
   const [bufferRevision, setBufferRevision] = useState(0);
-  // Deliberately not persisted: per-chat would be a field on ChatRecord, global
-  // would be localStorage. Neither is worth it until the list stops being hardcoded.
+  // not persisted on purpose - not worth it while CHAT_MODELS is hardcoded
   const [model, setModel] = useState(DEFAULT_CHAT_MODEL);
 
-  // Every reportError lands here. Registered ahead of the hooks below so it can't
-  // miss what they report on mount.
+  // registered before the hooks below so it cannot miss what they report on mount
   useEffect(() => subscribeToChatErrors(setError), []);
 
   const clearError = useCallback(() => setError(null), []);
 
   const { timings, startTurn, reset: resetTimings } = useChatTimings(agent);
-  // Stays above useChatPersistence because getResolvedInterrupts is an argument to
-  // it - the call order is pinned by the data flow, not by effect ordering.
+  // must stay above useChatPersistence - it takes getResolvedInterrupts as an argument
   const {
     interrupts,
     resolved: resolvedInterrupts,
@@ -100,11 +94,8 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   const awaitingApproval = interrupts.length > 0;
 
-  // Skipped when an approval is already open - a remount with one pending.
-  // connectAgent detaches the active run and runs the same pre-flight check, so
-  // with no resume array it kills the resume and throws. Read the agent field, not
-  // awaitingApproval: with the flag in the deps this re-fires the instant a resume
-  // clears the card, which is the worst moment to connect.
+  // skip while an approval is open - connectAgent detaches the run and kills the resume.
+  // read agent.pendingInterrupts, not awaitingApproval, or this re-fires as the card clears
   useEffect(() => {
     if (agent.pendingInterrupts.length > 0) return;
     void copilotkit.connectAgent({ agent }).catch((err) => {
@@ -124,9 +115,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
         if (event.code === "abort") return; // the user pressed Stop
         reportError("run", event);
       },
-      // A landed abort ends on RUN_ERROR/abort, never here, so reaching this means
-      // the stop didn't take and the answer is real - unless the run only paused
-      // to ask something, which isn't an answer.
+      // a real finish clears "stopped"; an interrupt is a pause, not an answer
       onRunFinishedEvent(params) {
         if (params.outcome === "interrupt") return;
         setStopped(false);
@@ -135,9 +124,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     return () => sub.unsubscribe();
   }, [agent]);
 
-  // CopilotKit-level failures - tool execution, transport - that never become agent
-  // events. Subscribing directly because the v2 <CopilotKit> wrapper destructures
-  // onError away and never forwards it to the provider.
+  // v2's <CopilotKit> drops onError, so subscribe here for transport and tool failures
   useEffect(() => {
     const sub = copilotkit.subscribe({
       onError({ error }) {
@@ -147,19 +134,15 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     return () => sub.unsubscribe();
   }, [copilotkit]);
 
-  // Translate the agent's buffer into our own shape, so /ui never sees an AG-UI
-  // or CopilotKit type. Both deps are load-bearing: a run reassigns the array, a local
-  // addMessage only pushes into it.
+  // translate the agent buffer into our own shape so /ui never sees an AG-UI type
   const messages = useMemo<ChatMessage[]>(
     () => agent.messages.flatMap(toChatMessage),
-    // Both deps required: the counter misses the applier's reassignments, the
-    // reference misses our own addMessage. Removing either hides a sent prompt.
+    // both deps needed or a freshly sent prompt hides behind "Running..."
     // oxlint-disable-next-line react-hooks/exhaustive-deps
     [agent.messages, bufferRevision],
   );
 
-  // Run whatever is in the buffer. forwardedProps is the only slot that survives the
-  // runtime's schema re-validation, which strips unknown top-level fields.
+  // forwardedProps is the only slot that survives the runtime's schema re-validation
   const runCurrent = useCallback(() => {
     if (agent.pendingInterrupts.length > 0) return;
     void copilotkit
@@ -178,8 +161,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
       setError(null);
       setStopped(false);
 
-      // Order matters: the clock starts before the message exists, and the prompt
-      // is persisted before the run so a crash can't lose it.
+      // order matters: clock before the message, persist before the run
       startTurn(id);
       agent.addMessage({ id, role: "user", content: trimmed });
       onUserMessage();
@@ -188,8 +170,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     [agent, onUserMessage, runCurrent, startTurn, awaitingApproval],
   );
 
-  // Skips reportError on purpose: stopping is the user's doing, not a failure.
-  // stopAgent still throws locally on occasion; warn rather than surface it.
+  // no reportError: stopping is the user's doing, not a failure. warn instead
   const stopRun = useCallback(() => {
     if (!agent.isRunning) return;
     setStopped(true);
@@ -203,8 +184,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
   }, [agent, copilotkit]);
 
   const last = agent.messages[agent.messages.length - 1];
-  // An open approval leaves isRunning false, so without that guard Retry and Edit both
-  // light up next to the card and blow up on the pre-flight check.
+  // an open approval leaves isRunning false, so Retry/Edit would light up and then fail
   const editableMessageId =
     !agent.isRunning && !awaitingApproval && last?.role === "user" ? last.id : null;
 
@@ -220,8 +200,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   const editAndRerun = useCallback(
     (text: string) => {
-      // Check before setMessages: it truncates the buffer, so a blocked edit would
-      // destroy the transcript on its way to failing.
+      // check before setMessages - it truncates, so a blocked edit would lose the transcript
       if (agent.isRunning || agent.pendingInterrupts.length > 0 || awaitingApproval || !text.trim())
         return;
       const idx = lastUserIndex(agent.messages);
@@ -232,14 +211,12 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     [agent, sendMessage, awaitingApproval],
   );
 
-  // Shared by New Chat and by loading an old one.
+  // shared by New Chat and by loading an old one
   const resetLocalState = useCallback(() => {
     setError(null);
     setStopped(false);
     resetTimings();
-    // One agent serves every chat in the sidebar, and its pending interrupts
-    // outlive setMessages and a threadId swap. Dropping them here is what makes
-    // New Chat the way out of an approval you don't want to answer.
+    // pending interrupts outlive setMessages and a threadId swap - New Chat's escape
     clearInterrupts();
   }, [resetTimings, clearInterrupts]);
 
@@ -252,8 +229,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     async (id: string) => {
       const restored = await openChat(id);
       if (!restored) return;
-      // resetLocalState wipes the interrupt history, so seed the stored one after
-      // it, never before.
+      // resetLocalState wipes interrupt history, so seed the stored one after it
       resetLocalState();
       adoptInterrupts(restored);
     },
@@ -262,7 +238,6 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   const deleteChat = useCallback(
     async (id: string) => {
-      // Can't delete the chat that's mid-run.
       if (id === chatId && agent.isRunning) return;
       await remove(id);
       if (id === chatId) clearMessages();
