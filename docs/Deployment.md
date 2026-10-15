@@ -6,7 +6,7 @@ Fork or create from template this repository to deploy commons-frontend-app with
 
 Deploy commons-frontend-app with helm chart. To do this you need create a config repository (or use existing).
 The config repository contains the config and public directories used by the gen3-frontend-framework, it needs to have the
- following structure:
+following structure:
 
 directoryName | gen3/config/
 directoryName | gen3/public/

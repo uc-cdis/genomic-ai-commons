@@ -36,7 +36,7 @@ jobs:
     name: Security Pipeline
     uses: uc-cdis/.github/.github/workflows/securitypipeline.yaml@master
     with:
-      python-poetry: 'false'
+      python-poetry: "false"
     secrets: inherit # pragma: allowlist-secret
 
   ci:

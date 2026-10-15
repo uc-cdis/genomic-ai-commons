@@ -1,0 +1,9 @@
+/* rehype-katex emits KaTeX markup but no stylesheet; without this, math renders unstyled. */
+@import "katex/dist/katex.min.css";
+
+/* NavPageLayout's root is `h-full min-h-dvh` - an indefinite height - so main's
+   `flex-basis:0%` falls back to content size and the page scrolls, not the transcript.
+   Without this rule the viewport is not a scroll container and autoscroll is dead. */
+div:has(> main > [data-chat-shell]) {
+  height: 100dvh;
+}
