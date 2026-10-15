@@ -44,7 +44,7 @@
     "@mantine/core": ">=9",
     "@mantine/hooks": ">=9",
     "@tabler/icons-react": "*",
-    "next": "^16",
+    "next": "^16.4.1",
     "react": "^19.2",
     "react-dom": "^19.2",
     "recharts": ">=3"
