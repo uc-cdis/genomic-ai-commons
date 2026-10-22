@@ -23,9 +23,9 @@
     "getDRSToHostname": "getDRSToHostname --out=config/",
     "build:jupyterlite:gen3sdk": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-gen3sdk-lite.sh ./builds",
     "build:jupyterlite:setupenv": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/setup-env.sh ./builds",
-    "build:jupyterlite:free": "gen3-build-jupyterlite free ./builds",
-    "build:jupyterlite:remote": "gen3-build-jupyterlite remote ./builds",
-    "build:jupyterlite:assets": "gen3-sync-jupyter-assets ./builds",
+    "build:jupyterlite:free": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh free ./builds",
+    "build:jupyterlite:remote": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh remote ./builds",
+    "build:jupyterlite:assets": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/sync-jupyter-assets-into-package.sh ./builds",
     "build:jupyterlite": "npm run build:jupyterlite:setupenv && npm run build:jupyterlite:gen3sdk && npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets",
     "build:turbopack": "next build",
     "dev:webpack": "next dev --webpack"
