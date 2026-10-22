@@ -1,6 +1,8 @@
-node_modules
-builds
-.next
-.idea
-.swc
+# Paths match from the repo root and don't nest like .gitignore,
+# so **/ is needed to also catch apps/commons/.next (5 GB)
+**/node_modules
+**/builds
+**/.next
+**/.idea
+**/.swc
 .github

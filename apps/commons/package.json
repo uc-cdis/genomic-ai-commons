@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "setupCommons": "npm run buildColors && npm run getSchema && npm run getDRSToHostname && npm run buildIcons && npm run build:middlewarePaths",
-    "build:docker": "docker build -t gen3:fef_app -f Dockerfile.production .",
+    "build:docker": "docker build -t gen3:fef_app -f Dockerfile.production ../..",
     "build:colors": "buildColors --themeFile=config/$npm_config_commons/colors.json --out=config/$npm_config_commons",
     "build:icons": "bundleIcons --inpath=config/icons --outpath=config/icons",
     "build:middlewarePaths": "scanSitePaths",
