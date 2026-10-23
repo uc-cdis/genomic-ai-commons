@@ -1,8 +1,8 @@
 # docker build -t gen3:gac-test -f apps/commons/Dockerfile.test .
 # docker run -p 3000:3000 -it gen3:gac-test
 # Build from the repo root, not this folder: npm workspaces need the root lockfile
-# Build stage
-FROM --platform=$BUILDPLATFORM node:24.18.1-alpine3.23 AS builder
+# Dependency stage
+FROM --platform=$BUILDPLATFORM node:24.18.1-alpine3.23 AS deps
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -21,6 +21,10 @@ RUN npm config set fetch-retries 5 && \
     npm config set fetch-retry-maxtimeout 120000 && \
     npm ci && \
     npm cache clean --force
+
+# JupyterLite stage
+# Needs only node_modules, so it builds in parallel with the app and stays cached on code changes
+FROM deps AS jupyterlite
 
 # Install Python for JupyterLite build
 RUN apk add --no-cache python3 py3-pip bash curl bzip2 uv git coreutils
@@ -44,6 +48,15 @@ RUN LITE_DIR=node_modules/@gen3/workspaces/dist/jupyterlite-builds/remote-privat
       curl -fsSL "$URL" | tar -xj -C "$WASM_ENV"; \
     done
 
+# Build JupyterLite static assets
+# Run from apps/commons so builds/ and jupyter-workspaces/ both end up there
+RUN cd apps/commons && npm run build:jupyterlite
+
+# Build stage
+FROM deps AS builder
+# 2 page-data workers instead of 7, so next build fits alongside jupyterlite in 8 GB
+ARG NEXT_BUILD_WORKERS=2
+
 # Copy necessary config files
 COPY apps/commons/next.config.js apps/commons/tsconfig.json apps/commons/tailwind.config.js apps/commons/postcss.config.js ./apps/commons/
 COPY apps/commons/.env.test ./apps/commons/
@@ -61,10 +74,6 @@ ENV NODE_ENV=test
 # The app imports @gen3/chat from dist/, so build it first
 RUN npm run build -w @gen3/chat
 
-# Build JupyterLite static assets
-# Run from apps/commons so builds/ and jupyter-workspaces/ both end up there
-RUN cd apps/commons && npm run build:jupyterlite
-
 # Build
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build -w @gen3/commons-portal-app-base
 
@@ -72,30 +81,31 @@ RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build -w @gen3/commons-port
 FROM node:24.18.1-alpine3.23 AS runner
 
 WORKDIR /ci
+# server.js lives here inside the standalone output
+ARG APP=.next/standalone/apps/commons
 
 RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 
 # The standalone output mirrors the repo, so server.js is at standalone/apps/commons/
 COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/.next/standalone ./.next/standalone
-COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/.next/static ./.next/standalone/apps/commons/.next/static
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/.next/static $APP/.next/static
 COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/start_ci.sh ./start_ci.sh
 COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/public ./public
 COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/config ./config
-COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/jupyter-workspaces ./jupyter-workspaces
+COPY --from=jupyterlite --chown=nextjs:nextjs /ci/apps/commons/jupyter-workspaces ./jupyter-workspaces
 
-# server.js runs from standalone/apps/commons, so the image cache and these links go there
+# server.js runs from $APP, so the image cache and links go there (absolute, so depth doesn't matter)
 # The traced config/ has only 1 of 26 files, so swap it for a link to the full copy
-RUN mkdir -p .next/standalone/apps/commons/.next/cache/images && \
-    chmod -R 777 .next/standalone/apps/commons/.next/cache && \
-    chown -R nextjs:nextjs .next/standalone/apps/commons/.next/cache && \
+RUN mkdir -p $APP/.next/cache/images && \
+    chmod -R 777 $APP/.next/cache && \
+    chown -R nextjs:nextjs $APP/.next/cache && \
     chmod +x start_ci.sh && \
     chown -R nextjs:nextjs start_ci.sh && \
-    rm -rf .next/standalone/apps/commons/config && \
-    cd .next/standalone/apps/commons && \
-    ln -s ../../../../config ./config && \
-    ln -s ../../../../public ./public && \
-    ln -s ../../../../jupyter-workspaces ./jupyter-workspaces
+    rm -rf $APP/config && \
+    ln -s "$(pwd)/config" $APP/config && \
+    ln -s "$(pwd)/public" $APP/public && \
+    ln -s "$(pwd)/jupyter-workspaces" $APP/jupyter-workspaces
 
 USER nextjs:nextjs
 
