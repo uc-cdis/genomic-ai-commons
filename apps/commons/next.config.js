@@ -55,6 +55,10 @@ const nextConfig = {
   // Both are barrel files - importing one name otherwise compiles the whole package.
   experimental: {
     optimizePackageImports: ["@tabler/icons-react", "@gen3/frontend"],
+    // Off by default because of our webpack() hook; frees the compiler's memory before page data
+    webpackBuildWorker: true,
+    // Docker builds cap page-data workers: the default 7 ran an 8 GB builder out of memory
+    ...(process.env.NEXT_BUILD_WORKERS && { cpus: Number(process.env.NEXT_BUILD_WORKERS) }),
   },
   // Turbopack ignores the webpack() hook, so kill the CopilotKit stylesheet here too.
   turbopack: {
