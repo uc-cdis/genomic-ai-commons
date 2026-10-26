@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { CopilotRuntime } from "@copilotkit/runtime/v2";
 import { createCopilotNodeListener } from "@copilotkit/runtime/v2/node";
 import { HttpAgent } from "@ag-ui/client";
-import { QAG_VERSION } from "../qagVersion";
 
 export interface ChatHandlerOptions {
   verifyToken: (cookie?: string) => Promise<string | null>;
@@ -10,11 +9,12 @@ export interface ChatHandlerOptions {
   endpoint: string;
 }
 
-/** where QAG listens, e.g. <commons>/qag/v3/agui/ */
+/** where the agent listens, e.g. http://gdc-agent/agui/ */
+// keep the trailing slash: the agent mounts /agui/, so a bare /agui falls through to its ui
 const getChatAgentUrl = (): string => {
   const base = process.env.GEN3_QAG_BASE_URL;
   if (!base) throw new Error("GEN3_QAG_BASE_URL is not configured");
-  return `${base.replace(/\/+$/, "")}/${QAG_VERSION}/agui/`;
+  return `${base.replace(/\/+$/, "")}/agui/`;
 };
 
 let runtime: CopilotRuntime | null = null;
