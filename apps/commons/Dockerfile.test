@@ -1,7 +1,8 @@
-# docker build -t ff .
-# docker run -p 3000:3000 -it ff
-# Build stage
-FROM --platform=$BUILDPLATFORM node:24.18.1-alpine3.23 AS builder
+# docker build -t gen3:gac-test -f apps/commons/Dockerfile.test .
+# docker run -p 3000:3000 -it gen3:gac-test
+# Build from the repo root, not this folder: npm workspaces need the root lockfile
+# Dependency stage
+FROM --platform=$BUILDPLATFORM node:24.18.1-alpine3.23 AS deps
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -9,7 +10,10 @@ ARG TARGETARCH
 WORKDIR /ci
 
 # Copy dependency files first for better caching
+# npm ci needs the root manifest, the lockfile and each workspace's manifest
 COPY package.json package-lock.json ./
+COPY apps/commons/package.json ./apps/commons/
+COPY packages/chat/package.json ./packages/chat/
 
 # Install ALL dependencies once (including dev deps for build)
 RUN npm config set fetch-retries 5 && \
@@ -18,14 +22,19 @@ RUN npm config set fetch-retries 5 && \
     npm ci && \
     npm cache clean --force
 
+# JupyterLite stage
+# Needs only node_modules, so it builds in parallel with the app and stays cached on code changes
+FROM deps AS jupyterlite
+
 # Install Python for JupyterLite build
 RUN apk add --no-cache python3 py3-pip bash curl bzip2 uv git coreutils
 
-COPY docker/micromamba-stub.py /usr/local/bin/micromamba
+COPY apps/commons/docker/micromamba-stub.py /usr/local/bin/micromamba
 RUN chmod +x /usr/local/bin/micromamba
 
 # Download cockle WASM packages into the remote-private lite-dir so prepare_wasm.js
 # finds cockle_wasm_env/bin/fs.js at the correct relative path (cwd = lite-dir).
+# @gen3/workspaces is hoisted to the root node_modules
 RUN LITE_DIR=node_modules/@gen3/workspaces/dist/jupyterlite-builds/remote-private && \
     WASM_ENV="$LITE_DIR/cockle_wasm_env" && \
     mkdir -p "$WASM_ENV" && \
@@ -39,49 +48,64 @@ RUN LITE_DIR=node_modules/@gen3/workspaces/dist/jupyterlite-builds/remote-privat
       curl -fsSL "$URL" | tar -xj -C "$WASM_ENV"; \
     done
 
+# Build JupyterLite static assets
+# Run from apps/commons so builds/ and jupyter-workspaces/ both end up there
+RUN cd apps/commons && npm run build:jupyterlite
+
+# Build stage
+FROM deps AS builder
+# 2 page-data workers instead of 7, so next build fits alongside jupyterlite in 8 GB
+ARG NEXT_BUILD_WORKERS=2
+
 # Copy necessary config files
-COPY next.config.js tsconfig.json tailwind.config.js postcss.config.js ./
-COPY .env.test ./
+COPY apps/commons/next.config.js apps/commons/tsconfig.json apps/commons/tailwind.config.js apps/commons/postcss.config.js ./apps/commons/
+COPY apps/commons/.env.test ./apps/commons/
 
 # Copy source files
-COPY ./src ./src
-COPY ./public ./public
-COPY ./config ./config
-COPY ./start_ci.sh ./
+COPY packages/chat/tsconfig.build.json ./packages/chat/
+COPY packages/chat/src ./packages/chat/src
+COPY apps/commons/src ./apps/commons/src
+COPY apps/commons/public ./apps/commons/public
+COPY apps/commons/config ./apps/commons/config
+COPY apps/commons/start_ci.sh ./apps/commons/
 
 ENV NODE_ENV=test
 
-# Build JupyterLite static assets (outputs to public/ before Next.js build)
-RUN npm run build:jupyterlite
+# The app imports @gen3/chat from dist/, so build it first
+RUN npm run build -w @gen3/chat
 
 # Build
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build -w @gen3/commons-portal-app-base
 
 # Production stage
 FROM node:24.18.1-alpine3.23 AS runner
 
 WORKDIR /ci
+# server.js lives here inside the standalone output
+ARG APP=.next/standalone/apps/commons
 
 RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 
-COPY --from=builder --chown=nextjs:nextjs /ci/.next/standalone ./.next/standalone
-COPY --from=builder --chown=nextjs:nextjs /ci/.next/static ./.next/standalone/.next/static
-COPY --from=builder --chown=nextjs:nextjs /ci/start_ci.sh ./start_ci.sh
-COPY --from=builder --chown=nextjs:nextjs /ci/public ./public
-COPY --from=builder --chown=nextjs:nextjs /ci/config ./config
-COPY --from=builder --chown=nextjs:nextjs /ci/jupyter-workspaces ./jupyter-workspaces
+# The standalone output mirrors the repo, so server.js is at standalone/apps/commons/
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/.next/standalone ./.next/standalone
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/.next/static $APP/.next/static
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/start_ci.sh ./start_ci.sh
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/public ./public
+COPY --from=builder --chown=nextjs:nextjs /ci/apps/commons/config ./config
+COPY --from=jupyterlite --chown=nextjs:nextjs /ci/apps/commons/jupyter-workspaces ./jupyter-workspaces
 
-RUN mkdir -p .next/standalone/.next/cache/images && \
-    chmod -R 777 .next/standalone/.next/cache && \
-    chown -R nextjs:nextjs .next/standalone/.next/cache && \
+# server.js runs from $APP, so the image cache and links go there (absolute, so depth doesn't matter)
+# The traced config/ has only 1 of 26 files, so swap it for a link to the full copy
+RUN mkdir -p $APP/.next/cache/images && \
+    chmod -R 777 $APP/.next/cache && \
+    chown -R nextjs:nextjs $APP/.next/cache && \
     chmod +x start_ci.sh && \
     chown -R nextjs:nextjs start_ci.sh && \
-    rm -rf .next/standalone/config && \
-    cd .next/standalone && \
-    ln -s ../../config ./config && \
-    ln -s ../../public ./public && \
-    ln -s ../../jupyter-workspaces ./jupyter-workspaces
+    rm -rf $APP/config && \
+    ln -s "$(pwd)/config" $APP/config && \
+    ln -s "$(pwd)/public" $APP/public && \
+    ln -s "$(pwd)/jupyter-workspaces" $APP/jupyter-workspaces
 
 USER nextjs:nextjs
 

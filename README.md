@@ -68,10 +68,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Docker
 
-You build a self-contained Docker image by:
+You build a self-contained Docker image by running this from the repo root. The
+context has to be the root, not `apps/commons` — npm workspaces resolve against the
+single lockfile that lives there.
 
 ```bash
-docker build -f Dockerfile.production .
+docker build -f apps/commons/Dockerfile.production .
 ```
 
 ## Updating a forked commons

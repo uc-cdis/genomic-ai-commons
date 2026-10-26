@@ -14,7 +14,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "setupCommons": "npm run buildColors && npm run getSchema && npm run getDRSToHostname && npm run buildIcons && npm run build:middlewarePaths",
-    "build:docker": "docker build -t gen3:fef_app -f Dockerfile.production .",
+    "build:docker": "docker build -t gen3:fef_app -f Dockerfile.production ../..",
     "build:colors": "buildColors --themeFile=config/$npm_config_commons/colors.json --out=config/$npm_config_commons",
     "build:icons": "bundleIcons --inpath=config/icons --outpath=config/icons",
     "build:middlewarePaths": "scanSitePaths",
@@ -23,9 +23,9 @@
     "getDRSToHostname": "getDRSToHostname --out=config/",
     "build:jupyterlite:gen3sdk": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-gen3sdk-lite.sh ./builds",
     "build:jupyterlite:setupenv": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/setup-env.sh ./builds",
-    "build:jupyterlite:free": "gen3-build-jupyterlite free ./builds",
-    "build:jupyterlite:remote": "gen3-build-jupyterlite remote ./builds",
-    "build:jupyterlite:assets": "gen3-sync-jupyter-assets ./builds",
+    "build:jupyterlite:free": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh free ./builds",
+    "build:jupyterlite:remote": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/build-jupyterlite.sh remote ./builds",
+    "build:jupyterlite:assets": "bash \"$(npm root)\"/@gen3/workspaces/dist/jupyterlite-builds/scripts/sync-jupyter-assets-into-package.sh ./builds",
     "build:jupyterlite": "npm run build:jupyterlite:setupenv && npm run build:jupyterlite:gen3sdk && npm run build:jupyterlite:free && npm run build:jupyterlite:remote && npm run build:jupyterlite:assets",
     "build:turbopack": "next build",
     "dev:webpack": "next dev --webpack"
@@ -118,15 +118,5 @@
   "engines": {
     "node": ">=24.18.1",
     "npm": ">=11.16.0"
-  },
-  "allowScripts": {
-    "esbuild": true,
-    "core-js-pure": true,
-    "unrs-resolver": true,
-    "fsevents": true,
-    "msw": true,
-    "sharp": true,
-    "@swc/core": true,
-    "@parcel/watcher": true
   }
 }

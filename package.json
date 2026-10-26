@@ -8,8 +8,8 @@
   "scripts": {
     "predev": "npm run build -w @gen3/chat",
     "dev": "concurrently -k -n chat,app -c blue,green \"npm:dev:chat\" \"npm:dev:app\"",
-    "dev:chat": "npm run dev   -w @gen3/chat",
-    "dev:app": "npm run dev   -w @gen3/commons-portal-app-base",
+    "dev:chat": "npm run dev -w @gen3/chat",
+    "dev:app": "npm run dev -w @gen3/commons-portal-app-base",
     "build": "npm run build -w @gen3/chat && npm run build -w @gen3/commons-portal-app-base",
     "lint": "oxlint .",
     "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons",
@@ -24,5 +24,16 @@
     "concurrently": "^10.0.5",
     "oxfmt": "^0.68.0",
     "oxlint": "^1.82.0"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "core-js-pure": true,
+    "unrs-resolver": true,
+    "fsevents": true,
+    "msw": true,
+    "sharp": true,
+    "@swc/core": true,
+    "@parcel/watcher": true,
+    "@scarf/scarf": false
   }
 }
