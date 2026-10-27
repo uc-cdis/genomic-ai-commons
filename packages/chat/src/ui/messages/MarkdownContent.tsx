@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { Typography } from "@mantine/core";
+import { isAgentDownloadLink } from "../../core/downloadLinks";
 import { normalizeMath } from "./normalizeMath";
 
 const components: Components = {
@@ -14,6 +15,22 @@ const components: Components = {
       <table>{children}</table>
     </div>
   ),
+  // an agent download saves in place, so an expired link can't navigate away mid-answer;
+  // links within the answer (footnotes) stay put; any other link opens a new tab
+  a: ({ node: _node, children, ...props }) => {
+    if (isAgentDownloadLink(props.href))
+      return (
+        <a {...props} download>
+          {children}
+        </a>
+      );
+    if (props.href?.startsWith("#")) return <a {...props}>{children}</a>;
+    return (
+      <a {...props} target="_blank" rel="noopener noreferrer">
+        {children}
+      </a>
+    );
+  },
 };
 const remarkPlugins: Options["remarkPlugins"] = [remarkGfm, remarkMath];
 const rehypePlugins: Options["rehypePlugins"] = [[rehypeKatex, { output: "mathml" }]];

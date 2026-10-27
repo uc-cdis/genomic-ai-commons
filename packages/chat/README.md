@@ -70,6 +70,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 
   Click a panel to see its inputs (PARAMETERS) and its output (RESULT).
 
+- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV). Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A model picker.** The names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
 - **A sidebar** with your chats, newest first. You can start a new chat, rename one, or delete one. You can't delete the chat that is running.
 - **A "Scroll to latest" button** when you scroll up while an answer streams.
@@ -118,6 +119,8 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 - `/Chat` needs a login (`config/gen3/authz.json`).
 - Every chat request is checked on the portal server. Without a valid login it gets a 401.
 - The server passes your token on to the agent.
+- Downloads go through the portal too: `/download/<kind>/<handle>` → `pages/api/chat-download` → the agent. They need a login, and the portal checks each link before asking the agent (`core/downloadLinks.ts`).
+  - Known limits: this needs the revproxy to keep sending `/download/*` to the portal (it does today). It breaks if the portal gets a `BASE_PATH`, or if the agent runs with `--root-path`, because the agent's links then start with that path.
 - CopilotKit's usage telemetry is turned off (`COPILOTKIT_TELEMETRY_DISABLED=true`).
 
 ## Settings
@@ -165,8 +168,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 2.5   | Unit tests for the saving and Stop rules; CI runs them                                         | done   |
 | 3     | Remove the old "Run Summary" card                                                              | done   |
 | 4     | Show each short reason _above_ its tool call                                                   | done   |
-| 5     | Make download links in answers work, through a portal route                                    | next   |
-| 6     | Fix the survival card for the new agent. Today it can't load the curve                         |        |
+| 5     | Make download links in answers work, through a portal route                                    | done   |
+| 6     | Fix the survival card for the new agent. Today it can't load the curve                         | next   |
 | 7     | New wording and example questions; hide old AI tiles                                           |        |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
