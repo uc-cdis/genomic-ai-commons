@@ -90,7 +90,7 @@ function unwrapToolResult(content: string): string {
 }
 
 /** AG-UI content can be a plain string or an array of multimodal parts. */
-function extractText(content: unknown): string {
+export function extractText(content: unknown): string {
   if (typeof content === "string") return content;
 
   if (Array.isArray(content)) {
