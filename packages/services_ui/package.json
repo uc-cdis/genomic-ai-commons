@@ -32,6 +32,9 @@
   "dependencies": {
     "idb": "^8.0.3"
   },
+  "devDependencies": {
+    "@storybook/nextjs-vite": "^10.6.5"
+  },
   "peerDependencies": {
     "@mantine/core": ">=9",
     "@mantine/hooks": ">=9",

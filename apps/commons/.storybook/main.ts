@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)', '../../../packages/services_ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
   env: (config) => ({
     ...config,
   }),

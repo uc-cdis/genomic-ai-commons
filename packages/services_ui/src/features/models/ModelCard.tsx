@@ -3,7 +3,7 @@ import { Fragment } from 'react';
 import { Badge, Button, Divider, Tooltip } from '@mantine/core';
 import { Icon } from '@iconify-icon/react';
 import type { ModelInformation } from './types';
-import { formatDate } from '../../../utils/date';
+import { formatDate } from '../../utils/date';
 
 export interface ModelCardStat {
   label: string;
