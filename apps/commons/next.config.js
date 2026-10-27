@@ -37,6 +37,19 @@ const withMDX = require("@next/mdx")({
   },
 });
 
+// Workspace packages are compiled from src so edits hot-reload without a tsc --watch step.
+// services_ui is always aliased (the root build never produces its dist); chat only in dev,
+// where prod keeps using its built dist. Keep in sync with "paths" in tsconfig.json.
+const workspaceSources = {
+  "@gen3/services_ui": "../../packages/services_ui/src/index.ts",
+  ...(isDev && {
+    "@gen3/chat": "../../packages/chat/src/index.ts",
+    "@gen3/chat/ui": "../../packages/chat/src/ui/index.ts",
+    "@gen3/chat/server": "../../packages/chat/src/server/index.ts",
+    "@gen3/chat/styles.css": "../../packages/chat/src/styles.css",
+  }),
+};
+
 // get the version of the frontend package
 const packageJson = require(path.join(pkgDir("@gen3/frontend"), "package.json"));
 
@@ -64,6 +77,7 @@ const nextConfig = {
   turbopack: {
     resolveAlias: {
       "@copilotkit/react-core/dist/v2/index.css": "./empty.css",
+      ...workspaceSources,
     },
   },
   logging: {
@@ -82,6 +96,9 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       [path.join(pkgDir("@copilotkit/react-core"), "dist/v2/index.css")]: false,
+      ...Object.fromEntries(
+        Object.entries(workspaceSources).map(([spec, file]) => [`${spec}$`, path.resolve(__dirname, file)]),
+      ),
     };
     return config;
   },

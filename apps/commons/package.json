@@ -39,6 +39,7 @@
     "@fontsource/poppins": "^5.2.7",
     "@fontsource/source-sans-pro": "^5.2.5",
     "@gen3/chat": "^0.1.0",
+    "@gen3/services_ui": "^0.1.0",
     "@gen3/core": "^0.13.2",
     "@gen3/frontend": "^0.13.2",
     "@gen3/workspaces": "^0.13.2",

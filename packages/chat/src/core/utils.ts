@@ -36,7 +36,7 @@ export function toChatMessage(message: Message): ChatMessage[] {
         id: message.id,
         role: "tool",
         toolCallId: message.toolCallId,
-        content: unwrapToolResult(message.content),
+        content: unwrapToolResult(message.content as string),
       },
     ];
   }
@@ -49,7 +49,9 @@ function parseArgs(raw: string): Record<string, unknown> | null {
   if (!raw) return null;
   try {
     const parsed: unknown = JSON.parse(raw);
-    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+    return typeof parsed === "object" &&
+      parsed !== null &&
+      !Array.isArray(parsed)
       ? (parsed as Record<string, unknown>)
       : null;
   } catch {
@@ -127,7 +129,8 @@ export function toChatInterrupt(interrupt: Interrupt): ChatInterrupt {
     reason: interrupt.reason,
     message: interrupt.message ?? null,
     toolCallId: interrupt.toolCallId ?? null,
-    metadata: (interrupt.metadata as Record<string, unknown> | undefined) ?? null,
+    metadata:
+      (interrupt.metadata as Record<string, unknown> | undefined) ?? null,
     canEditArgs: advertisesEditedArgs(interrupt.responseSchema),
     expiresAt: toEpochMs(interrupt.expiresAt),
   };
@@ -140,7 +143,11 @@ export function toChatInterrupt(interrupt: Interrupt): ChatInterrupt {
 function advertisesEditedArgs(schema: unknown): boolean {
   if (typeof schema !== "object" || schema === null) return false;
   const properties = (schema as { properties?: unknown }).properties;
-  return typeof properties === "object" && properties !== null && "editedArgs" in properties;
+  return (
+    typeof properties === "object" &&
+    properties !== null &&
+    "editedArgs" in properties
+  );
 }
 
 /** expiresAt is ISO-8601 on the wire. Junk dates count as no expiry. */

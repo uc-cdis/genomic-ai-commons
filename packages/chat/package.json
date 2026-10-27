@@ -38,7 +38,7 @@
     "remark-math": "^6.0.0"
   },
   "peerDependencies": {
-    "@ag-ui/client": "^0.0.59",
+    "@ag-ui/client": "1.0.2",
     "@copilotkit/react-core": "^1.72.0",
     "@copilotkit/runtime": "^1.72.0",
     "@mantine/core": ">=9",

@@ -21,24 +21,27 @@
       "types": "./dist/server/index.d.ts",
       "import": "./dist/server/index.js",
       "default": "./dist/server/index.js"
-    },
-    "./styles.css": "./dist/styles.css"
+    }
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/",
+    "build": "tsc -p tsconfig.build.json",
     "dev": "tsc -p tsconfig.build.json --watch",
     "typecheck": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
-    "idb": "^8.0.3"
+    "@mantine/dropzone": "^9.7.4",
+    "idb": "^8.0.3",
+    "jszip": "^3.10.2"
   },
   "devDependencies": {
-    "@storybook/nextjs-vite": "^10.6.5"
+    "@storybook/nextjs-vite": "^10.6.5",
+    "@types/jszip": "^3.4.0"
   },
   "peerDependencies": {
     "@mantine/core": ">=9",
     "@mantine/hooks": ">=9",
     "@tabler/icons-react": "*",
+    "mantine-react-table-open": ">=9",
     "next": "^16",
     "react": "^19.2",
     "react-dom": "^19.2",
