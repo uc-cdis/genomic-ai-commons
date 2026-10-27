@@ -18,13 +18,18 @@ const components: Components = {
 const remarkPlugins: Options["remarkPlugins"] = [remarkGfm, remarkMath];
 const rehypePlugins: Options["rehypePlugins"] = [[rehypeKatex, { output: "mathml" }]];
 
-// One memo, on `content`, and that's the whole story: a message that isn't the one
-// streaming skips the parse entirely. A second boundary used to sit under this one,
-// because a 100ms sampler held the parsed source steady while `content` moved per token.
-// The sampler is gone, so the two change together and the inner memo could never hit.
-export const MarkdownContent = memo(function MarkdownContent({ content }: { content: string }) {
+// memo: skip redraws when the text hasn't changed, so older messages don't
+// re-parse their markdown every time a new word streams in
+export const MarkdownContent = memo(function MarkdownContent({
+  content,
+  fz = "sm",
+}: {
+  content: string;
+  /** "xs" for agent steps; answers keep "sm" */
+  fz?: "xs" | "sm";
+}) {
   return (
-    <Typography fz="sm" className="chat-markdown">
+    <Typography fz={fz} className="chat-markdown">
       <ReactMarkdown
         remarkPlugins={remarkPlugins}
         rehypePlugins={rehypePlugins}

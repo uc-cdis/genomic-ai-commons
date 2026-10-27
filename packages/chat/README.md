@@ -62,6 +62,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Example questions** on the empty screen. Click one to send it.
 - **Answers** in Markdown, with tables and math.
 - **Reasoning**, folded under "Thought for Xs", when the model shares it.
+- **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains. The final answer shows in a bubble.
 - **One panel per tool call**: the tool name, how long it took, and a status:
   - ✓ the tool returned a result
   - spinner: still running
@@ -163,8 +164,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 0–2   | Point the chat at the new agent, upgrade the libraries, remove plan approval, new saving rules | done   |
 | 2.5   | Unit tests for the saving and Stop rules; CI runs them                                         | done   |
 | 3     | Remove the old "Run Summary" card                                                              | done   |
-| 4     | Show each short reason _above_ its tool call. Today it shows below                             | next   |
-| 5     | Make download links in answers work, through a portal route                                    |        |
+| 4     | Show each short reason _above_ its tool call                                                   | done   |
+| 5     | Make download links in answers work, through a portal route                                    | next   |
 | 6     | Fix the survival card for the new agent. Today it can't load the curve                         |        |
 | 7     | New wording and example questions; hide old AI tiles                                           |        |
 

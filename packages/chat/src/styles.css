@@ -7,3 +7,12 @@
 div:has(> main > [data-chat-shell]) {
   height: 100dvh;
 }
+
+/* Steps are read, not skimmed. Mantine's "dimmed" grey is below the 4.5:1 contrast that text
+   needs (3.3:1 light, 4.0:1 dark); these shades are about 8:1 and still read as grey. */
+.chat-step {
+  color: var(--mantine-color-gray-7);
+}
+[data-mantine-color-scheme="dark"] .chat-step {
+  color: var(--mantine-color-dark-1);
+}
