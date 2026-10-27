@@ -36,7 +36,8 @@ export function toChatMessage(message: Message): ChatMessage[] {
         id: message.id,
         role: "tool",
         toolCallId: message.toolCallId,
-        content: unwrapToolResult(message.content),
+        // tool content can be parts too; only the text is rendered
+        content: unwrapToolResult(extractText(message.content)),
       },
     ];
   }
