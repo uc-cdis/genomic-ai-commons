@@ -3,12 +3,11 @@
 import { useMemo } from "react";
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
-import type { ChatMessage, Timings, ToolCall } from "../../core";
+import type { ChatMessage, Timings } from "../../core";
 import { MessageItem } from "./MessageItem";
 import { RunStatusBanner } from "./RunStatusBanner";
 import { JumpToLatest } from "./JumpToLatest";
 import { useStickToBottom } from "./useStickToBottom";
-import { ToolResultCard, isTrailingTool } from "../tools";
 import { CHAT_MAX_WIDTH } from "../util";
 
 export interface MessageListProps {
@@ -20,23 +19,6 @@ export interface MessageListProps {
   editableMessageId: string | null;
   onRetry: () => void;
   onEdit: (text: string) => void;
-}
-
-type Row =
-  | { kind: "message"; key: string; message: ChatMessage }
-  | { kind: "summary"; key: string; toolCall: ToolCall };
-
-/** which tool call requires a summary card - for now run_query/rewoo*/
-function summaryCardsFor(message: ChatMessage): Row[] {
-  if (message.role !== "assistant") return [];
-  return (message.toolCalls ?? [])
-    .filter((tc) => isTrailingTool(tc.name))
-    .map((tc) => ({ kind: "summary", key: `summary:${tc.id}`, toolCall: tc }));
-}
-
-/** Answers does this message close a turn. */
-function endsTurn(message: ChatMessage): boolean {
-  return message.role === "user" || (message.role === "assistant" && message.content.length > 0);
 }
 
 export function MessageList({
@@ -75,30 +57,6 @@ export function MessageList({
     return map;
   }, [messages]);
 
-  // Messages in the order they arrived, with each summary card parked in `waiting` until the
-  // turn ends - so everything the turn did reads above it. One forward walk, no grouping.
-  const rows = useMemo<Row[]>(() => {
-    const placed: Row[] = [];
-    let waiting: Row[] = [];
-
-    for (const message of messages) {
-      const summaries = summaryCardsFor(message);
-
-      if (endsTurn(message)) {
-        // place summary just above the final answer from the agent
-        placed.push(...waiting, ...summaries);
-        waiting = [];
-      } else {
-        waiting.push(...summaries);
-      }
-
-      placed.push({ kind: "message", key: message.id, message });
-    }
-
-    // A turn still mid-flight has no answer yet; draw what it has.
-    return [...placed, ...waiting];
-  }, [messages]);
-
   return (
     <Box pos="relative" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       <ScrollArea
@@ -109,29 +67,19 @@ export function MessageList({
         onScrollPositionChange={onScrollPositionChange}
       >
         <Stack ref={contentRef} gap="md" px="lg" py="md" maw={CHAT_MAX_WIDTH} mx="auto" w="100%">
-          {rows.map((row) =>
-            row.kind === "message" ? (
-              <MessageItem
-                key={row.key}
-                message={row.message}
-                timings={timings}
-                toolResults={toolResults}
-                editableMessageId={editableMessageId}
-                isRunning={isRunning}
-                isLast={row.message.id === lastMessageId}
-                onEdit={onEdit}
-                onRetry={onRetry}
-              />
-            ) : (
-              <ToolResultCard
-                key={row.key}
-                toolCall={row.toolCall}
-                result={toolResults.get(row.toolCall.id) ?? null}
-                isRunning={isRunning}
-                trailing
-              />
-            ),
-          )}
+          {messages.map((message) => (
+            <MessageItem
+              key={message.id}
+              message={message}
+              timings={timings}
+              toolResults={toolResults}
+              editableMessageId={editableMessageId}
+              isRunning={isRunning}
+              isLast={message.id === lastMessageId}
+              onEdit={onEdit}
+              onRetry={onRetry}
+            />
+          ))}
 
           {isRunning && <RunStatusBanner isRunning durationMs={null} />}
 

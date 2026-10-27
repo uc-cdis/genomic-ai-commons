@@ -2,7 +2,7 @@
 
 `@gen3/chat` is the chat feature of the portal. The portal (`apps/commons`) shows it on the `/Chat` page. You ask a question about GDC data, and an AI agent answers. It uses tools to look up cohorts, mutations, expression and survival.
 
-This file describes how the chat works **after Phase 2 of the move to the GDC agent (October 2026)**. Some parts are still being moved; see [Work in progress](#work-in-progress).
+This file describes how the chat works today. The move from the old QAG agent to the GDC agent is still in progress; the [Work in progress](#work-in-progress) table shows which parts are done.
 
 ## The big picture
 
@@ -162,8 +162,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | ----- | ---------------------------------------------------------------------------------------------- | ------ |
 | 0–2   | Point the chat at the new agent, upgrade the libraries, remove plan approval, new saving rules | done   |
 | 2.5   | Unit tests for the saving and Stop rules; CI runs them                                         | done   |
-| 3     | Remove the old "Run Summary" card                                                              | next   |
-| 4     | Show each short reason _above_ its tool call. Today it shows below                             |        |
+| 3     | Remove the old "Run Summary" card                                                              | done   |
+| 4     | Show each short reason _above_ its tool call. Today it shows below                             | next   |
 | 5     | Make download links in answers work, through a portal route                                    |        |
 | 6     | Fix the survival card for the new agent. Today it can't load the curve                         |        |
 | 7     | New wording and example questions; hide old AI tiles                                           |        |
