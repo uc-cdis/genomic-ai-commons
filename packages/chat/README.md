@@ -137,6 +137,12 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 Before you push, run `npm run build`, then discard the regenerated `apps/commons/src/proxy.ts`.
 
+## Tests
+
+- Run `npm test`. It runs the chat package's unit tests with vitest. CI runs them on every push.
+- Tests sit next to the code, as `src/**/<name>.test.ts`. `npm run typecheck` checks them, but they are left out of the built package.
+- The rules for how a run ends (save it, drop it, clear the stop note) live in `core/runEndings.ts`. To change a rule, change it there and update `runEndings.test.ts`.
+
 ## Library versions
 
 | Library                                         | Version           | Note                                   |
@@ -155,6 +161,7 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | Phase | What changes                                                                                   | Status |
 | ----- | ---------------------------------------------------------------------------------------------- | ------ |
 | 0–2   | Point the chat at the new agent, upgrade the libraries, remove plan approval, new saving rules | done   |
+| 2.5   | Unit tests for the saving and Stop rules; CI runs them                                         | done   |
 | 3     | Remove the old "Run Summary" card                                                              | next   |
 | 4     | Show each short reason _above_ its tool call. Today it shows below                             |        |
 | 5     | Make download links in answers work, through a portal route                                    |        |
