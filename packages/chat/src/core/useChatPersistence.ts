@@ -1,7 +1,6 @@
 // Owns chat identity and write policy.
 import { useCallback, useEffect, useState } from "react";
-import type { AbstractAgent, Message, RunFinishedEvent } from "@copilotkit/react-core/v2";
-import type { ResolvedInterrupt } from "./types";
+import type { AbstractAgent, Message } from "@copilotkit/react-core/v2";
 import { saveChat, loadChat } from "./db";
 import { reportError } from "./errors";
 
@@ -12,8 +11,8 @@ export interface UseChatPersistence {
   onUserMessage: () => void;
   /** New chat. Clears the agent buffer. No-op mid-run. */
   newChat: () => void;
-  /** Load an existing chat into the agent. Null when the id is unknown or mid-run. */
-  openChat: (id: string) => Promise<ResolvedInterrupt[] | null>;
+  /** Load an existing chat into the agent. False when the id is unknown or mid-run. */
+  openChat: (id: string) => Promise<boolean>;
 }
 
 /** Keep the prompt, drop whatever the run produced. */
@@ -53,8 +52,6 @@ function newId(): string {
 export function useChatPersistence(
   agent: AbstractAgent,
   refresh: () => Promise<void>,
-  /** Stable by contract - it lands in the subscribe effect's deps below. */
-  getResolvedInterrupts: () => ResolvedInterrupt[],
 ): UseChatPersistence {
   const [chatId, setChatId] = useState(() => (agent.threadId ??= newId()));
 
@@ -74,36 +71,24 @@ export function useChatPersistence(
         id: chatId,
         title: deriveTitle(messages),
         messages,
-        // An approval isn't a Message, so the transcript alone loses every
-        // record that a human agreed to anything.
-        interrupts: getResolvedInterrupts(),
       })
         .then(refresh)
         .catch((err) => reportError("persist", err));
     },
-    [chatId, refresh, getResolvedInterrupts],
+    [chatId, refresh],
   );
 
-  // Write point 2 (RUN_FINISHED) and the error rollback. Neither handler may
-  // return { stopPropagation: true } - that suppresses the applier's write to
-  // agent.pendingInterrupts and the approval gate silently stops working.
+  // Write point 2 (RUN_FINISHED) and the error rollback.
   useEffect(() => {
     const sub = agent.subscribe({
-      onRunFinishedEvent({ event }) {
-        const { outcome } = event as RunFinishedEvent;
-        // An interrupted turn ends on an unanswered tool call, and this
-        // backend rebuilds its history from what we send. Saving that
-        // leaves a chat whose next message always fails, so a reload drops
-        // the plan on purpose and the user just asks again.
-        if (outcome && outcome.type !== "success") return;
+      onRunFinishedEvent({ outcome }) {
+        // Only a successful finish is saved: anything else may be half a turn, and the
+        // agent rebuilds its history from what we send, so a saved one can break the next.
+        if (outcome !== "success") return;
         write(agent.messages.slice());
       },
       onRunErrorEvent({ event }) {
         if (event.code === "abort") return; // the user pressed Stop
-        // Don't roll back past an approval the server still holds - a failed
-        // resume would delete the assistant message, its tool call, and the
-        // result we wrote for it.
-        if (agent.pendingInterrupts.length > 0) return;
         agent.setMessages(truncateToLastUser(agent.messages));
       },
     });
@@ -122,17 +107,16 @@ export function useChatPersistence(
     agent.setMessages([]);
   }, [agent, setChat]);
 
-  /** Swap the buffer for a stored transcript. Null if the id is unknown. */
+  /** Swap the buffer for a stored transcript. False if the id is unknown. */
   const openChat = useCallback(
     async (id: string) => {
-      if (agent.isRunning) return null;
+      if (agent.isRunning) return false;
 
       const loaded = await loadChat(id);
-      if (!loaded) return null;
+      if (!loaded) return false;
       agent.setMessages(loaded.messages);
       setChat(loaded.chat.id);
-
-      return loaded.interrupts;
+      return true;
     },
     [agent, setChat],
   );

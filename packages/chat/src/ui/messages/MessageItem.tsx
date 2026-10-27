@@ -4,14 +4,11 @@ import type { ChatMessage, Timings } from "../../core";
 import { ReasoningBlock } from "./ReasoningBlock";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
-import type { InterruptActions, InterruptView } from "../interrupts";
 
 export interface MessageItemProps {
   message: ChatMessage;
   timings: Timings;
   toolResults: ReadonlyMap<string, string>;
-  interrupts: ReadonlyMap<string, InterruptView>;
-  interruptActions: InterruptActions;
   editableMessageId: string | null;
   isRunning: boolean;
   /** Last in the list. Only the tail can be mid-stream. */
@@ -24,8 +21,6 @@ export function MessageItem({
   message,
   timings,
   toolResults,
-  interrupts,
-  interruptActions,
   editableMessageId,
   isRunning,
   isLast,
@@ -62,8 +57,6 @@ export function MessageItem({
       message={message}
       timings={timings}
       toolResults={toolResults}
-      interrupts={interrupts}
-      interruptActions={interruptActions}
       isRunning={isRunning}
     />
   );

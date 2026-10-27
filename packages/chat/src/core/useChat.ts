@@ -2,17 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAgent, useCopilotKit } from "@copilotkit/react-core/v2";
-import type {
-  ChatInterrupt,
-  ChatMessage,
-  InterruptDecision,
-  ResolvedInterrupt,
-  Timings,
-} from "./types";
+import type { ChatMessage, Timings } from "./types";
 import { toChatMessage, lastUserIndex } from "./utils";
 import { CHAT_MODELS, DEFAULT_CHAT_MODEL } from "./models";
 import { useChatTimings } from "./useChatTimings";
-import { useChatInterrupts } from "./useChatInterrupts";
 import { useChatPersistence } from "./useChatPersistence";
 import { useChatList } from "./useChatList";
 import type { ChatRecord } from "./db";
@@ -29,16 +22,6 @@ export interface UseChatApi {
   /** True once the user stops a run, until the next run or chat switch. */
   stopped: boolean;
   timings: Timings;
-  /** Approvals the agent is waiting on. Every run is blocked until answered. */
-  interrupts: ChatInterrupt[];
-  /** Separate from isRunning - nothing streams, but sending is still refused. */
-  awaitingApproval: boolean;
-  /** Already decided, kept so the transcript still shows them. */
-  resolvedInterrupts: ResolvedInterrupt[];
-  /** A decision is on the wire. */
-  interruptSubmitting: boolean;
-  /** Record a decision. The resume fires once every open approval has one. */
-  answerInterrupt: (id: string, decision: InterruptDecision) => void;
   /** model aliases the agent accepts - /ui reads them here, not from models.ts */
   models: readonly string[];
   /** Sent as forwardedProps.model on every run. */
@@ -75,29 +58,10 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
   const clearError = useCallback(() => setError(null), []);
 
   const { timings, startTurn, reset: resetTimings } = useChatTimings(agent);
-  // must stay above useChatPersistence - it takes getResolvedInterrupts as an argument
-  const {
-    interrupts,
-    resolved: resolvedInterrupts,
-    submitting: interruptSubmitting,
-    answer: answerInterrupt,
-    getResolved: getResolvedInterrupts,
-    adopt: adoptInterrupts,
-    clear: clearInterrupts,
-  } = useChatInterrupts(agent, copilotkit, model);
   const { chats, loading: chatsLoading, refresh, rename, remove, clear } = useChatList();
-  const { chatId, onUserMessage, newChat, openChat } = useChatPersistence(
-    agent,
-    refresh,
-    getResolvedInterrupts,
-  );
+  const { chatId, onUserMessage, newChat, openChat } = useChatPersistence(agent, refresh);
 
-  const awaitingApproval = interrupts.length > 0;
-
-  // skip while an approval is open - connectAgent detaches the run and kills the resume.
-  // read agent.pendingInterrupts, not awaitingApproval, or this re-fires as the card clears
   useEffect(() => {
-    if (agent.pendingInterrupts.length > 0) return;
     void copilotkit.connectAgent({ agent }).catch((err) => {
       reportError("connect", err);
     });
@@ -144,7 +108,6 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   // forwardedProps is the only slot that survives the runtime's schema re-validation
   const runCurrent = useCallback(() => {
-    if (agent.pendingInterrupts.length > 0) return;
     void copilotkit
       .runAgent({ agent, forwardedProps: { model } })
       .catch((err) => reportError("run", err));
@@ -153,8 +116,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
   const sendMessage = useCallback(
     (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || agent.isRunning || agent.pendingInterrupts.length > 0 || awaitingApproval)
-        return;
+      if (!trimmed || agent.isRunning) return;
 
       const id = crypto.randomUUID();
 
@@ -167,7 +129,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
       onUserMessage();
       runCurrent();
     },
-    [agent, onUserMessage, runCurrent, startTurn, awaitingApproval],
+    [agent, onUserMessage, runCurrent, startTurn],
   );
 
   // no reportError: stopping is the user's doing, not a failure. warn instead
@@ -184,31 +146,28 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
   }, [agent, copilotkit]);
 
   const last = agent.messages[agent.messages.length - 1];
-  // an open approval leaves isRunning false, so Retry/Edit would light up and then fail
-  const editableMessageId =
-    !agent.isRunning && !awaitingApproval && last?.role === "user" ? last.id : null;
+  const editableMessageId = !agent.isRunning && last?.role === "user" ? last.id : null;
 
   const retry = useCallback(() => {
-    if (agent.isRunning || awaitingApproval) return;
+    if (agent.isRunning) return;
     const idx = lastUserIndex(agent.messages);
     if (idx < 0) return;
     setError(null);
     setStopped(false);
     startTurn(agent.messages[idx].id);
     runCurrent();
-  }, [agent, runCurrent, startTurn, awaitingApproval]);
+  }, [agent, runCurrent, startTurn]);
 
   const editAndRerun = useCallback(
     (text: string) => {
       // check before setMessages - it truncates, so a blocked edit would lose the transcript
-      if (agent.isRunning || agent.pendingInterrupts.length > 0 || awaitingApproval || !text.trim())
-        return;
+      if (agent.isRunning || !text.trim()) return;
       const idx = lastUserIndex(agent.messages);
       if (idx < 0) return;
       agent.setMessages(agent.messages.slice(0, idx));
       sendMessage(text);
     },
-    [agent, sendMessage, awaitingApproval],
+    [agent, sendMessage],
   );
 
   // shared by New Chat and by loading an old one
@@ -216,9 +175,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     setError(null);
     setStopped(false);
     resetTimings();
-    // pending interrupts outlive setMessages and a threadId swap - New Chat's escape
-    clearInterrupts();
-  }, [resetTimings, clearInterrupts]);
+  }, [resetTimings]);
 
   const clearMessages = useCallback(() => {
     newChat();
@@ -227,13 +184,10 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   const selectChat = useCallback(
     async (id: string) => {
-      const restored = await openChat(id);
-      if (!restored) return;
-      // resetLocalState wipes interrupt history, so seed the stored one after it
+      if (!(await openChat(id))) return;
       resetLocalState();
-      adoptInterrupts(restored);
     },
-    [openChat, resetLocalState, adoptInterrupts],
+    [openChat, resetLocalState],
   );
 
   const deleteChat = useCallback(
@@ -261,11 +215,6 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
     clearError,
     stopped,
     timings,
-    interrupts,
-    awaitingApproval,
-    resolvedInterrupts,
-    interruptSubmitting,
-    answerInterrupt,
     models: CHAT_MODELS,
     model,
     setModel,

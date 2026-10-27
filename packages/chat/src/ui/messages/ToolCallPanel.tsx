@@ -26,8 +26,6 @@ export interface ToolCallPanelProps {
   result: string | null;
   /** A call with no result is only pending while a run is in flight. */
   isRunning: boolean;
-  /** This call is what an open approval is gating. */
-  awaitingApproval?: boolean;
   durationMs?: number;
   isExpanded: boolean;
   onToggle: () => void;
@@ -37,7 +35,6 @@ export function ToolCallPanel({
   toolCall,
   result,
   isRunning,
-  awaitingApproval,
   durationMs,
   isExpanded,
   onToggle,
@@ -63,7 +60,7 @@ export function ToolCallPanel({
                 {formatDuration(durationMs)}
               </Text>
             )}
-            {awaitingApproval ? null : result ? (
+            {result ? (
               <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />} />
             ) : isRunning ? (
               <Badge color="blue" variant="light">
@@ -108,7 +105,6 @@ export function ToolCallPanel({
               </Code>
             </>
           ) : (
-            !awaitingApproval &&
             !isRunning && (
               <Text size="xs" c="dimmed" mt="xs">
                 The run ended without a result for this call.

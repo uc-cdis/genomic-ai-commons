@@ -3,12 +3,11 @@
 import { useMemo } from "react";
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
-import type { ChatInterrupt, ChatMessage, ResolvedInterrupt, Timings, ToolCall } from "../../core";
+import type { ChatMessage, Timings, ToolCall } from "../../core";
 import { MessageItem } from "./MessageItem";
 import { RunStatusBanner } from "./RunStatusBanner";
 import { JumpToLatest } from "./JumpToLatest";
 import { useStickToBottom } from "./useStickToBottom";
-import type { InterruptActions, InterruptView } from "../interrupts";
 import { ToolResultCard, isTrailingTool } from "../tools";
 import { CHAT_MAX_WIDTH } from "../util";
 
@@ -18,9 +17,6 @@ export interface MessageListProps {
   timings: Timings;
   stopped: boolean;
   chatId: string;
-  interrupts: ChatInterrupt[];
-  resolvedInterrupts: ResolvedInterrupt[];
-  interruptActions: InterruptActions;
   editableMessageId: string | null;
   onRetry: () => void;
   onEdit: (text: string) => void;
@@ -49,9 +45,6 @@ export function MessageList({
   timings,
   stopped,
   chatId,
-  interrupts,
-  resolvedInterrupts,
-  interruptActions,
   editableMessageId,
   onRetry,
   onEdit,
@@ -61,11 +54,9 @@ export function MessageList({
 
   const lastMessage = messages[messages.length - 1];
   const promptId = lastMessage?.role === "user" ? lastMessage.id : null;
-  // Every open id, not interrupts[0] - that one never re-jumped for a second approval.
-  const interruptKey = interrupts.map((i) => i.id).join(",");
 
-  // Three things override the user's scroll position: their own prompt, an approval
-  // that blocks the composer, and switching conversations.
+  // Two things override the user's scroll position: their own prompt and switching
+  // conversations.
   useIsomorphicEffect(() => {
     scrollToBottom("auto");
   }, [chatId]);
@@ -73,10 +64,6 @@ export function MessageList({
   useIsomorphicEffect(() => {
     if (promptId) scrollToBottom("auto");
   }, [promptId]);
-
-  useIsomorphicEffect(() => {
-    if (interruptKey) scrollToBottom("auto");
-  }, [interruptKey]);
 
   const lastMessageId = lastMessage?.id ?? null;
 
@@ -112,18 +99,6 @@ export function MessageList({
     return [...placed, ...waiting];
   }, [messages]);
 
-  // One approval card per tool call, decided or open
-  const byToolCall = useMemo(() => {
-    const map = new Map<string, InterruptView>();
-    for (const { interrupt, decision } of resolvedInterrupts) {
-      if (interrupt.toolCallId) map.set(interrupt.toolCallId, { interrupt, decision });
-    }
-    for (const interrupt of interrupts) {
-      if (interrupt.toolCallId) map.set(interrupt.toolCallId, { interrupt });
-    }
-    return map;
-  }, [interrupts, resolvedInterrupts]);
-
   return (
     <Box pos="relative" style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
       <ScrollArea
@@ -141,8 +116,6 @@ export function MessageList({
                 message={row.message}
                 timings={timings}
                 toolResults={toolResults}
-                interrupts={byToolCall}
-                interruptActions={interruptActions}
                 editableMessageId={editableMessageId}
                 isRunning={isRunning}
                 isLast={row.message.id === lastMessageId}

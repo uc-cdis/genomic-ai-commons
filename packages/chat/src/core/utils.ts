@@ -1,5 +1,5 @@
-import type { Interrupt, Message } from "@copilotkit/react-core/v2";
-import type { ChatInterrupt, ChatMessage, ToolCall } from "./types";
+import type { Message } from "@copilotkit/react-core/v2";
+import type { ChatMessage, ToolCall } from "./types";
 
 // Message -> ChatMessage. Lossy for now; more of the agent's message fields will
 // need to come across as the UI grows.
@@ -115,38 +115,4 @@ export function lastUserIndex(messages: Message[]): number {
     if (messages[i].role === "user") return i;
   }
   return -1;
-}
-
-/**
- * Interrupt -> ChatInterrupt. Total, unlike toChatMessage's drop-the-empties
- * flatMap: one we refuse to translate is one the user can never answer, which
- * blocks every run after it. Never report from here - it runs in a render memo.
- */
-export function toChatInterrupt(interrupt: Interrupt): ChatInterrupt {
-  return {
-    id: interrupt.id,
-    reason: interrupt.reason,
-    message: interrupt.message ?? null,
-    toolCallId: interrupt.toolCallId ?? null,
-    metadata: (interrupt.metadata as Record<string, unknown> | undefined) ?? null,
-    canEditArgs: advertisesEditedArgs(interrupt.responseSchema),
-    expiresAt: toEpochMs(interrupt.expiresAt),
-  };
-}
-
-/**
- * responseSchema is JSON Schema for the resume payload. We don't render forms from
- * it - the only thing we read is whether the agent will take edited args.
- */
-function advertisesEditedArgs(schema: unknown): boolean {
-  if (typeof schema !== "object" || schema === null) return false;
-  const properties = (schema as { properties?: unknown }).properties;
-  return typeof properties === "object" && properties !== null && "editedArgs" in properties;
-}
-
-/** expiresAt is ISO-8601 on the wire. Junk dates count as no expiry. */
-function toEpochMs(iso: string | undefined): number | null {
-  if (!iso) return null;
-  const ms = Date.parse(iso);
-  return Number.isNaN(ms) ? null : ms;
 }
