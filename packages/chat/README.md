@@ -140,7 +140,7 @@ Before you push, run `npm run build`, then discard the regenerated `apps/commons
 
 ## Tests
 
-- Run `npm test`. It runs the chat package's unit tests with vitest. CI runs them on every push.
+- Run `npm test`. It runs the unit tests with vitest: the chat package's, then the portal app's (its chat login check). CI runs them on every push.
 - Tests sit next to the code, as `src/**/<name>.test.ts`. `npm run typecheck` checks them, but they are left out of the built package.
 - The rules for how a run ends (save it, drop it, clear the stop note) live in `core/runEndings.ts`. To change a rule, change it there and update `runEndings.test.ts`.
 
