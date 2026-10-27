@@ -115,9 +115,9 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
         if (event.code === "abort") return; // the user pressed Stop
         reportError("run", event);
       },
-      // a real finish clears "stopped"; an interrupt is a pause, not an answer
+      // only a real finish clears "stopped"; a stop can also end as a "cancelled" one
       onRunFinishedEvent(params) {
-        if (params.outcome === "interrupt") return;
+        if (params.outcome !== "success") return;
         setStopped(false);
       },
     });
