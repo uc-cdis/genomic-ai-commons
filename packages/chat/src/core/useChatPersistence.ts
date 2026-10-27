@@ -16,7 +16,7 @@ export interface UseChatPersistence {
 }
 
 /** Keep the prompt, drop whatever the run produced. */
-function truncateToLastUser(messages: Message[]): Message[] {
+function truncateToLastUser(messages: readonly Message[]): Message[] {
   for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i].role === "user") return messages.slice(0, i + 1);
   }
@@ -46,8 +46,8 @@ function newId(): string {
 
 /**
  * Persists the agent's buffer to IndexedDB, one record per chat. Writes on send
- * and on a successful run; rolls back to the last user message when a run fails,
- * so a retry doesn't inherit half an answer.
+ * and on a successful run; rolls back to the last user message when a run fails or
+ * is stopped, so the buffer never holds half an answer the next save would keep.
  */
 export function useChatPersistence(
   agent: AbstractAgent,
@@ -78,19 +78,19 @@ export function useChatPersistence(
     [chatId, refresh],
   );
 
-  // Write point 2 (RUN_FINISHED) and the error rollback.
+  // Write point 2 (a successful finish). Any other ending - error, stop, "cancelled", a dropped
+  // connection - is half a turn: drop it, as a returned mutation copilotkit can't undo.
   useEffect(() => {
+    const dropHalfTurn = ({ messages }: { messages: readonly Message[] }) => ({
+      messages: truncateToLastUser(messages),
+    });
     const sub = agent.subscribe({
-      onRunFinishedEvent({ outcome }) {
-        // Only a successful finish is saved: anything else may be half a turn, and the
-        // agent rebuilds its history from what we send, so a saved one can break the next.
-        if (outcome !== "success") return;
+      onRunFinishedEvent(params) {
+        if (params.outcome !== "success") return dropHalfTurn(params);
         write(agent.messages.slice());
       },
-      onRunErrorEvent({ event }) {
-        if (event.code === "abort") return; // the user pressed Stop
-        agent.setMessages(truncateToLastUser(agent.messages));
-      },
+      onRunErrorEvent: dropHalfTurn,
+      onRunFailed: dropHalfTurn,
     });
     return () => sub.unsubscribe();
   }, [agent, write]);
