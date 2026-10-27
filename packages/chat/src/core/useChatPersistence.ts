@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { AbstractAgent, Message } from "@copilotkit/react-core/v2";
 import { saveChat, loadChat } from "./db";
 import { reportError } from "./errors";
+import { saveOrDropTurn } from "./runEndings";
 
 export interface UseChatPersistence {
   /** Id of the chat that's currently loaded or running */
@@ -13,14 +14,6 @@ export interface UseChatPersistence {
   newChat: () => void;
   /** Load an existing chat into the agent. False when the id is unknown or mid-run. */
   openChat: (id: string) => Promise<boolean>;
-}
-
-/** Keep the prompt, drop whatever the run produced. */
-function truncateToLastUser(messages: readonly Message[]): Message[] {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    if (messages[i].role === "user") return messages.slice(0, i + 1);
-  }
-  return [];
 }
 
 /** First user message, trimmed to 80 chars. Only used when the row is created. */
@@ -78,20 +71,9 @@ export function useChatPersistence(
     [chatId, refresh],
   );
 
-  // Write point 2 (a successful finish). Any other ending - error, stop, "cancelled", a dropped
-  // connection - is half a turn: drop it, as a returned mutation copilotkit can't undo.
+  // Write point 2: a successful finish is saved, any other ending is dropped.
   useEffect(() => {
-    const dropHalfTurn = ({ messages }: { messages: readonly Message[] }) => ({
-      messages: truncateToLastUser(messages),
-    });
-    const sub = agent.subscribe({
-      onRunFinishedEvent(params) {
-        if (params.outcome !== "success") return dropHalfTurn(params);
-        write(agent.messages.slice());
-      },
-      onRunErrorEvent: dropHalfTurn,
-      onRunFailed: dropHalfTurn,
-    });
+    const sub = agent.subscribe(saveOrDropTurn(() => write(agent.messages.slice())));
     return () => sub.unsubscribe();
   }, [agent, write]);
 

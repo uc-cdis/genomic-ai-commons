@@ -8,6 +8,7 @@ import { CHAT_MODELS, DEFAULT_CHAT_MODEL } from "./models";
 import { useChatTimings } from "./useChatTimings";
 import { useChatPersistence } from "./useChatPersistence";
 import { useChatList } from "./useChatList";
+import { clearStopNoteOnSuccess } from "./runEndings";
 import type { ChatRecord } from "./db";
 import { reportError, subscribeToChatErrors, type ChatError } from "./errors";
 
@@ -69,6 +70,7 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   useEffect(() => {
     const sub = agent.subscribe({
+      ...clearStopNoteOnSuccess(() => setStopped(false)),
       onNewMessage() {
         setBufferRevision((r) => r + 1);
       },
@@ -78,11 +80,6 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
       onRunErrorEvent({ event }) {
         if (event.code === "abort") return; // the user pressed Stop
         reportError("run", event);
-      },
-      // only a real finish clears "stopped"; a stop can also end as a "cancelled" one
-      onRunFinishedEvent(params) {
-        if (params.outcome !== "success") return;
-        setStopped(false);
       },
     });
     return () => sub.unsubscribe();
