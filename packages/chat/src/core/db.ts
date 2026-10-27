@@ -23,7 +23,9 @@ interface ChatDB extends DBSchema {
   };
 }
 
-const DEFAULT_DB_NAME = "QAG-chat";
+// A new name, not a version bump: old chats hold QAG tool calls that may not replay on
+// the gdc agent, so they stay in "QAG-chat", untouched and no longer read.
+const DEFAULT_DB_NAME = "gdc-chat";
 const DB_VERSION = 1;
 
 const dbName = DEFAULT_DB_NAME;
