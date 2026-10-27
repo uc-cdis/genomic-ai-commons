@@ -12,7 +12,7 @@ This file describes how the chat works today. The move from the old QAG agent to
    ▼
  portal server (Next.js)            @gen3/chat/server
    │  checks your login, then forwards the request with your token
-   │  POST <GEN3_QAG_BASE_URL>/agui/
+   │  POST <GEN3_AGENT_BASE_URL>/agui/
    ▼
  gdc-agent (pydantic-ai)            repo: gdc-mcp-demo/agent
    │  picks tools and calls them
@@ -33,10 +33,12 @@ This file describes how the chat works today. The move from the old QAG agent to
 packages/chat/src/
   core/     no UI: hooks, saving chats, talking to the agent
   ui/       the screens, built with Mantine
-  server/   the portal's /chat-runtime handler
+  server/   handlers for the portal's chat and download routes
 apps/commons/
   src/pages/Chat.tsx              the /Chat page
-  src/pages/api/chat-runtime.ts   wires the handler to the portal's login check
+  src/pages/api/chat-runtime.ts   wires the chat handler to the portal's login check and agent url
+  src/pages/api/chat-download/    the same for downloads
+  src/lib/chat/                   the login check (auth.ts) and the agent url (agent.ts)
 ```
 
 Rule: `apps/commons` uses `@gen3/chat`. `@gen3/chat` never imports from the app.
@@ -127,7 +129,7 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 | Variable                        | Where                           | What it does                                                                            |
 | ------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
-| `GEN3_QAG_BASE_URL`             | `apps/commons/.env.*` or helm   | Base URL of the agent. Production: `http://gdc-agent` (inside the cluster)              |
+| `GEN3_AGENT_BASE_URL`           | `apps/commons/.env.*` or helm   | Base URL of the agent. Production: `http://gdc-agent` (inside the cluster)              |
 | `COPILOTKIT_TELEMETRY_DISABLED` | `apps/commons/.env.*`           | `true` turns off CopilotKit's usage data. One setting covers the server and the browser |
 | `NEXT_PUBLIC_GEN3_QAG_VERSION`  | `apps/commons/.env.development` | Old agent only. Goes away in Phase 6                                                    |
 
@@ -135,7 +137,7 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 1. Get an agent you can reach: run one yourself, or use a URL for the deployed one.
 2. Create `apps/commons/.env.development.local` (git ignores it) and add:
-   `GEN3_QAG_BASE_URL=http://localhost:8080`
+   `GEN3_AGENT_BASE_URL=http://localhost:8080`
 3. Run `npm run dev`, then log in.
 4. Open `/Chat`. Add `?copilotInspector` to the URL to see the raw AG-UI events (dev only).
 

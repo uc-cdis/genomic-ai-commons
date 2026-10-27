@@ -15,7 +15,7 @@ export interface DownloadRequest {
 export interface DownloadDeps {
   verifyToken: VerifyToken;
   /** the agent's base url, without a trailing slash */
-  agentBase: string;
+  agentBaseUrl: string;
   /** only ever called with a url string, so tests can pass a plain stand-in */
   fetch?: (url: string, init?: RequestInit) => Promise<Response>;
 }
@@ -25,7 +25,7 @@ const PASSED_HEADERS = ["content-type", "content-disposition"];
 
 export async function fetchDownload(
   req: DownloadRequest,
-  { verifyToken, agentBase, fetch: fetchImpl = fetch }: DownloadDeps,
+  { verifyToken, agentBaseUrl, fetch: fetchImpl = fetch }: DownloadDeps,
 ): Promise<Response> {
   const token = await verifyToken(req.cookie);
   if (!token) return Response.json({ error: "Authentication required." }, { status: 401 });
@@ -35,7 +35,7 @@ export async function fetchDownload(
 
   let upstream: Response;
   try {
-    upstream = await fetchImpl(`${agentBase}${path}`, {
+    upstream = await fetchImpl(`${agentBaseUrl}${path}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (error) {

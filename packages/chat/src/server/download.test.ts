@@ -18,7 +18,7 @@ describe("fetchDownload", () => {
     const fetch = agentReplying(tsv, { status: 200 });
     const res = await fetchDownload(
       { kind: "manifest", handle: "fs_1" },
-      { verifyToken: loggedOut, agentBase: AGENT, fetch },
+      { verifyToken: loggedOut, agentBaseUrl: AGENT, fetch },
     );
     expect(res.status).toBe(401);
     expect(fetch).not.toHaveBeenCalled();
@@ -28,7 +28,7 @@ describe("fetchDownload", () => {
     const fetch = agentReplying(tsv, { status: 200 });
     const res = await fetchDownload(
       { kind: "manifest", handle: "fs_1", format: "csv" },
-      { verifyToken: loggedIn, agentBase: AGENT, fetch },
+      { verifyToken: loggedIn, agentBaseUrl: AGENT, fetch },
     );
     expect(res.status).toBe(404);
     expect(fetch).not.toHaveBeenCalled();
@@ -38,7 +38,7 @@ describe("fetchDownload", () => {
     const fetch = agentReplying(tsv, { status: 200 });
     await fetchDownload(
       { kind: "survival", handle: "cs_1", format: "csv" },
-      { verifyToken: loggedIn, agentBase: AGENT, fetch },
+      { verifyToken: loggedIn, agentBaseUrl: AGENT, fetch },
     );
     expect(fetch).toHaveBeenCalledOnce();
     const [url, init] = fetch.mock.calls[0];
@@ -53,7 +53,7 @@ describe("fetchDownload", () => {
     });
     const res = await fetchDownload(
       { kind: "manifest", handle: "fs_1" },
-      { verifyToken: loggedIn, agentBase: AGENT, fetch },
+      { verifyToken: loggedIn, agentBaseUrl: AGENT, fetch },
     );
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toBe("text/tab-separated-values");
@@ -72,7 +72,7 @@ describe("fetchDownload", () => {
     });
     const res = await fetchDownload(
       { kind: "survival", handle: "cs_1" },
-      { verifyToken: loggedIn, agentBase: AGENT, fetch },
+      { verifyToken: loggedIn, agentBaseUrl: AGENT, fetch },
     );
     expect(res.status).toBe(404);
     expect(await res.text()).toBe(expired);
@@ -84,7 +84,7 @@ describe("fetchDownload", () => {
     });
     const res = await fetchDownload(
       { kind: "filter", handle: "flt_1" },
-      { verifyToken: loggedIn, agentBase: AGENT, fetch },
+      { verifyToken: loggedIn, agentBaseUrl: AGENT, fetch },
     );
     expect(res.status).toBe(502);
   });

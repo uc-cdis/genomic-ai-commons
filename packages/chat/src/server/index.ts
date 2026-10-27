@@ -11,27 +11,16 @@ export interface ChatHandlerOptions {
   verifyToken: VerifyToken;
   /** the public path, not /api/*. the rewrite does not change req.url */
   endpoint: string;
+  /** the agent's root url, e.g. http://gdc-agent */
+  agentBaseUrl: string;
 }
 
-/** the agent's base url without a trailing slash, e.g. http://gdc-agent */
-const getAgentBase = (): string => {
-  const base = process.env.GEN3_QAG_BASE_URL;
-  if (!base) throw new Error("GEN3_QAG_BASE_URL is not configured");
-  return base.replace(/\/+$/, "");
-};
-
-/** where the agent listens, e.g. http://gdc-agent/agui/ */
-// keep the trailing slash: the agent mounts /agui/, so a bare /agui falls through to its ui
-const getChatAgentUrl = (): string => `${getAgentBase()}/agui/`;
-
-let runtime: CopilotRuntime | null = null;
+// so adding a path never gives a double slash: http://gdc-agent/ + /agui/
+const withoutTrailingSlash = (url: string): string => url.replace(/\/+$/, "");
 
 // registry of named agents. "default" is the name useChat asks for
-const getCopilotRuntime = (): CopilotRuntime => {
-  if (runtime) return runtime;
-  const agentUrl = getChatAgentUrl();
-
-  runtime = new CopilotRuntime({
+const createCopilotRuntime = (agentUrl: string): CopilotRuntime =>
+  new CopilotRuntime({
     // this needs to be a function as we need token per caller
     agents: ({ request }) => {
       const authorization = request.headers.get("authorization");
@@ -48,10 +37,9 @@ const getCopilotRuntime = (): CopilotRuntime => {
     },
   });
 
-  return runtime;
-};
-
-export const createChatHandler = ({ verifyToken, endpoint }: ChatHandlerOptions) => {
+export const createChatHandler = ({ verifyToken, endpoint, agentBaseUrl }: ChatHandlerOptions) => {
+  // keep the trailing slash: the agent mounts /agui/, so a bare /agui falls through to its ui
+  const agentUrl = `${withoutTrailingSlash(agentBaseUrl)}/agui/`;
   let endpointHandler: ReturnType<typeof createCopilotNodeListener> | null = null;
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
@@ -62,7 +50,7 @@ export const createChatHandler = ({ verifyToken, endpoint }: ChatHandlerOptions)
       res.setHeader("X-Accel-Buffering", "no");
 
       endpointHandler ??= createCopilotNodeListener({
-        runtime: getCopilotRuntime(),
+        runtime: createCopilotRuntime(agentUrl),
         basePath: endpoint,
         // client posts {method, params, body}, v2 defaults to multi-route and 404s it
         mode: "single-route",
@@ -101,13 +89,17 @@ export const createChatHandler = ({ verifyToken, endpoint }: ChatHandlerOptions)
 
 export interface DownloadHandlerOptions {
   verifyToken: VerifyToken;
+  /** the agent's root url, e.g. http://gdc-agent */
+  agentBaseUrl: string;
 }
 
 const firstValue = (value: string | string[] | undefined): string =>
   (Array.isArray(value) ? value[0] : value) ?? "";
 
 /** GET /download/<kind>/<handle>: the agent's download links, after a login check. */
-export const createDownloadHandler = ({ verifyToken }: DownloadHandlerOptions) => {
+export const createDownloadHandler = ({ verifyToken, agentBaseUrl }: DownloadHandlerOptions) => {
+  const deps = { verifyToken, agentBaseUrl: withoutTrailingSlash(agentBaseUrl) };
+
   return async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method !== "GET") {
       res.setHeader("Allow", "GET");
@@ -123,7 +115,7 @@ export const createDownloadHandler = ({ verifyToken }: DownloadHandlerOptions) =
           format: firstValue(req.query.format) || undefined,
           cookie: req.headers.cookie,
         },
-        { verifyToken, agentBase: getAgentBase() },
+        deps,
       );
 
       res.status(response.status);
