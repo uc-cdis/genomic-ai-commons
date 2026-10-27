@@ -27,7 +27,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/",
     "dev": "tsc -p tsconfig.build.json --watch",
-    "typecheck": "tsc --noEmit -p tsconfig.build.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "idb": "^8.0.3",
@@ -48,5 +49,8 @@
     "react": "^19.2",
     "react-dom": "^19.2",
     "recharts": ">=3"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
   }
 }
