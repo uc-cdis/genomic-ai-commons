@@ -73,6 +73,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
   Click a panel to see its inputs (PARAMETERS) and its output (RESULT).
 
 - **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV). Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
+- **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
 - **A model picker.** The names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
 - **A sidebar** with your chats, newest first. You can start a new chat, rename one, or delete one. You can't delete the chat that is running.
 - **A "Scroll to latest" button** when you scroll up while an answer streams.

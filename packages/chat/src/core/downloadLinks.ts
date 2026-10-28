@@ -1,6 +1,7 @@
 // The agent links its results as /download/<kind>/<handle>[?format=csv]. These rules mirror
 // its own checks (gdc-mcp-demo agent/downloads.py), so a bad link never reaches it.
-const DOWNLOAD_KINDS: readonly string[] = ["filter", "survival", "manifest"];
+export const DOWNLOAD_KINDS = ["filter", "survival", "manifest"] as const;
+export type DownloadKind = (typeof DOWNLOAD_KINDS)[number];
 const HANDLE = /^[A-Za-z0-9_-]+$/;
 
 /** The agent's path for a download, or null when the agent wouldn't serve it. */
@@ -9,7 +10,7 @@ export function agentDownloadPath(
   handle: string,
   format: string | undefined,
 ): string | null {
-  if (!DOWNLOAD_KINDS.includes(kind) || !HANDLE.test(handle)) return null;
+  if (!(DOWNLOAD_KINDS as readonly string[]).includes(kind) || !HANDLE.test(handle)) return null;
   const csv = format === "csv";
   // only survival curves come as csv
   if (csv && kind !== "survival") return null;
