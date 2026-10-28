@@ -1,28 +1,41 @@
 "use client";
 
 import { Box, Burger, Drawer, useMantineTheme } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
 import { useEffect, type ReactNode } from "react";
 import { HeaderStrip } from "./HeaderStrip";
 
+export interface SidebarState {
+  collapsed: boolean;
+  /** absent in the mobile drawer, which always shows the whole list */
+  onToggleCollapsed?: () => void;
+}
+
 export interface ChatShellProps {
-  sidebar: ReactNode;
+  sidebar: (state: SidebarState) => ReactNode;
   children: ReactNode;
   headerContent: ReactNode;
 }
 
 const SIDEBAR_WIDTH = 340;
+const RAIL_WIDTH = 56;
 
 export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) {
   const theme = useMantineTheme();
   const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure(false);
+  const [collapsed, setCollapsed] = useLocalStorage({
+    key: "gdc-chat-sidebar-collapsed",
+    defaultValue: false,
+    // the chat page only renders in the browser, so read it now instead of flashing the full list
+    getInitialValueInEffect: false,
+  });
 
   useEffect(() => {
     if (isDesktop && mobileOpened) closeMobile();
   }, [isDesktop, mobileOpened, closeMobile]);
 
-  const sidebarBody = (
+  const sidebarBody = (state: SidebarState) => (
     <Box
       mih={0}
       style={{ flex: 1, display: "flex", flexDirection: "column" }}
@@ -34,7 +47,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
         closeMobile();
       }}
     >
-      {sidebar}
+      {sidebar(state)}
     </Box>
   );
 
@@ -56,7 +69,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
         <Box
           component="aside"
           visibleFrom="sm"
-          w={SIDEBAR_WIDTH}
+          w={collapsed ? RAIL_WIDTH : SIDEBAR_WIDTH}
           mih={0}
           bg="var(--chat-panel)"
           style={{
@@ -66,7 +79,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
             borderInlineEnd: "1px solid var(--chat-rule)",
           }}
         >
-          {sidebarBody}
+          {sidebarBody({ collapsed, onToggleCollapsed: () => setCollapsed(!collapsed) })}
         </Box>
 
         <Drawer
@@ -81,7 +94,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
             body: { flex: 1, minHeight: 0, display: "flex", flexDirection: "column" },
           }}
         >
-          {sidebarBody}
+          {sidebarBody({ collapsed: false })}
         </Drawer>
 
         <Box

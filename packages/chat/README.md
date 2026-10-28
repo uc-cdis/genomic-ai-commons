@@ -78,7 +78,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
 - **A manifest card** under `get_file_manifest`, with Download TSV. A cohort filter downloads from the RESULT of its `create_filter` panel.
 - **A header** with the open chat's title, as "Chat / title". Its menu renames or deletes the chat. The model picker is commented out in `ui/ChatHeader.tsx` while the agent offers one model; the names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
-- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running.
+- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running. On a computer, the arrow at its top folds it into a thin strip (new chat, search) and back; the browser remembers which. On a phone, the menu button opens it.
 - **A "Scroll to latest" button** when you scroll up while an answer streams.
 - **An error banner**, "Something went wrong. Please try again." The details are in the browser console, as `[chat-core:<source>]`.
 
