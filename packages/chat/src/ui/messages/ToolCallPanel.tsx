@@ -1,6 +1,6 @@
 "use client";
 
-import { Code, Collapse, Group, Loader, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
+import { Collapse, Group, Loader, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
 import {
   IconChevronDown,
   IconChevronUp,
@@ -11,7 +11,8 @@ import {
 import { useMemo } from "react";
 import type { ToolCall } from "../../core";
 import { DownloadButton, findDownload } from "../tools";
-import { formatDuration, formatJson } from "../util";
+import { formatDuration } from "../util";
+import { JsonCode } from "./JsonCode";
 
 const STATUS_LABELS = {
   completed: "Completed",
@@ -57,21 +58,25 @@ export function ToolCallPanel({
   return (
     <Paper withBorder radius="sm" bg="var(--mantine-color-default)" style={{ overflow: "hidden" }}>
       <UnstyledButton onClick={onToggle} aria-expanded={isExpanded} w="100%" display="block">
-        <Group
-          justify="space-between"
-          p="xs"
-          bg={isExpanded ? "var(--mantine-color-default-hover)" : "transparent"}
-        >
+        <Group justify="space-between" p="xs">
           <Group gap="xs">
-            <IconTool size={16} color="var(--mantine-color-gray-6)" />
-            <Text size="sm" ff="monospace" fw={500}>
+            <IconTool size={16} color="var(--chat-icon)" />
+            <Text
+              size="sm"
+              ff="monospace"
+              fw={500}
+              c="var(--chat-tool-name)"
+              bg="var(--chat-tint)"
+              px={6}
+              style={{ borderRadius: "var(--mantine-radius-sm)" }}
+            >
               {toolCall.name}
             </Text>
           </Group>
 
           <Group gap="sm">
             {durationMs !== undefined && (
-              <Text size="xs" c="dimmed">
+              <Text size="xs" c="var(--chat-muted)">
                 {formatDuration(durationMs)}
               </Text>
             )}
@@ -88,34 +93,24 @@ export function ToolCallPanel({
       </UnstyledButton>
 
       <Collapse expanded={isExpanded}>
-        <Stack
-          p="sm"
-          gap="xs"
-          bg="var(--mantine-color-body)"
-          bd="1px solid var(--mantine-color-default-border)"
-          style={{ borderBottom: "none", borderLeft: "none", borderRight: "none" }}
-        >
-          <Text size="xs" fw={700} c="dimmed">
-            PARAMETERS
+        <Stack p="sm" gap="xs" className="chat-tool-body">
+          <Text size="xs" fw={700} c="var(--chat-muted)">
+            ARGUMENTS
           </Text>
           {toolCall.args ? (
-            <Code block mah={300} style={{ overflow: "auto" }}>
-              {JSON.stringify(toolCall.args, null, 2)}
-            </Code>
+            <JsonCode text={JSON.stringify(toolCall.args)} />
           ) : (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="var(--chat-muted)">
               Waiting for arguments…
             </Text>
           )}
 
           {result ? (
             <>
-              <Text size="xs" fw={700} c="dimmed" mt="xs">
+              <Text size="xs" fw={700} c="var(--chat-muted)" mt="xs">
                 {failed ? "ERROR" : "RESULT"}
               </Text>
-              <Code block mah={300} style={{ overflow: "auto" }}>
-                {formatJson(result)}
-              </Code>
+              <JsonCode text={result} />
               {filter && (
                 <div>
                   <DownloadButton href={filter.url} label="Download filter (JSON)" />
@@ -124,7 +119,7 @@ export function ToolCallPanel({
             </>
           ) : (
             !isRunning && (
-              <Text size="xs" c="dimmed" mt="xs">
+              <Text size="xs" c="var(--chat-muted)" mt="xs">
                 The run ended without a result for this call.
               </Text>
             )

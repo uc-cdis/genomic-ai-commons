@@ -13,9 +13,12 @@
   /* not in the designer's list yet: the portal theme's accentCool, and the mockup's other colours */
   --chat-navy: #0f4163;
   --chat-surface: #edf4fa;
+  --chat-surface-light: #f6fafd;
+  --chat-orange-dark: #b0461a; /* the orange is 4.12:1 on the tint; this is 5.06:1 */
   --chat-green-tint: #dcfce7;
   --chat-red-tint: #fee2e2;
   --chat-red-deep: #b91c1c; /* the mockup's Error pill */
+  --chat-gray: #6b7280;
 
   /* what components use */
   --chat-title: var(--chat-navy);
@@ -31,6 +34,7 @@
   --chat-rule: var(--mantine-color-default-border);
   --chat-panel: var(--mantine-color-gray-0);
   --chat-tint: var(--chat-surface);
+  --chat-tint-light: var(--chat-surface-light);
   --chat-answer-line: var(--chat-navy);
   /* 4.57:1 on its tint, only just over 4.5:1 */
   --chat-success: var(--chat-green);
@@ -38,8 +42,15 @@
   /* outlined, so files stand out from the grey copy/edit actions; 5.2:1 on white */
   --chat-download: var(--chat-blue);
   --chat-primary: var(--chat-blue);
+  --chat-tool-name: var(--chat-navy);
+  /* icons need 3:1; this is 4.83:1 on white */
+  --chat-icon: var(--chat-gray);
   /* 4.57:1 on white, only just over 4.5:1: re-check if the orange changes */
   --chat-accent: var(--chat-orange);
+  --chat-json-key: var(--chat-navy);
+  --chat-json-string: var(--chat-orange-dark);
+  --chat-json-number: var(--chat-blue);
+  --chat-json-punctuation: var(--chat-muted);
 }
 
 /* NavPageLayout's root is `h-full min-h-dvh` - an indefinite height - so main's
@@ -158,4 +169,26 @@ div:has(> main > [data-chat-shell]) {
 .chat-status[data-status="missing"] {
   --chat-status-tint: var(--chat-muted-tint);
   --chat-status-text: var(--chat-muted);
+}
+
+.chat-tool-body {
+  border-top: 1px solid var(--chat-rule);
+  background: var(--chat-tint-light);
+}
+/* Mantine's Code reads --code-bg; a background here would tie with its own rule */
+.chat-code {
+  --code-bg: var(--chat-tint);
+}
+.chat-json-key {
+  color: var(--chat-json-key);
+}
+.chat-json-string {
+  color: var(--chat-json-string);
+}
+.chat-json-number,
+.chat-json-literal {
+  color: var(--chat-json-number);
+}
+.chat-json-punctuation {
+  color: var(--chat-json-punctuation);
 }

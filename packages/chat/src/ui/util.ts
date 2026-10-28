@@ -7,12 +7,38 @@ export function formatDuration(ms: number): string {
   return ms < 1000 ? `${Math.round(ms)}ms` : `${(ms / 1000).toFixed(1)}s`;
 }
 
-export function formatJson(raw: string): string {
+export interface JsonToken {
+  kind: "key" | "string" | "number" | "literal" | "punctuation";
+  text: string;
+}
+
+// strings first, so digits and words inside a string stay part of it
+const JSON_TOKEN = /"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null/g;
+
+export function jsonTokens(raw: string): JsonToken[] | null {
+  let pretty: string;
   try {
-    return JSON.stringify(JSON.parse(raw), null, 2);
+    pretty = JSON.stringify(JSON.parse(raw), null, 2);
   } catch {
-    return raw;
+    return null;
   }
+  const tokens: JsonToken[] = [];
+  const punctuation = (text: string) => {
+    if (text) tokens.push({ kind: "punctuation", text });
+  };
+  let end = 0;
+  for (const match of pretty.matchAll(JSON_TOKEN)) {
+    const [text] = match;
+    punctuation(pretty.slice(end, match.index));
+    end = match.index + text.length;
+    if (text.startsWith('"')) {
+      tokens.push({ kind: pretty[end] === ":" ? "key" : "string", text });
+    } else {
+      tokens.push({ kind: /^[tfn]/.test(text) ? "literal" : "number", text });
+    }
+  }
+  punctuation(pretty.slice(end));
+  return tokens;
 }
 
 export function groupChatsByDay(
