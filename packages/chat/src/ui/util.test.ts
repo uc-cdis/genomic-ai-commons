@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ChatRecord } from "../core";
-import { groupChatsByDay } from "./util";
+import { groupChatsByDay, searchChats } from "./util";
 
 // clocks went forward here on 9 March 2025, so the midnight test means something on CI too
 process.env.TZ = "America/New_York";
@@ -15,7 +15,7 @@ const chat = (id: string, title: string, updatedAt: number): ChatRecord => ({
 });
 
 describe("groupChatsByDay", () => {
-  it("groups chats into today, yesterday and earlier, keeping their order", () => {
+  it("groups chats into recent sessions, yesterday and earlier, keeping their order", () => {
     const chats = [
       chat("a", "KRAS in lung", NOW - 1 * HOUR),
       chat("b", "BRAF survival", NOW - 3 * HOUR),
@@ -23,7 +23,7 @@ describe("groupChatsByDay", () => {
       chat("d", "BRCA variants", NOW - 5 * 24 * HOUR),
     ];
     expect(groupChatsByDay(chats, NOW)).toEqual([
-      { label: "TODAY", chats: [chats[0], chats[1]] },
+      { label: "RECENT SESSIONS", chats: [chats[0], chats[1]] },
       { label: "YESTERDAY", chats: [chats[2]] },
       { label: "EARLIER", chats: [chats[3]] },
     ]);
@@ -41,5 +41,21 @@ describe("groupChatsByDay", () => {
   it("leaves out groups with no chats", () => {
     const old = chat("d", "BRCA variants", NOW - 5 * 24 * HOUR);
     expect(groupChatsByDay([old], NOW)).toEqual([{ label: "EARLIER", chats: [old] }]);
+  });
+});
+
+describe("searchChats", () => {
+  const chats = [chat("a", "KRAS in lung", NOW), chat("b", "BRAF survival", NOW)];
+
+  it("keeps chats whose title contains the search, ignoring case", () => {
+    expect(searchChats(chats, "kras")).toEqual([chats[0]]);
+  });
+
+  it("keeps every chat when the search is blank", () => {
+    expect(searchChats(chats, "  ")).toEqual(chats);
+  });
+
+  it("keeps none when nothing matches", () => {
+    expect(searchChats(chats, "EGFR")).toEqual([]);
   });
 });

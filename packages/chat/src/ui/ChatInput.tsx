@@ -1,29 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Group, Select, Stack, Text, Textarea } from "@mantine/core";
+import { ActionIcon, Textarea, Tooltip } from "@mantine/core";
+import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
 
 export interface ChatInputProps {
   isRunning: boolean;
   onSend: (text: string) => void;
   onStop: () => void;
-  label?: string;
   placeholder?: string;
-  models: readonly string[];
-  model: string;
-  onModelChange: (model: string) => void;
 }
 
-export function ChatInput({
-  isRunning,
-  onSend,
-  onStop,
-  label,
-  placeholder,
-  models,
-  model,
-  onModelChange,
-}: ChatInputProps) {
+export function ChatInput({ isRunning, onSend, onStop, placeholder }: ChatInputProps) {
   const [value, setValue] = useState("");
 
   const send = () => {
@@ -33,49 +21,50 @@ export function ChatInput({
     setValue("");
   };
 
-  // Width and gutter belong to the column this sits in, not to the composer.
   return (
-    <Stack gap="xs" w="100%">
-      {label && (
-        <Text fw={700} size="sm">
-          {label}
-        </Text>
-      )}
-      <Textarea
-        autosize
-        minRows={1}
-        maxRows={6}
-        placeholder={placeholder ?? "Type a message"}
-        aria-label="Message"
-        value={value}
-        onChange={(event) => setValue(event.currentTarget.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            send();
-          }
-        }}
-      />
-      <Group justify="space-between" wrap="nowrap">
-        <Select
-          data={models}
-          value={model}
-          onChange={(next) => next && onModelChange(next)}
-          allowDeselect={false}
-          aria-label="Model"
-          w={240}
-          comboboxProps={{ withinPortal: true }}
-        />
-        {isRunning ? (
-          <Button variant="light" color="red" onClick={onStop}>
-            Stop
-          </Button>
+    <Textarea
+      size="md"
+      autosize
+      minRows={1}
+      maxRows={6}
+      placeholder={placeholder ?? "Type a message"}
+      aria-label="Message"
+      value={value}
+      onChange={(event) => setValue(event.currentTarget.value)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          send();
+        }
+      }}
+      styles={{ input: { paddingBlock: 10, backgroundColor: "var(--chat-panel)" } }}
+      rightSectionWidth={60}
+      rightSectionPointerEvents="all"
+      rightSection={
+        isRunning ? (
+          <Tooltip label="Stop" withArrow>
+            <ActionIcon
+              variant="light"
+              color="var(--chat-error)"
+              size="lg"
+              aria-label="Stop"
+              onClick={onStop}
+            >
+              <IconPlayerStopFilled size={16} />
+            </ActionIcon>
+          </Tooltip>
         ) : (
-          <Button onClick={send} disabled={!value.trim()}>
-            Send
-          </Button>
-        )}
-      </Group>
-    </Stack>
+          <ActionIcon
+            variant="filled"
+            color="var(--chat-primary)"
+            size="lg"
+            aria-label="Send"
+            onClick={send}
+          >
+            <IconSend size={18} />
+          </ActionIcon>
+        )
+      }
+    />
   );
 }

@@ -12,7 +12,7 @@ export function UserBubble({ message }: UserBubbleProps) {
       py="xs"
       radius="lg"
       maw="80%"
-      bg="orange.6"
+      bg="var(--chat-accent)"
       c="white"
       style={{ alignSelf: "flex-end" }}
     >

@@ -1,6 +1,6 @@
-# @gen3/chat: the GDC chat
+# @gen3/chat: Genomics Explorer
 
-`@gen3/chat` is the chat feature of the portal. The portal (`apps/commons`) shows it on the `/Chat` page. You ask a question about GDC data, and an AI agent answers. It uses tools to look up cohorts, mutations, expression and survival.
+`@gen3/chat` is Genomics Explorer, the chat feature of the portal. The portal (`apps/commons`) shows it on the `/Chat` page. You ask a question about GDC data, and an AI agent answers. It uses tools to look up cohorts, mutations, expression and survival.
 
 This file describes how the chat works today. The move from the old QAG agent to the GDC agent is still in progress; the [Work in progress](#work-in-progress) table shows which parts are done.
 
@@ -76,8 +76,8 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as small buttons. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
 - **A manifest card** under `get_file_manifest`, with Download TSV. A cohort filter downloads from the RESULT of its `create_filter` panel.
-- **A model picker.** The names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
-- **A sidebar** with your chats, newest first. You can start a new chat, rename one, or delete one. You can't delete the chat that is running.
+- **A header** with the open chat's title, as "Chat / title". Its menu renames or deletes the chat. The model picker is commented out in `ui/ChatHeader.tsx` while the agent offers one model; the names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
+- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running.
 - **A "Scroll to latest" button** when you scroll up while an answer streams.
 - **An error banner**, "Something went wrong. Please try again." The details are in the browser console, as `[chat-core:<source>]`.
 
@@ -137,10 +137,10 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 ## Colours
 
-Chat colours are CSS variables at the top of `src/styles.css`. The cards use them. The older parts (empty state, sidebar, buttons, error banner) still name Mantine colours until the Phase 8 design pass, and the survival plot keeps GDC's own curve colours.
+Chat colours are CSS variables at the top of `src/styles.css`. Most of the chat uses them. Until the Phase 8 design pass these still name Mantine colours: the tool panels, the error banner, the grey status lines under a turn, and the grey Cancel button when you edit a question. Plain white surfaces and borders use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
 
 - The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
-- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-download`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-download`, `--chat-primary`, `--chat-accent`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
 
@@ -179,7 +179,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 4     | Show each short reason _above_ its tool call                                                   | done   |
 | 5     | Make download links in answers work, through a portal route                                    | done   |
 | 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
-| 7     | New wording and example questions; hide old AI tiles                                           | next   |
+| 7     | Named Genomics Explorer; new empty screen, composer and sidebar; the agent's example questions | done   |
+| 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | next   |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 

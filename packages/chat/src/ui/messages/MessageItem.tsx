@@ -27,7 +27,6 @@ export function MessageItem({
   onEdit,
   onRetry,
 }: MessageItemProps) {
-  // only the newest message of a running turn is still being written
   const isStreaming = isRunning && isLast;
 
   if (message.role === "user") {

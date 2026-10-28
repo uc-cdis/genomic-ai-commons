@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ActionIcon, Group, Menu, Stack, Text, TextInput, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Group, Menu, Stack, Text, UnstyledButton } from "@mantine/core";
 import { IconDots, IconMessage, IconPencil, IconTrash } from "@tabler/icons-react";
+import { TitleInput } from "./TitleInput";
 
 export interface ConversationItemProps {
   label: string;
@@ -25,16 +26,7 @@ export function ConversationItem({
   onRename,
   onDelete,
 }: ConversationItemProps) {
-  const [draft, setDraft] = useState<string | null>(null);
-  const editing = draft !== null;
-
-  const startEditing = () => setDraft(label);
-
-  const commit = () => {
-    const trimmed = draft?.trim() ?? "";
-    if (trimmed && trimmed !== label) onRename?.(trimmed);
-    setDraft(null);
-  };
+  const [editing, setEditing] = useState(false);
 
   return (
     <Group
@@ -49,23 +41,10 @@ export function ConversationItem({
       }}
     >
       {editing ? (
-        <TextInput
-          size="xs"
-          /* oxlint-disable-next-line jsx-a11y/no-autofocus */
-          autoFocus
-          flex={1}
-          data-keep-open
-          value={draft}
-          aria-label="Conversation title"
-          onChange={(event) => setDraft(event.currentTarget.value)}
-          onBlur={commit}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              commit();
-            }
-            if (event.key === "Escape") setDraft(null);
-          }}
+        <TitleInput
+          title={label}
+          onRename={(title) => onRename?.(title)}
+          onDone={() => setEditing(false)}
         />
       ) : (
         <>
@@ -76,7 +55,7 @@ export function ConversationItem({
             <Group gap="xs" wrap="nowrap" align="flex-start">
               <IconMessage
                 size={16}
-                color={active ? "var(--mantine-color-orange-6)" : "var(--mantine-color-dimmed)"}
+                color="var(--chat-accent)"
                 style={{ marginTop: 2, flexShrink: 0 }}
               />
               <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
@@ -84,7 +63,7 @@ export function ConversationItem({
                   {label}
                 </Text>
                 {hint && (
-                  <Text size="xs" c="dimmed" truncate="end">
+                  <Text size="xs" c="var(--chat-muted)" truncate="end">
                     {hint}
                   </Text>
                 )}
@@ -97,7 +76,7 @@ export function ConversationItem({
               <Menu.Target>
                 <ActionIcon
                   variant="subtle"
-                  color="gray"
+                  color="var(--chat-accent)"
                   size="sm"
                   data-keep-open
                   aria-label={`Actions for ${label}`}
@@ -106,11 +85,11 @@ export function ConversationItem({
                 </ActionIcon>
               </Menu.Target>
               <Menu.Dropdown>
-                <Menu.Item leftSection={<IconPencil size={14} />} onClick={startEditing}>
+                <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => setEditing(true)}>
                   Rename
                 </Menu.Item>
                 <Menu.Item
-                  color="red"
+                  color="var(--chat-error)"
                   leftSection={<IconTrash size={14} />}
                   disabled={deleteDisabled}
                   onClick={onDelete}
