@@ -144,7 +144,7 @@ Chat colours are CSS variables at the top of `src/styles.css`. The cards use the
 ## Running it locally
 
 1. Dev talks to the deployed agent through `https://genomicaicommons.org/agent` (set in `apps/commons/.env.development`). To use an agent you run yourself, put `GEN3_AGENT_BASE_URL=http://localhost:8080` in `apps/commons/.env.development.local` (git ignores it).
-2. Run `npm run dev`, then log in.
+2. Run `npm run dev`, then log in. It runs three processes: `chat` rebuilds the package's TypeScript, `css` copies its `styles.css` to `dist` on every save, and `app` is the portal.
 3. Open `/Chat`. Add `?copilotInspector` to the URL to see the raw AG-UI events (dev only).
 
 Before you push, run `npm run build`.

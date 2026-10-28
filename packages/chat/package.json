@@ -27,6 +27,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && cp src/styles.css dist/",
     "dev": "tsc -p tsconfig.build.json --watch",
+    "dev:css": "node --watch-path=src/styles.css scripts/copy-styles.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run"
   },
