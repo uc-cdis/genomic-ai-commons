@@ -180,7 +180,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 5     | Make download links in answers work, through a portal route                                    | done   |
 | 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
 | 7     | Named Genomics Explorer; new empty screen, composer and sidebar; the agent's example questions | done   |
-| 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | next   |
+| 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | done   |
+| 8     | Steps list and status pills from the mockup; the rest of the design pass                       | next   |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 
