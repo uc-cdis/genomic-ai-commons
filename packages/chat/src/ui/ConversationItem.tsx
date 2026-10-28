@@ -74,7 +74,6 @@ export function ConversationItem({
 
           {showActions && (
             <ChatActionsMenu
-              position="bottom-end"
               deleteDisabled={deleteDisabled}
               onRename={() => setEditing(true)}
               onDelete={onDelete}

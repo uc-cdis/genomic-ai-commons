@@ -14,11 +14,12 @@ import {
 } from "@mantine/core";
 import { IconChevronLeft, IconChevronRight, IconPlus, IconSearch } from "@tabler/icons-react";
 import type { ChatRecord } from "../core";
+import type { SidebarState } from "./ChatShell";
 import { ConversationItem } from "./ConversationItem";
 import { HeaderStrip } from "./HeaderStrip";
 import { groupChatsByDay, searchChats } from "./util";
 
-export interface ChatSidebarProps {
+export interface ChatSidebarProps extends SidebarState {
   chats: ChatRecord[];
   activeChatId: string;
   loading: boolean;
@@ -27,8 +28,6 @@ export interface ChatSidebarProps {
   onSelect: (id: string) => void;
   onRename: (id: string, title: string) => void;
   onDelete: (id: string) => void;
-  collapsed: boolean;
-  onToggleCollapsed?: () => void;
 }
 
 function SidebarIconButton({
@@ -67,7 +66,7 @@ export function ChatSidebar({
   const groups = groupChatsByDay(searchChats(chats, query));
   const isDraft = !loading && !chats.some((chat) => chat.id === activeChatId);
 
-  // the strip's search button expands the list, then the search box takes the cursor
+  // the search box isn't rendered while collapsed, so it takes the cursor once the list expands
   const searchRef = useRef<HTMLInputElement>(null);
   const focusSearchOnExpand = useRef(false);
   useEffect(() => {

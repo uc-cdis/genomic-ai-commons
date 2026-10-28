@@ -3,7 +3,6 @@
 import { Group, type GroupProps } from "@mantine/core";
 import { HEADER_HEIGHT } from "./util";
 
-/** The sidebar's and the conversation's top strips, so their bottom lines meet. */
 export function HeaderStrip(props: Omit<GroupProps, "style">) {
   return (
     <Group

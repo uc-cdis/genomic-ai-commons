@@ -1,13 +1,11 @@
 "use client";
 
-import { Menu, type MenuProps } from "@mantine/core";
+import { Menu } from "@mantine/core";
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import type { ReactElement } from "react";
 
 export interface ChatActionsMenuProps {
-  /** the button that opens the menu */
   children: ReactElement;
-  position: MenuProps["position"];
   deleteDisabled?: boolean;
   onRename: () => void;
   onDelete?: () => void;
@@ -15,13 +13,12 @@ export interface ChatActionsMenuProps {
 
 export function ChatActionsMenu({
   children,
-  position,
   deleteDisabled,
   onRename,
   onDelete,
 }: ChatActionsMenuProps) {
   return (
-    <Menu position={position} withinPortal>
+    <Menu position="bottom-end" withinPortal>
       <Menu.Target>{children}</Menu.Target>
       {/* it renders outside the mobile drawer, but React still passes its clicks to the drawer's
           close-on-click, which would close it before Rename can open the title box */}

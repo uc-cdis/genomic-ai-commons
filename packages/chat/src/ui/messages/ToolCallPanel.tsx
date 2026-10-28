@@ -56,7 +56,11 @@ export function ToolCallPanel({
   const filter = useMemo(() => findDownload(result, "filter"), [result]);
 
   return (
-    <Paper withBorder radius="sm" bg="var(--mantine-color-default)" style={{ overflow: "hidden" }}>
+    <Paper
+      radius="sm"
+      bg="var(--mantine-color-default)"
+      style={{ overflow: "hidden", border: "1px solid var(--chat-rule)" }}
+    >
       <UnstyledButton onClick={onToggle} aria-expanded={isExpanded} w="100%" display="block">
         <Group justify="space-between" p="xs">
           <Group gap="xs">

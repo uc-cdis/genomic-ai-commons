@@ -140,7 +140,7 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 Chat colours are CSS variables at the top of `src/styles.css`, and the chat uses them throughout. Plain white surfaces and the cards' outlines use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
 
-- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there. The colours under it (navy, the tints, the Error pill's red, a grey for icons, and a darker orange for JSON strings) are the portal theme's and the wireframes' until the designer names them.
+- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there. The colours under it (navy, the tints, the Error pill's red, a grey for icons and placeholders, and a darker orange for JSON strings) are the portal theme's and the wireframes' until the designer names them.
 - Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-error-strong`, `--chat-error-tint`, `--chat-muted`, `--chat-muted-tint`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-tint-light`, `--chat-answer-line`, `--chat-success`, `--chat-success-tint`, `--chat-download`, `--chat-primary`, `--chat-tool-name`, `--chat-icon`, `--chat-placeholder`, `--chat-accent`, and `--chat-json-*` for the JSON in tool panels), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey and `--chat-placeholder` its placeholder grey; both are below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
@@ -182,7 +182,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
 | 7     | Named Genomics Explorer; new empty screen, composer and sidebar; the agent's example questions | done   |
 | 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | done   |
-| 8     | Steps list and status pills from the mockup; the rest of the design pass                       | next   |
+| 8     | Status pills, blue tool panels, sidebar fold and the last colours from the mockup              | done   |
+| 8     | Steps list from the mockup; spacing                                                            | next   |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 

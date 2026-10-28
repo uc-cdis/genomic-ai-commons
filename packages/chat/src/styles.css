@@ -1,8 +1,7 @@
 /* rehype-katex emits KaTeX markup but no stylesheet; without this, math renders unstyled. */
 @import "katex/dist/katex.min.css";
 
-/* Chat colours: change them here. The cards and steps read these; older parts still name
-   Mantine colours until the design pass. */
+/* Chat colours: change them here. */
 :root {
   /* the designer's palette (Figma) */
   --chat-blue: #2a72a5;
@@ -51,6 +50,7 @@
   --chat-accent: var(--chat-orange);
   --chat-json-key: var(--chat-navy);
   --chat-json-string: var(--chat-orange-dark);
+  /* 4.67:1 on the tint, as is the Running pill's text: only just over 4.5:1 */
   --chat-json-number: var(--chat-blue);
   --chat-json-punctuation: var(--chat-muted);
 }

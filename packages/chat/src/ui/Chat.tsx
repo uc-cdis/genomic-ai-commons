@@ -56,7 +56,7 @@ export function Chat({ agentId }: ChatProps) {
           onModelChange={setModel}
         />
       }
-      sidebar={({ collapsed, onToggleCollapsed }) => (
+      sidebar={(state) => (
         <ChatSidebar
           chats={chats}
           activeChatId={chatId}
@@ -66,8 +66,7 @@ export function Chat({ agentId }: ChatProps) {
           onSelect={(id) => selectChat(id)}
           onRename={(id, title) => renameChat(id, title)}
           onDelete={(id) => deleteChat(id)}
-          collapsed={collapsed}
-          onToggleCollapsed={onToggleCollapsed}
+          {...state}
         />
       )}
     >
