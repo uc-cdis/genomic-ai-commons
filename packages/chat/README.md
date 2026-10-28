@@ -63,7 +63,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 
 - **Example questions** on the empty screen. Click one to send it.
 - **Answers** in Markdown, with tables and math.
-- **Reasoning**, folded under "Thought for Xs", when the model shares it.
+- **Reasoning**, when the model shares it: open while it thinks, then folded under "Thought for Xs". A click opens or closes it.
 - **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains. The final answer shows in a bubble.
 - **One panel per tool call**: the tool name, how long it took, and a status:
   - ✓ the tool returned a result
