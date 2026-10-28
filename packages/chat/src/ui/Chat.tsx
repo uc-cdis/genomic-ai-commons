@@ -9,6 +9,7 @@ import { Box, Stack } from "@mantine/core";
 import { EmptyState } from "./EmptyState";
 import { ErrorBanner } from "./ErrorBanner";
 import { MessageList } from "./messages";
+import { CHAT_MAX_WIDTH } from "./util";
 
 export interface ChatProps {
   agentId?: string;
@@ -88,20 +89,17 @@ export function Chat({ agentId }: ChatProps) {
           />
         )}
 
-        <Stack
-          gap="sm"
-          px="md"
-          pt="sm"
-          style={{ flexShrink: 0, borderTop: "1px solid var(--chat-rule)" }}
-        >
-          {error && <ErrorBanner error={error} onDismiss={clearError} />}
-          <ChatInput
-            isRunning={isRunning}
-            onSend={sendMessage}
-            onStop={stopRun}
-            placeholder="Ask me a question about GDC data ..."
-          />
-        </Stack>
+        <Box style={{ flexShrink: 0, borderTop: "1px solid var(--chat-rule)" }}>
+          <Stack gap="sm" px="md" pt="sm" maw={CHAT_MAX_WIDTH} mx="auto" w="100%">
+            {error && <ErrorBanner error={error} onDismiss={clearError} />}
+            <ChatInput
+              isRunning={isRunning}
+              onSend={sendMessage}
+              onStop={stopRun}
+              placeholder="Ask me a question about GDC data ..."
+            />
+          </Stack>
+        </Box>
       </Stack>
     </ChatShell>
   );

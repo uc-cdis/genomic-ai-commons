@@ -1,6 +1,6 @@
 import type { ChatRecord } from "../core";
 
-export const CHAT_MAX_WIDTH = 820;
+export const CHAT_MAX_WIDTH = 1100;
 export const HEADER_HEIGHT = 48;
 
 export function formatDuration(ms: number): string {
