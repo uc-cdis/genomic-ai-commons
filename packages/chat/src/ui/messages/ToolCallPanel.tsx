@@ -18,7 +18,9 @@ import {
   IconChevronUp,
   IconTool,
 } from "@tabler/icons-react";
+import { useMemo } from "react";
 import type { ToolCall } from "../../core";
+import { DownloadButton, findDownload } from "../tools";
 import { formatDuration, formatJson } from "../util";
 
 export interface ToolCallPanelProps {
@@ -39,6 +41,9 @@ export function ToolCallPanel({
   isExpanded,
   onToggle,
 }: ToolCallPanelProps) {
+  // create_filter's filter, as a file; survival curves and manifests get their own cards
+  const filter = useMemo(() => findDownload(result, "filter"), [result]);
+
   return (
     <Paper withBorder radius="sm" bg="var(--mantine-color-default)" style={{ overflow: "hidden" }}>
       <UnstyledButton onClick={onToggle} aria-expanded={isExpanded} w="100%" display="block">
@@ -103,6 +108,11 @@ export function ToolCallPanel({
               <Code block mah={300} style={{ overflow: "auto" }}>
                 {formatJson(result)}
               </Code>
+              {filter && (
+                <div>
+                  <DownloadButton href={filter.url} label="Download filter (JSON)" />
+                </div>
+              )}
             </>
           ) : (
             !isRunning && (
