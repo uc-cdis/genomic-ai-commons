@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { ActionIcon, Button, Group, Stack, Textarea, Tooltip } from "@mantine/core";
+import { Button, Group, Stack, Textarea } from "@mantine/core";
 import { IconPencil, IconRefresh } from "@tabler/icons-react";
 import type { ChatMessage } from "../../core";
 import { CopyAction } from "./CopyAction";
+import { TextAction } from "./TextAction";
 import { UserBubble } from "./UserBubble";
 import { RunStatusBanner } from "./RunStatusBanner";
 
@@ -79,27 +80,18 @@ export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }:
 
           {canRewind && (
             <>
-              <Tooltip label="Edit" withArrow position="top">
-                <ActionIcon
-                  variant="default"
-                  size="sm"
-                  aria-label="Edit message"
-                  onClick={startEditing}
-                >
-                  <IconPencil size={14} />
-                </ActionIcon>
-              </Tooltip>
-
-              <Tooltip label="Try again" withArrow position="top">
-                <ActionIcon
-                  variant="default"
-                  size="sm"
-                  aria-label="Retry this message"
-                  onClick={onRetry}
-                >
-                  <IconRefresh size={14} />
-                </ActionIcon>
-              </Tooltip>
+              <TextAction
+                icon={<IconPencil size={14} />}
+                label="Edit"
+                ariaLabel="Edit message"
+                onClick={startEditing}
+              />
+              <TextAction
+                icon={<IconRefresh size={14} />}
+                label="Retry"
+                ariaLabel="Retry this message"
+                onClick={onRetry}
+              />
             </>
           )}
         </Group>

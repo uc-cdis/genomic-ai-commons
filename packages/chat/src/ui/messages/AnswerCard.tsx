@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Box, Stack } from "@mantine/core";
+import { Box, Group, Stack } from "@mantine/core";
 import { CopyAction } from "./CopyAction";
 import { MarkdownContent } from "./MarkdownContent";
 import { copyableAnswer } from "./copyableAnswer";
@@ -19,7 +19,11 @@ export function AnswerCard({ content, isStreaming }: { content: string; isStream
       <Box className="chat-answer" data-streaming={isStreaming || undefined}>
         <MarkdownContent content={content} />
       </Box>
-      {!isStreaming && <CopyAction value={copyText} label="Copy answer" />}
+      {!isStreaming && (
+        <Group gap={4}>
+          <CopyAction value={copyText} label="Copy answer" />
+        </Group>
+      )}
     </Stack>
   );
 }

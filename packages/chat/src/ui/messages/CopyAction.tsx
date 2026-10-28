@@ -1,23 +1,20 @@
 "use client";
 
-import { ActionIcon, CopyButton, Tooltip } from "@mantine/core";
+import { CopyButton } from "@mantine/core";
 import { IconCheck, IconCopy } from "@tabler/icons-react";
+import { TextAction } from "./TextAction";
 
 export function CopyAction({ value, label }: { value: string; label: string }) {
   return (
     <CopyButton value={value} timeout={2000}>
       {({ copied, copy }) => (
-        <Tooltip label={copied ? "Copied" : "Copy"} withArrow position="top">
-          <ActionIcon
-            variant="subtle"
-            color={copied ? "var(--chat-success)" : "var(--chat-action)"}
-            size="sm"
-            aria-label={copied ? "Copied to clipboard" : label}
-            onClick={copy}
-          >
-            {copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
-          </ActionIcon>
-        </Tooltip>
+        <TextAction
+          icon={copied ? <IconCheck size={14} /> : <IconCopy size={14} />}
+          label={copied ? "Copied" : "Copy"}
+          ariaLabel={copied ? "Copied to clipboard" : label}
+          color={copied ? "var(--chat-success)" : undefined}
+          onClick={copy}
+        />
       )}
     </CopyButton>
   );
