@@ -2,6 +2,7 @@
 
 import { Stack, Text, Title, UnstyledButton, Group } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
+import { EXAMPLES_WIDTH, INTRO_WIDTH } from "./util";
 
 // the agent's own examples (gdc-mcp-demo agent/index.html), so they're questions it handles
 const EXAMPLE_QUESTIONS = [
@@ -26,13 +27,13 @@ export function EmptyState({ onSelect, disabled }: EmptyStateProps) {
         <Title order={1} c="var(--chat-title)">
           Ask GDC About Cancer Data
         </Title>
-        <Text size="lg" maw={680} textWrap="wrap">
+        <Text size="lg" maw={INTRO_WIDTH} textWrap="wrap">
           Use <b>Genomics Explorer</b> to ask questions about harmonized GDC data: cohorts,
           mutations, gene expression, survival and files.
         </Text>
       </Stack>
 
-      <Stack gap="xs" w="100%" maw={760}>
+      <Stack gap="xs" w="100%" maw={EXAMPLES_WIDTH}>
         <Text size="xs" fw={700} c="var(--chat-accent)" lts="1px">
           EXAMPLE QUERIES
         </Text>

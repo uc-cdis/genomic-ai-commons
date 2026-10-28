@@ -72,7 +72,7 @@ export function Chat({ agentId }: ChatProps) {
       <Stack flex={1} mih={0} miw={0} gap={0}>
         {isEmpty ? (
           <Box flex={1} mih={0} style={{ overflowY: "auto", display: "flex" }}>
-            <Box m="auto" maw={900} w="100%" px="lg" py="xl">
+            <Box m="auto" maw={CHAT_MAX_WIDTH} w="100%" px="lg" py="xl">
               <EmptyState onSelect={sendMessage} disabled={isRunning} />
             </Box>
           </Box>

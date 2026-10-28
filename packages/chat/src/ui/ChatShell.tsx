@@ -1,14 +1,14 @@
 "use client";
 
-import { Box, Burger, Drawer, Group, useMantineTheme } from "@mantine/core";
+import { Box, Burger, Drawer, useMantineTheme } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useEffect, type ReactNode } from "react";
-import { HEADER_HEIGHT } from "./util";
+import { HeaderStrip } from "./HeaderStrip";
 
 export interface ChatShellProps {
   sidebar: ReactNode;
   children: ReactNode;
-  headerContent?: ReactNode;
+  headerContent: ReactNode;
 }
 
 const SIDEBAR_WIDTH = 340;
@@ -57,7 +57,6 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           component="aside"
           visibleFrom="sm"
           w={SIDEBAR_WIDTH}
-          p="md"
           mih={0}
           bg="var(--chat-panel)"
           style={{
@@ -74,7 +73,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           opened={mobileOpened}
           onClose={closeMobile}
           size={SIDEBAR_WIDTH}
-          padding="md"
+          padding={0}
           withCloseButton={false}
           styles={{
             content: { display: "flex", flexDirection: "column" },
@@ -90,14 +89,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           miw={0}
           style={{ flex: 1, display: "flex", flexDirection: "column" }}
         >
-          <Group
-            hiddenFrom={headerContent ? undefined : "sm"}
-            h={HEADER_HEIGHT}
-            px="md"
-            gap="sm"
-            wrap="nowrap"
-            style={{ flexShrink: 0, borderBottom: "1px solid var(--chat-rule)" }}
-          >
+          <HeaderStrip>
             <Burger
               hiddenFrom="sm"
               opened={mobileOpened}
@@ -106,7 +98,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
               aria-label="Toggle conversation list"
             />
             {headerContent}
-          </Group>
+          </HeaderStrip>
           <Box mih={0} miw={0} style={{ flex: 1, display: "flex" }}>
             {children}
           </Box>

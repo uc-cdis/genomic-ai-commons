@@ -1,6 +1,9 @@
 import type { ChatRecord } from "../core";
 
 export const CHAT_MAX_WIDTH = 1100;
+// the empty screen's sentence and example questions
+export const INTRO_WIDTH = 680;
+export const EXAMPLES_WIDTH = 760;
 export const HEADER_HEIGHT = 48;
 
 export function formatDuration(ms: number): string {
