@@ -7,6 +7,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { Typography } from "@mantine/core";
 import { isAgentDownloadLink } from "../../core/downloadLinks";
+import { DownloadButton } from "../tools";
 import { normalizeMath } from "./normalizeMath";
 
 const components: Components = {
@@ -15,16 +16,13 @@ const components: Components = {
       <table>{children}</table>
     </div>
   ),
-  // an agent download saves in place, so an expired link can't navigate away mid-answer;
-  // links within the answer (footnotes) stay put; any other link opens a new tab
   a: ({ node: _node, children, ...props }) => {
-    if (isAgentDownloadLink(props.href))
-      return (
-        <a {...props} download>
-          {children}
-        </a>
-      );
+    // a button like the cards' that saves in place, so an expired link can't navigate away
+    if (props.href && isAgentDownloadLink(props.href))
+      return <DownloadButton href={props.href} label={children} />;
+    // links within the answer (footnotes) stay put
     if (props.href?.startsWith("#")) return <a {...props}>{children}</a>;
+    // anything else opens a new tab, so the chat stays
     return (
       <a {...props} target="_blank" rel="noopener noreferrer">
         {children}

@@ -49,10 +49,17 @@ div:has(> main > [data-chat-shell]) {
 .chat-markdown ul.contains-task-list {
   list-style: none;
 }
-/* Mantine's Typography underlines links only on hover; always, so they read as links */
-.chat-markdown a {
+/* Mantine's Typography underlines links only on hover; always, so they read as links
+   (download buttons excepted) */
+.chat-markdown a:not(.chat-download) {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+/* Typography's link colour and hover underline would also reach download buttons, which are
+   links too; give them back the button's own look */
+.chat-markdown a.chat-download {
+  color: var(--button-color);
+  text-decoration: none;
 }
 /* Typography sizes headings for a page (h1 34px) inside 14px text; a chat needs them close */
 .chat-markdown :is(h1, h2, h3, h4, h5, h6) {
