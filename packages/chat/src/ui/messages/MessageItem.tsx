@@ -27,6 +27,9 @@ export function MessageItem({
   onEdit,
   onRetry,
 }: MessageItemProps) {
+  // only the newest message of a running turn is still being written
+  const isStreaming = isRunning && isLast;
+
   if (message.role === "user") {
     return (
       <UserMessage
@@ -44,7 +47,7 @@ export function MessageItem({
       <ReasoningBlock
         content={message.content}
         durationMs={timings.reasoning?.[message.id]}
-        isStreaming={isRunning && isLast}
+        isStreaming={isStreaming}
       />
     );
   }
@@ -58,6 +61,7 @@ export function MessageItem({
       timings={timings}
       toolResults={toolResults}
       isRunning={isRunning}
+      isStreaming={isStreaming}
     />
   );
 }

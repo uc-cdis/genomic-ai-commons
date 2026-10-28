@@ -64,7 +64,8 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Example questions** on the empty screen. Click one to send it.
 - **Answers** in Markdown, with tables and math.
 - **Reasoning**, when the model shares it: open while it thinks, then folded under "Thought for Xs". A click opens or closes it.
-- **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains. The final answer shows in a bubble.
+- **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains.
+- **The final answer** shows in a card, with a Copy button under it once it has finished. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
 - **One panel per tool call**: the tool name, how long it took, and a status:
   - ✓ the tool returned a result
   - spinner: still running
@@ -139,7 +140,7 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 Chat colours are CSS variables at the top of `src/styles.css`. The cards use them. The older parts (empty state, sidebar, buttons, error banner) still name Mantine colours until the Phase 8 design pass, and the survival plot keeps GDC's own curve colours.
 
 - The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
-- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-tint`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-tint`, `--chat-answer-line`, `--chat-success`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
 

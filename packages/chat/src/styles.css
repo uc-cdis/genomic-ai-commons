@@ -23,6 +23,8 @@
   --chat-action: var(--chat-muted);
   --chat-rule: var(--mantine-color-default-border);
   --chat-tint: var(--chat-surface);
+  --chat-answer-line: var(--chat-navy);
+  --chat-success: var(--chat-green);
 }
 
 /* NavPageLayout's root is `h-full min-h-dvh` - an indefinite height - so main's
@@ -51,6 +53,20 @@ div:has(> main > [data-chat-shell]) {
 .chat-markdown a {
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* the agent's final answer: a full frame with a thick left line sets it apart from the steps.
+   While it streams the frame is invisible but keeps its width, so the text doesn't move */
+.chat-answer {
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  border: 1px solid var(--chat-rule);
+  border-left: 3px solid var(--chat-answer-line);
+  border-radius: var(--mantine-radius-md);
+  background: var(--mantine-color-body);
+}
+.chat-answer[data-streaming] {
+  border-color: transparent;
+  background: none;
 }
 
 /* Steps are read, not skimmed, so they keep full contrast while still reading as grey. */
