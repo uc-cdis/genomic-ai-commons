@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ActionIcon, Group, Menu, Stack, Text, UnstyledButton } from "@mantine/core";
-import { IconDots, IconMessage, IconPencil, IconTrash } from "@tabler/icons-react";
+import { ActionIcon, Group, Stack, Text, UnstyledButton } from "@mantine/core";
+import { IconDots, IconMessage } from "@tabler/icons-react";
+import { ChatActionsMenu } from "./ChatActionsMenu";
 import { TitleInput } from "./TitleInput";
 
 export interface ConversationItemProps {
@@ -72,32 +73,22 @@ export function ConversationItem({
           </UnstyledButton>
 
           {showActions && (
-            <Menu position="bottom-end" withinPortal>
-              <Menu.Target>
-                <ActionIcon
-                  variant="subtle"
-                  color="var(--chat-accent)"
-                  size="sm"
-                  data-keep-open
-                  aria-label={`Actions for ${label}`}
-                >
-                  <IconDots size={16} />
-                </ActionIcon>
-              </Menu.Target>
-              <Menu.Dropdown>
-                <Menu.Item leftSection={<IconPencil size={14} />} onClick={() => setEditing(true)}>
-                  Rename
-                </Menu.Item>
-                <Menu.Item
-                  color="var(--chat-error)"
-                  leftSection={<IconTrash size={14} />}
-                  disabled={deleteDisabled}
-                  onClick={onDelete}
-                >
-                  Delete
-                </Menu.Item>
-              </Menu.Dropdown>
-            </Menu>
+            <ChatActionsMenu
+              position="bottom-end"
+              deleteDisabled={deleteDisabled}
+              onRename={() => setEditing(true)}
+              onDelete={onDelete}
+            >
+              <ActionIcon
+                variant="subtle"
+                color="var(--chat-accent)"
+                size="sm"
+                data-keep-open
+                aria-label={`Actions for ${label}`}
+              >
+                <IconDots size={16} />
+              </ActionIcon>
+            </ChatActionsMenu>
           )}
         </>
       )}
