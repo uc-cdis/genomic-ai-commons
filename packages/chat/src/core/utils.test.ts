@@ -6,7 +6,7 @@ describe("toChatMessage", () => {
   it("reads a tool result sent as a string", () => {
     const message: Message = { id: "r1", role: "tool", toolCallId: "t1", content: '{"count":5}' };
     expect(toChatMessage(message)).toEqual([
-      { id: "r1", role: "tool", toolCallId: "t1", content: '{"count":5}' },
+      { id: "r1", role: "tool", toolCallId: "t1", content: '{"count":5}', failed: false },
     ]);
   });
 
@@ -21,8 +21,41 @@ describe("toChatMessage", () => {
       ],
     };
     expect(toChatMessage(message)).toEqual([
-      { id: "r1", role: "tool", toolCallId: "t1", content: '{"count":5}' },
+      { id: "r1", role: "tool", toolCallId: "t1", content: '{"count":5}', failed: false },
     ]);
+  });
+
+  const failedOf = (fields: Partial<Extract<Message, { role: "tool" }>>) => {
+    const [message] = toChatMessage({
+      id: "r1",
+      role: "tool",
+      toolCallId: "t1",
+      content: "",
+      ...fields,
+    });
+    return message.role === "tool" && message.failed;
+  };
+
+  it("marks a result pydantic-ai flagged as failed", () => {
+    expect(failedOf({ encryptedValue: '{"pydantic_ai": {"outcome": "failed"}}' })).toBe(true);
+  });
+
+  it("marks a result with AG-UI's error field as failed", () => {
+    expect(failedOf({ error: "Tool 'create_filter' returned an error" })).toBe(true);
+  });
+
+  it("marks pydantic-ai's retry prompt as failed", () => {
+    const content = "1 validation error:\n```json\n[]\n```\n\nFix the errors and try again.";
+    expect(failedOf({ content })).toBe(true);
+  });
+
+  it("leaves other results and other encrypted values alone", () => {
+    expect(failedOf({ content: '{"count":5}' })).toBe(false);
+    expect(failedOf({ content: "Fix the errors and try again. Then 5 cases." })).toBe(false);
+    expect(failedOf({ encryptedValue: '{"pydantic_ai": {"outcome": "denied"}}' })).toBe(false);
+    expect(failedOf({ encryptedValue: '{"outcome": "failed"}' })).toBe(false);
+    expect(failedOf({ encryptedValue: "opaque provider blob" })).toBe(false);
+    expect(failedOf({ encryptedValue: "null" })).toBe(false);
   });
 
   it("parses finished tool arguments and leaves half-streamed ones empty", () => {

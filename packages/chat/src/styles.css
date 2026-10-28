@@ -10,22 +10,31 @@
   --chat-green: #15803d;
   --chat-red: #dc2626;
   --chat-red-dark: #991b1b; /* usually red text on a pale red background: ask the designer */
-  /* not in the designer's list yet: the portal theme's accentCool, and the wireframes' card tint */
+  /* not in the designer's list yet: the portal theme's accentCool, and the mockup's other colours */
   --chat-navy: #0f4163;
   --chat-surface: #edf4fa;
+  --chat-green-tint: #dcfce7;
+  --chat-red-tint: #fee2e2;
+  --chat-red-deep: #b91c1c; /* the mockup's Error pill */
 
   /* what components use */
   --chat-title: var(--chat-navy);
   --chat-value: var(--chat-blue);
   --chat-error: var(--chat-red);
+  /* --chat-error is 3.95:1 on the error tint; this is 5.30:1 */
+  --chat-error-strong: var(--chat-red-deep);
+  --chat-error-tint: var(--chat-red-tint);
   /* Mantine's "dimmed" grey is below the 4.5:1 text needs (3.3:1 on white); this is ~8:1 */
   --chat-muted: var(--mantine-color-gray-7);
+  --chat-muted-tint: var(--mantine-color-gray-1);
   --chat-action: var(--chat-muted);
   --chat-rule: var(--mantine-color-default-border);
   --chat-panel: var(--mantine-color-gray-0);
   --chat-tint: var(--chat-surface);
   --chat-answer-line: var(--chat-navy);
+  /* 4.57:1 on its tint, only just over 4.5:1 */
   --chat-success: var(--chat-green);
+  --chat-success-tint: var(--chat-green-tint);
   /* outlined, so files stand out from the grey copy/edit actions; 5.2:1 on white */
   --chat-download: var(--chat-blue);
   --chat-primary: var(--chat-blue);
@@ -119,4 +128,34 @@ div:has(> main > [data-chat-shell]) {
 /* Steps are read, not skimmed, so they keep full contrast while still reading as grey. */
 .chat-step {
   color: var(--chat-muted);
+}
+
+.chat-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--chat-status-tint);
+  color: var(--chat-status-text);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.chat-status[data-status="completed"] {
+  --chat-status-tint: var(--chat-success-tint);
+  --chat-status-text: var(--chat-success);
+}
+.chat-status[data-status="error"] {
+  --chat-status-tint: var(--chat-error-tint);
+  --chat-status-text: var(--chat-error-strong);
+}
+.chat-status[data-status="running"] {
+  --chat-status-tint: var(--chat-tint);
+  --chat-status-text: var(--chat-primary);
+}
+.chat-status[data-status="missing"] {
+  --chat-status-tint: var(--chat-muted-tint);
+  --chat-status-text: var(--chat-muted);
 }

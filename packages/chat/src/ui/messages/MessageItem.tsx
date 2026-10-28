@@ -1,6 +1,6 @@
 "use client";
 
-import type { ChatMessage, Timings } from "../../core";
+import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { ReasoningBlock } from "./ReasoningBlock";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
@@ -8,7 +8,7 @@ import { UserMessage } from "./UserMessage";
 export interface MessageItemProps {
   message: ChatMessage;
   timings: Timings;
-  toolResults: ReadonlyMap<string, string>;
+  toolResults: ReadonlyMap<string, ToolResultMessage>;
   editableMessageId: string | null;
   isRunning: boolean;
   /** Last in the list. Only the tail can be mid-stream. */

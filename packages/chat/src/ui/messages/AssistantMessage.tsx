@@ -2,7 +2,7 @@
 
 import { Fragment, useState } from "react";
 import { Box, Stack } from "@mantine/core";
-import type { ChatMessage, Timings } from "../../core";
+import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { AnswerCard } from "./AnswerCard";
 import { MarkdownContent } from "./MarkdownContent";
 import { ToolCallPanel } from "./ToolCallPanel";
@@ -22,7 +22,7 @@ function StepText({ content }: { content: string }) {
 export interface AssistantMessageProps {
   message: AssistantChatMessage;
   timings: Timings;
-  toolResults: ReadonlyMap<string, string>;
+  toolResults: ReadonlyMap<string, ToolResultMessage>;
   isRunning: boolean;
   isStreaming: boolean;
 }
@@ -47,19 +47,22 @@ export function AssistantMessage({
       )}
 
       {toolCalls.map((tc) => {
-        const result = toolResults.get(tc.id) ?? null;
+        const toolResult = toolResults.get(tc.id);
+        const result = toolResult?.content ?? null;
+        const failed = toolResult?.failed ?? false;
 
         return (
           <Fragment key={tc.id}>
             <ToolCallPanel
               toolCall={tc}
               result={result}
+              failed={failed}
               isRunning={isRunning}
               durationMs={timings.tools?.[tc.id]}
               isExpanded={openedCallId === tc.id}
               onToggle={() => setOpenedCallId(openedCallId === tc.id ? null : tc.id)}
             />
-            <ToolResultCard toolCall={tc} result={result} isRunning={isRunning} />
+            {!failed && <ToolResultCard toolCall={tc} result={result} isRunning={isRunning} />}
           </Fragment>
         );
       })}

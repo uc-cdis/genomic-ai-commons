@@ -31,7 +31,10 @@ export type ChatMessage =
       role: "tool";
       toolCallId: string; // ties back to the assistant's ToolCall.id
       content: string;
+      failed: boolean;
     };
+
+export type ToolResultMessage = Extract<ChatMessage, { role: "tool" }>;
 
 export interface Timings {
   turns: Record<string, number>; // userMessageId → ms

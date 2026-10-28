@@ -51,7 +51,7 @@ you press Send
   2. the agent works, and the screen updates as events arrive:
        reasoning      "Thinking..." (only if the model shares its thoughts)
        a short reason "Looking up the field for lung cancer."
-       a tool call    search_fields  ✓
+       a tool call    search_fields  Completed
        ... more reasons and tool calls ...
        the answer     "About 5.43% of lung cancer cases ..."
   3. the run finishes with "success", so the whole chat is saved again
@@ -67,11 +67,12 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains.
 - **The final answer** shows in a card, with a Copy button under it once it has finished. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
 - **One panel per tool call**: the tool name, how long it took, and a status:
-  - ✓ the tool returned a result
-  - spinner: still running
-  - ⚠ the run ended without a result for this call
+  - Completed: the tool returned a result
+  - Error: the tool failed, or it got bad arguments and the agent will retry. No card shows under it.
+  - Running: still running
+  - No result: the run ended without a result for this call
 
-  Click a panel to see its inputs (PARAMETERS) and its output (RESULT).
+  Click a panel to see its inputs (PARAMETERS) and its output (RESULT, or ERROR). pydantic-ai marks a failed call in a separate event after its result; `toChatMessage` in `core/utils.ts` reads it.
 
 - **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as small buttons. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
@@ -139,8 +140,8 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 Chat colours are CSS variables at the top of `src/styles.css`. Most of the chat uses them. Until the Phase 8 design pass these still name Mantine colours: the tool panels, the error banner, the grey status lines under a turn, and the grey Cancel button when you edit a question. Plain white surfaces and borders use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
 
-- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
-- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-download`, `--chat-primary`, `--chat-accent`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there. The colours under it (navy, and the status pills' tints and red) are the portal theme's and the wireframes' until the designer names them.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-error-strong`, `--chat-error-tint`, `--chat-muted`, `--chat-muted-tint`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-success-tint`, `--chat-download`, `--chat-primary`, `--chat-accent`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
 

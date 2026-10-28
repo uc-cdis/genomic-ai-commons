@@ -1,21 +1,11 @@
 "use client";
 
+import { Code, Collapse, Group, Loader, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
 import {
-  Badge,
-  Code,
-  Collapse,
-  Group,
-  Loader,
-  Paper,
-  Stack,
-  Text,
-  UnstyledButton,
-} from "@mantine/core";
-import {
-  IconAlertTriangle,
-  IconCheck,
   IconChevronDown,
   IconChevronUp,
+  IconCircleCheck,
+  IconCircleX,
   IconTool,
 } from "@tabler/icons-react";
 import { useMemo } from "react";
@@ -23,9 +13,28 @@ import type { ToolCall } from "../../core";
 import { DownloadButton, findDownload } from "../tools";
 import { formatDuration, formatJson } from "../util";
 
+const STATUS_LABELS = {
+  completed: "Completed",
+  error: "Error",
+  running: "Running",
+  missing: "No result",
+};
+
+function StatusPill({ status }: { status: keyof typeof STATUS_LABELS }) {
+  return (
+    <span className="chat-status" data-status={status}>
+      {status === "completed" && <IconCircleCheck size={14} />}
+      {status === "error" && <IconCircleX size={14} />}
+      {status === "running" && <Loader size={10} type="dots" color="var(--chat-primary)" />}
+      {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
 export interface ToolCallPanelProps {
   toolCall: ToolCall;
   result: string | null;
+  failed: boolean;
   /** A call with no result is only pending while a run is in flight. */
   isRunning: boolean;
   durationMs?: number;
@@ -36,6 +45,7 @@ export interface ToolCallPanelProps {
 export function ToolCallPanel({
   toolCall,
   result,
+  failed,
   isRunning,
   durationMs,
   isExpanded,
@@ -65,16 +75,14 @@ export function ToolCallPanel({
                 {formatDuration(durationMs)}
               </Text>
             )}
-            {result ? (
-              <Badge color="teal" variant="light" leftSection={<IconCheck size={12} />} />
-            ) : isRunning ? (
-              <Badge color="blue" variant="light">
-                <Loader size={10} type="dots" />
-              </Badge>
+            <StatusPill
+              status={failed ? "error" : result ? "completed" : isRunning ? "running" : "missing"}
+            />
+            {isExpanded ? (
+              <IconChevronUp size={16} color="var(--chat-accent)" />
             ) : (
-              <Badge color="yellow" variant="light" leftSection={<IconAlertTriangle size={12} />} />
+              <IconChevronDown size={16} color="var(--chat-accent)" />
             )}
-            {isExpanded ? <IconChevronUp size={16} /> : <IconChevronDown size={16} />}
           </Group>
         </Group>
       </UnstyledButton>
@@ -103,7 +111,7 @@ export function ToolCallPanel({
           {result ? (
             <>
               <Text size="xs" fw={700} c="dimmed" mt="xs">
-                RESULT
+                {failed ? "ERROR" : "RESULT"}
               </Text>
               <Code block mah={300} style={{ overflow: "auto" }}>
                 {formatJson(result)}
