@@ -84,7 +84,7 @@ export function MessageList({
           {isRunning && <RunStatusBanner isRunning durationMs={null} />}
 
           {!isRunning && stopped && (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="var(--chat-muted)">
               You stopped this response.
             </Text>
           )}

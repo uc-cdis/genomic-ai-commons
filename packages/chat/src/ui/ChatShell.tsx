@@ -40,7 +40,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
 
   return (
     <Box
-      // Marker for the one global rule that gives this page a definite height.
+      // Marker for the chat's global rules in styles.css and the portal's globals.css.
       data-chat-shell
       pb="sm"
       mih={0}
@@ -63,7 +63,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
             flexShrink: 0,
             display: "flex",
             flexDirection: "column",
-            borderInlineEnd: "1px solid var(--mantine-color-default-border)",
+            borderInlineEnd: "1px solid var(--chat-rule)",
           }}
         >
           {sidebarBody}
@@ -74,6 +74,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           onClose={closeMobile}
           size={SIDEBAR_WIDTH}
           padding={0}
+          className="chat-drawer"
           withCloseButton={false}
           styles={{
             content: { display: "flex", flexDirection: "column" },

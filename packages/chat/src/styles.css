@@ -45,6 +45,8 @@
   --chat-tool-name: var(--chat-navy);
   /* icons need 3:1; this is 4.83:1 on white */
   --chat-icon: var(--chat-gray);
+  /* 4.59:1 on the question box, 4.83:1 on white */
+  --chat-placeholder: var(--chat-gray);
   /* 4.57:1 on white, only just over 4.5:1: re-check if the orange changes */
   --chat-accent: var(--chat-orange);
   --chat-json-key: var(--chat-navy);
@@ -58,6 +60,13 @@
    Without this rule the viewport is not a scroll container and autoscroll is dead. */
 div:has(> main > [data-chat-shell]) {
   height: 100dvh;
+}
+
+/* Mantine's placeholder grey is 1.97:1 on the question box. The mobile drawer renders outside
+   the shell, so it needs the rule too. */
+[data-chat-shell],
+.chat-drawer {
+  --mantine-color-placeholder: var(--chat-placeholder);
 }
 
 /* The portal's Tailwind reset sets list-style: none on every list. Mantine's Typography puts the

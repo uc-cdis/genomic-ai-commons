@@ -43,7 +43,7 @@ export function ChatHeader({
               <TitleInput title={title} onRename={onRename} onDone={() => setEditing(false)} />
             ) : (
               <ChatActionsMenu
-                position="bottom-start"
+                position="bottom-end"
                 deleteDisabled={deleteDisabled}
                 onRename={() => setEditing(true)}
                 onDelete={onDelete}

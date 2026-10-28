@@ -53,10 +53,10 @@ export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }:
           }}
         />
         <Group justify="flex-end" gap="xs">
-          <Button size="xs" variant="subtle" color="gray" onClick={cancelEditing}>
+          <Button size="xs" variant="subtle" color="var(--chat-action)" onClick={cancelEditing}>
             Cancel
           </Button>
-          <Button size="xs" onClick={commit} disabled={!draft.trim()}>
+          <Button size="xs" color="var(--chat-primary)" onClick={commit} disabled={!draft.trim()}>
             Send
           </Button>
         </Group>

@@ -23,7 +23,9 @@ export function ChatActionsMenu({
   return (
     <Menu position={position} withinPortal>
       <Menu.Target>{children}</Menu.Target>
-      <Menu.Dropdown>
+      {/* it renders outside the mobile drawer, but React still passes its clicks to the drawer's
+          close-on-click, which would close it before Rename can open the title box */}
+      <Menu.Dropdown data-keep-open>
         <Menu.Item leftSection={<IconPencil size={14} />} onClick={onRename}>
           Rename
         </Menu.Item>
