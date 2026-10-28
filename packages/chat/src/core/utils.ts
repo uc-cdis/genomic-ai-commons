@@ -37,7 +37,7 @@ export function toChatMessage(message: Message): ChatMessage[] {
         role: "tool",
         toolCallId: message.toolCallId,
         // tool content can be parts too; only the text is rendered
-        content: unwrapToolResult(extractText(message.content)),
+        content: extractText(message.content),
       },
     ];
   }
@@ -56,37 +56,6 @@ function parseArgs(raw: string): Record<string, unknown> | null {
   } catch {
     return null;
   }
-}
-
-/**
- * get_survival_data JSON-encodes an MCP content-block array into its result string. Peel it
- * once - anything else passes through untouched.
- */
-function unwrapToolResult(content: string): string {
-  if (!content.startsWith("[")) return content; // free reject: results are objects or prose
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(content);
-  } catch {
-    return content;
-  }
-  if (!Array.isArray(parsed) || parsed.length === 0) return content;
-
-  const texts: string[] = [];
-  for (const part of parsed) {
-    if (
-      typeof part !== "object" ||
-      part === null ||
-      (part as { type?: unknown }).type !== "text" ||
-      typeof (part as { text?: unknown }).text !== "string"
-    ) {
-      return content;
-    }
-    texts.push((part as { text: string }).text);
-  }
-
-  return texts.join("");
 }
 
 /** AG-UI content can be a plain string or an array of multimodal parts. */

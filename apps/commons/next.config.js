@@ -129,10 +129,6 @@ const nextConfig = {
           source: "/ai-search/:path*",
           destination: `${GEN3_TARGET}/ai-search/:path*`,
         },
-        // Chat's payload cache. In production the portal shares a host with /qag, so this
-        // path is same-origin and the session cookie clears the revproxy on its own; here
-        // it isn't, which is why dev sends a bearer built from credentials_token instead.
-        { source: "/qag/:path*", destination: `${GEN3_TARGET}/qag/:path*` },
         {
           source: "/authz/:path*",
           destination: `${GEN3_TARGET}/authz/:path*`,

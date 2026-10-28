@@ -129,11 +129,10 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 ## Settings
 
-| Variable                        | Where                           | What it does                                                                            |
-| ------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
-| `GEN3_AGENT_BASE_URL`           | `apps/commons/.env.*` or helm   | Base URL of the agent. Production: `http://gdc-agent` (inside the cluster)              |
-| `COPILOTKIT_TELEMETRY_DISABLED` | `apps/commons/.env.*`           | `true` turns off CopilotKit's usage data. One setting covers the server and the browser |
-| `NEXT_PUBLIC_GEN3_QAG_VERSION`  | `apps/commons/.env.development` | Old agent only. Goes away in Phase 6                                                    |
+| Variable                        | Where                         | What it does                                                                            |
+| ------------------------------- | ----------------------------- | --------------------------------------------------------------------------------------- |
+| `GEN3_AGENT_BASE_URL`           | `apps/commons/.env.*` or helm | Base URL of the agent. Production: `http://gdc-agent` (inside the cluster)              |
+| `COPILOTKIT_TELEMETRY_DISABLED` | `apps/commons/.env.*`         | `true` turns off CopilotKit's usage data. One setting covers the server and the browser |
 
 ## Colours
 
@@ -180,8 +179,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 3     | Remove the old "Run Summary" card                                                              | done   |
 | 4     | Show each short reason _above_ its tool call                                                   | done   |
 | 5     | Make download links in answers work, through a portal route                                    | done   |
-| 6     | Fix the survival card for the new agent. Today it can't load the curve                         | next   |
-| 7     | New wording and example questions; hide old AI tiles                                           |        |
+| 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
+| 7     | New wording and example questions; hide old AI tiles                                           | next   |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 
