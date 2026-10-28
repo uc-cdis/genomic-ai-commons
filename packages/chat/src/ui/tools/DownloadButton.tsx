@@ -12,8 +12,8 @@ export function DownloadButton({ href, label }: { href: string; label: ReactNode
       href={href}
       download
       className="chat-download"
-      variant="subtle"
-      color="var(--chat-action)"
+      variant="outline"
+      color="var(--chat-download)"
       size="compact-xs"
       leftSection={<IconDownload size={14} />}
     >

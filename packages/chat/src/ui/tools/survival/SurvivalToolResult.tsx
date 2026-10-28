@@ -118,7 +118,7 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
         {summary && <Tiles summary={summary} />}
 
         {canDownload && (
-          <Group gap={4}>
+          <Group gap="xs">
             <DownloadButton href={curveLink.url} label="Download JSON" />
             {curveLink.csvUrl && <DownloadButton href={curveLink.csvUrl} label="Download CSV" />}
           </Group>

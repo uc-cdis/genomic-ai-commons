@@ -25,6 +25,8 @@
   --chat-tint: var(--chat-surface);
   --chat-answer-line: var(--chat-navy);
   --chat-success: var(--chat-green);
+  /* outlined, so files stand out from the grey copy/edit actions; 5.2:1 on white */
+  --chat-download: var(--chat-blue);
 }
 
 /* NavPageLayout's root is `h-full min-h-dvh` - an indefinite height - so main's
