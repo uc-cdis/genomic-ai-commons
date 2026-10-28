@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Message } from "@copilotkit/react-core/v2";
-import { toChatMessage } from "./utils";
+import { shortenTitle, toChatMessage } from "./utils";
 
 describe("toChatMessage", () => {
   it("reads a tool result sent as a string", () => {
@@ -55,5 +55,32 @@ describe("toChatMessage", () => {
   it("drops empty user and assistant messages", () => {
     expect(toChatMessage({ id: "u1", role: "user", content: "" })).toEqual([]);
     expect(toChatMessage({ id: "a1", role: "assistant", content: "" })).toEqual([]);
+  });
+});
+
+describe("shortenTitle", () => {
+  it("keeps a title of 80 characters or fewer as it is", () => {
+    expect(shortenTitle("  What is the 1-year survival estimate for TCGA-CHOL?  ")).toBe(
+      "What is the 1-year survival estimate for TCGA-CHOL?",
+    );
+    const eighty = "x".repeat(80);
+    expect(shortenTitle(eighty)).toBe(eighty);
+  });
+
+  it("cuts a longer one at the last whole word and marks the cut", () => {
+    expect(
+      shortenTitle(
+        "What is the prevalence of BRAF SSMs in lung cancer cases of non smoking women over 40?",
+      ),
+    ).toBe("What is the prevalence of BRAF SSMs in lung cancer cases of non smoking women…");
+  });
+
+  it("keeps a last word that ends just before the 80th character", () => {
+    const title = `${"x".repeat(39)} ${"y".repeat(39)} zzz`;
+    expect(shortenTitle(title)).toBe(`${"x".repeat(39)} ${"y".repeat(39)}…`);
+  });
+
+  it("cuts a single long word at 80 characters, the mark included", () => {
+    expect(shortenTitle("a".repeat(120))).toBe(`${"a".repeat(79)}…`);
   });
 });

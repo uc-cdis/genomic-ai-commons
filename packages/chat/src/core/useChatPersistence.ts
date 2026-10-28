@@ -4,7 +4,7 @@ import type { AbstractAgent, Message } from "@copilotkit/react-core/v2";
 import { saveChat, loadChat } from "./db";
 import { reportError } from "./errors";
 import { saveOrDropTurn } from "./runEndings";
-import { extractText } from "./utils";
+import { extractText, shortenTitle } from "./utils";
 
 export interface UseChatPersistence {
   /** Id of the chat that's currently loaded or running */
@@ -17,10 +17,10 @@ export interface UseChatPersistence {
   openChat: (id: string) => Promise<boolean>;
 }
 
-/** First user message, trimmed to 80 chars. Re-applied on every save until the user renames. */
+/** First user message, cut to 80 chars at a whole word. Re-applied on every save until the user renames. */
 function deriveTitle(messages: Message[]): string {
   const first = messages.find((m) => m.role === "user");
-  return extractText(first?.content).trim().slice(0, 80) || "New Chat";
+  return shortenTitle(extractText(first?.content)) || "New Chat";
 }
 
 function newId(): string {

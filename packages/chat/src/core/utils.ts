@@ -85,3 +85,14 @@ export function lastUserIndex(messages: Message[]): number {
   }
   return -1;
 }
+
+const TITLE_MAX = 80;
+
+export function shortenTitle(text: string): string {
+  const title = text.trim();
+  if (title.length <= TITLE_MAX) return title;
+  // a space at index 79 still leaves room for the "…"
+  const lastSpace = title.lastIndexOf(" ", TITLE_MAX - 1);
+  const kept = lastSpace > 0 ? title.slice(0, lastSpace) : title.slice(0, TITLE_MAX - 1);
+  return `${kept.trimEnd()}…`;
+}

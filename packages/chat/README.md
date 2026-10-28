@@ -104,7 +104,7 @@ Chats are saved **in your browser only** (IndexedDB), in a database called `gdc-
 | `chats`    | yes              | id, title, created and updated times                                            |
 | `messages` | yes              | the whole conversation: questions, reasoning, tool calls, tool results, answers |
 
-The title is your first question, cut to 80 characters, until you rename it.
+The title is your first question, until you rename it. A question longer than 80 characters is cut at its last whole word and ends in "…".
 
 **The rule: save only your questions and finished answers.**
 
