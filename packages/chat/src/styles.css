@@ -32,6 +32,27 @@ div:has(> main > [data-chat-shell]) {
   height: 100dvh;
 }
 
+/* The portal's Tailwind reset sets list-style: none on every list. Mantine's Typography puts the
+   indent back but not the marker, so answers' lists lost their bullets and numbers. */
+.chat-markdown ul {
+  list-style: disc;
+}
+.chat-markdown ul ul {
+  list-style: circle;
+}
+.chat-markdown ol {
+  list-style: decimal;
+}
+/* GFM task lists ("- [ ] …") already show a checkbox */
+.chat-markdown ul.contains-task-list {
+  list-style: none;
+}
+/* Mantine's Typography underlines links only on hover; always, so they read as links */
+.chat-markdown a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* Steps are read, not skimmed, so they keep full contrast while still reading as grey. */
 .chat-step {
   color: var(--chat-muted);
