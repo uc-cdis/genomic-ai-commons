@@ -133,6 +133,13 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 | `COPILOTKIT_TELEMETRY_DISABLED` | `apps/commons/.env.*`           | `true` turns off CopilotKit's usage data. One setting covers the server and the browser |
 | `NEXT_PUBLIC_GEN3_QAG_VERSION`  | `apps/commons/.env.development` | Old agent only. Goes away in Phase 6                                                    |
 
+## Colours
+
+Chat colours are CSS variables at the top of `src/styles.css`. The cards use them. The older parts (empty state, sidebar, buttons, error banner) still name Mantine colours until the Phase 8 design pass, and the survival plot keeps GDC's own curve colours.
+
+- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-tint`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+
 ## Running it locally
 
 1. Get an agent you can reach: run one yourself, or use a URL for the deployed one.
