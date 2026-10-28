@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import type { ExtensionStat, ProcessZip } from './types';
+import type { ExtensionStat, ProcessZip } from './sketch/types';
 
 /**
  * Stand-in processor: opens the archive in the browser and tallies entries by

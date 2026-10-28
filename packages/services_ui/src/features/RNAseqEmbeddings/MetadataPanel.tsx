@@ -1,5 +1,6 @@
-import React from "react";
+import React, {useMemo} from "react";
 import MetadataTable from "./MetadataTable";
+import {useMetadata} from "./core/MetadataContext";
 
 const DEFAULT_COLUMNS = [
   "file_name",
@@ -18,9 +19,18 @@ const DEFAULT_COLUMNS = [
 ];
 
 const MetadataPanel = () => {
-  const currentFile = null;
+  const {metadata} = useMetadata()
 
-  return <MetadataTable columns={DEFAULT_COLUMNS} rows={currentFile ?? []} />;
+
+  const columns = useMemo(() => {
+    if( metadata.length > 0) {
+      return Object.keys(metadata[0])
+    } else return DEFAULT_COLUMNS
+  }, [metadata]);
+
+  const rows = useMemo(() => metadata ?? [], [metadata])
+
+  return <MetadataTable columns={columns} rows={rows} />;
 };
 
 export default MetadataPanel;

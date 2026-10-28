@@ -40,6 +40,7 @@
   "peerDependencies": {
     "@mantine/core": ">=9",
     "@mantine/hooks": ">=9",
+    "@mantine/notifications": ">=9",
     "@tabler/icons-react": "*",
     "mantine-react-table-open": ">=9",
     "next": "^16",

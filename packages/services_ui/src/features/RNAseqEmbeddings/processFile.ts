@@ -1,6 +1,6 @@
 import { inspectCsv } from './inspectCsv';
 import { inspectTsv } from './inspectTsv';
-import { inspectZip } from './sketch/inspectZip';
+import { inspectZip } from './inspectZip';
 import type { ProcessZip } from './sketch/types';
 
 /** Picks the processor from the file extension (MIME types are unreliable for .tsv and .csv). */

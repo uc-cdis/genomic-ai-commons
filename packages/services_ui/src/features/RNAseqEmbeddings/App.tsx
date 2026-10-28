@@ -1,9 +1,15 @@
 import React from "react";
 import AppPanel from "./AppPanel";
+import { DataFileBundlesProvider } from "./core/DataFileBundlesContext";
+import { MetadataProvider } from "./core/MetadataContext";
 
 const App = () => {
   return (
-      <AppPanel/>
+      <DataFileBundlesProvider>
+        <MetadataProvider>
+          <AppPanel/>
+        </MetadataProvider>
+      </DataFileBundlesProvider>
   );
 };
 

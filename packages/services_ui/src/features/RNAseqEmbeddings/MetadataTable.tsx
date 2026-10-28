@@ -30,7 +30,7 @@ const MetadataTable = ({ columns, rows }: MetadataTableProps) => {
     enableStickyHeader: true,
   });
 
-  return <MantineReactTable table={table} />;
+  return <div className="m-2"> <MantineReactTable table={table} /></div>;
 };
 
 export default MetadataTable;

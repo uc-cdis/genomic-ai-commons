@@ -14,7 +14,7 @@ const App = () => {
             <LoadedFiles/>
             <DropZone/>
         </div>
-        <Tabs classNames={{root: "w-full h-full"}}>
+        <Tabs classNames={{root: "w-3/4 h-full"}}>
             <Tabs.List>
                 <Tabs.Tab value="metadata" leftSection={<ImTable size={12} />}>
                     Metadata
