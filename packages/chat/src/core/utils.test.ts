@@ -85,6 +85,38 @@ describe("toChatMessage", () => {
     ]);
   });
 
+  const finalResult = {
+    id: "t9",
+    type: "function" as const,
+    function: { name: "final_result", arguments: '{"answer": "51 cases."}' },
+  };
+
+  it("drops a message that only holds the agent's final_result call", () => {
+    expect(
+      toChatMessage({ id: "a1", role: "assistant", content: "", toolCalls: [finalResult] }),
+    ).toEqual([]);
+  });
+
+  it("keeps the other tool calls beside final_result", () => {
+    const message: Message = {
+      id: "a1",
+      role: "assistant",
+      content: "",
+      toolCalls: [
+        { id: "t1", type: "function", function: { name: "get_cases", arguments: "{}" } },
+        finalResult,
+      ],
+    };
+    expect(toChatMessage(message)).toEqual([
+      {
+        id: "a1",
+        role: "assistant",
+        content: "",
+        toolCalls: [{ id: "t1", name: "get_cases", args: {} }],
+      },
+    ]);
+  });
+
   it("drops empty user and assistant messages", () => {
     expect(toChatMessage({ id: "u1", role: "user", content: "" })).toEqual([]);
     expect(toChatMessage({ id: "a1", role: "assistant", content: "" })).toEqual([]);

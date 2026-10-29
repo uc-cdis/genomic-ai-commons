@@ -65,7 +65,7 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Answers** in Markdown, with tables and math.
 - **Reasoning**, when the model shares it: open while it thinks, then folded under "Thought for Xs". A click opens or closes it.
 - **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains.
-- **The final answer** shows in a card, with a Copy button under it once it has finished. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
+- **The final answer** shows in a card, with a Copy button under it once it has finished. With the new agent, the model's last step is a `final_result` call holding one sentence, which the agent checks and may send back for a rewrite; the agent then builds the answer from the tool results and sends it as a text message. `toChatMessage` hides `final_result`, so only that message shows. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
 - **One panel per tool call**: the tool name, how long it took, and a status:
   - ✓: the tool returned a result (a tick, so only problems show a coloured pill)
   - Error: the tool failed, or it got bad arguments and the agent will retry. No card shows under it.
