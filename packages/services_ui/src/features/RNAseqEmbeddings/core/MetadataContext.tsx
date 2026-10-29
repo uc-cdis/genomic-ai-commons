@@ -1,25 +1,36 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useMemo, useState } from "react";
+
+interface Dataset {
+    metadata: Record<string, any>[];
+    zipFile: File;
+}
 
 interface MetadataContextValue {
     metadata: Record<string, any>[];
-    setMetadata: React.Dispatch<React.SetStateAction<Record<string, any>[]>>;
+    zipFile: File | null;
+    setDataset: (dataset: Dataset) => void;
 }
 
 const MetadataContext = createContext<MetadataContextValue | undefined>(undefined);
 
 export const MetadataProvider = ({
     children,
-    initialMetadata = [],
+    initialDataset = null,
 }: {
     children: React.ReactNode;
-    initialMetadata?: Record<string, any>[];
+    initialDataset?: Dataset | null;
 }) => {
-    const [metadata, setMetadata] = useState<Record<string, any>[]>(initialMetadata);
-    return (
-        <MetadataContext.Provider value={{ metadata, setMetadata }}>
-            {children}
-        </MetadataContext.Provider>
+    // metadata and zip are always set together, so they live in one state value
+    const [dataset, setDataset] = useState<Dataset | null>(initialDataset);
+    const value = useMemo<MetadataContextValue>(
+        () => ({
+            metadata: dataset?.metadata ?? [],
+            zipFile: dataset?.zipFile ?? null,
+            setDataset,
+        }),
+        [dataset],
     );
+    return <MetadataContext.Provider value={value}>{children}</MetadataContext.Provider>;
 };
 
 export const useMetadata = (): MetadataContextValue => {

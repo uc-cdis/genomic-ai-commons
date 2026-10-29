@@ -11,3 +11,7 @@ export enum ProcessingState {
 export interface ApplyEmbeddings {
     state: ProcessingState
 }
+
+export interface RNASeqConfiguration {
+    label?: string;
+}

@@ -1,5 +1,5 @@
-/** Splits CSV text into records of fields. Quoted fields may contain commas, newlines and "" escapes. */
-const parseCsv = (text: string): string[][] => {
+/** Splits delimited text into records of fields. Quoted fields may contain the delimiter, newlines and "" escapes. */
+const parseDelimited = (text: string, delimiter: string): string[][] => {
   const records: string[][] = [];
   let record: string[] = [];
   let field = '';
@@ -27,7 +27,7 @@ const parseCsv = (text: string): string[][] => {
     } else if (ch === '"') {
       inQuotes = true;
       recordHasContent = true;
-    } else if (ch === ',') {
+    } else if (ch === delimiter) {
       record.push(field);
       field = '';
       recordHasContent = true;
@@ -43,14 +43,19 @@ const parseCsv = (text: string): string[][] => {
   return records;
 };
 
+const loadDelimited = async (file: File, delimiter: string): Promise<Record<string, any>[]> => {
+  // a UTF-8 BOM would otherwise end up in the first column name
+  const text = (await file.text()).replace(/^\uFEFF/, '');
+  const [header, ...rows] = parseDelimited(text, delimiter);
+  if (!header) throw new Error('The file has no header row.');
+  return rows.map((cells) => Object.fromEntries(header.map((name, i) => [name, cells[i] ?? ''])));
+};
+
 /**
  * Loads a CSV file into memory: one record per data row, keyed by the header row's column names.
  * Values are left as strings.
  */
-export const loadCsv = async (file: File): Promise<Record<string, any>[]> => {
-  // a UTF-8 BOM would otherwise end up in the first column name
-  const text = (await file.text()).replace(/^﻿/, '');
-  const [header, ...rows] = parseCsv(text);
-  if (!header) throw new Error('The file has no header row.');
-  return rows.map((cells) => Object.fromEntries(header.map((name, i) => [name, cells[i] ?? ''])));
-};
+export const loadCsv = (file: File) => loadDelimited(file, ',');
+
+/** Same as `loadCsv` for a tab-separated file. */
+export const loadTsv = (file: File) => loadDelimited(file, '\t');

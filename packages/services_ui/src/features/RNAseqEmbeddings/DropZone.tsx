@@ -9,7 +9,8 @@ import { notifications } from "@mantine/notifications";
 import { FileArchive, Upload, X } from "lucide-react";
 import "@mantine/dropzone/styles.css";
 import {useMetadata} from "./core/MetadataContext";
-import {loadCsv} from "./loadCsv";
+import {MAX_ZIP_BYTES} from "./core/constants";
+import {loadCsv, loadTsv} from "./loadCsv";
 
 // extensions are listed too because browsers often report no MIME type for .tsv or .csv
 const FILE_TYPES = {
@@ -20,9 +21,11 @@ const FILE_TYPES = {
   "text/csv": [".csv"],
 };
 
+const formatGb = (bytes: number) => `${parseFloat((bytes / 1024 ** 3).toFixed(1))} GB`;
+
 // function to see if both a zipfile and .csv or .tsv file in the dropzone
 const hasValidFiles = (files: File[]) => {
-  const zipFile = files.find((file) => file.type === MIME_TYPES.zip);
+  const zipFile = files.find((file) => file.name.toLowerCase().endsWith(".zip"));
   const csvOrTsvFile = files.find(
     (file) => {
       if (!file) return false;
@@ -36,18 +39,18 @@ const hasValidFiles = (files: File[]) => {
 };
 
 const DropZone = () => {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [staged, setStaged] = useState<Array<File> | null>(null);
   const [rejection, setRejection] = useState<string | null>(null);
-  const { setMetadata } = useMetadata();
+  const { setDataset } = useMetadata();
 
   const loadMetadata = async (files: File[]) => {
-    const csvFile = files.find((file) => file.name.toLowerCase().endsWith(".csv"));
-    if (!csvFile) return;
+    const tableFile = files.find((file) => /\.(csv|tsv)$/i.test(file.name));
+    const zipFile = files.find((file) => file.name.toLowerCase().endsWith(".zip"));
+    if (!tableFile || !zipFile) return;
     try {
-      setMetadata(await loadCsv(csvFile));
+      const load = tableFile.name.toLowerCase().endsWith(".tsv") ? loadTsv : loadCsv;
+      setDataset({ metadata: await load(tableFile), zipFile });
     } catch (error) {
-      setRejection(error instanceof Error ? error.message : "Could not read the CSV file.");
+      setRejection(error instanceof Error ? error.message : "Could not read the metadata file.");
     }
   };
 
@@ -55,8 +58,14 @@ const DropZone = () => {
     <>
       <Dropzone
         onDrop={(files) => {
-          if (hasValidFiles(files)) {
-          setStaged(files);
+          const oversizedZip = files.find(
+            (file) => file.name.toLowerCase().endsWith(".zip") && file.size > MAX_ZIP_BYTES,
+          );
+          if (oversizedZip) {
+            setRejection(
+              `${oversizedZip.name} is ${formatGb(oversizedZip.size)}. Zip archives must be ${formatGb(MAX_ZIP_BYTES)} or smaller.`,
+            );
+          } else if (hasValidFiles(files)) {
           notifications.show({
             color: "green",
             title: "Files staged",

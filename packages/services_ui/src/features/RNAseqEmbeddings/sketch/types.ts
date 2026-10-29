@@ -39,16 +39,3 @@ export interface Run {
   error?: string;
   result?: RunResult;
 }
-
-export interface ProcessContext {
-  signal: AbortSignal;
-  onProgress: (percent: number, label: string) => void;
-}
-
-/** The seam: swap in a call to your backend, a web worker, etc. */
-export type ProcessZip = (file: File, ctx: ProcessContext) => Promise<RunResult>;
-
-
-export interface RNASeqConfiguration {
-  label?: string;
-}

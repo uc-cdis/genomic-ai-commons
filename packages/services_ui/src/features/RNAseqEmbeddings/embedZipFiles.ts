@@ -1,0 +1,75 @@
+import JSZip from 'jszip';
+import {fetchJSONDataFromURL, HttpMethod } from '@gen3/core';
+import { EMBEDDING_MAX_WORKERS, EMBEDDING_MODEL_ENDPOINT } from './core/constants';
+import { isOsMetadata } from './isOsMetadata';
+
+const EMBEDDING_MODEL_ENDPOINT = '/api/'
+
+export interface EmbeddingResult {
+    fileName: string;
+    result: Record<string, any>;
+}
+
+interface EmbedContext {
+    signal: AbortSignal;
+    onProgress: (percent: number, label: string) => void;
+}
+
+const embed = async (tsv: string, fileName: string, signal: AbortSignal): Promise<Record<string, any>> => {
+
+   const url = EMBEDDING_MODEL_ENDPOINT;
+   const resp = await fetchJSONDataFromURL<Record<string, any>>(url, false, HttpMethod.POST, JSON.stringify({ tsv, sample_id: fileName }), signal);
+    if (!resp || resp === null)
+        throw new Error(`null response`);
+    if (!resp.ok) throw new Error(`Embedding ${fileName} failed: ${resp.status} ${resp.statusText}`);
+    return resp.json();
+};
+
+/**
+ * Reads every file out of the zip and sends it to the embedding service,
+ * up to EMBEDDING_MAX_WORKERS requests at a time. Results are returned in archive order.
+ */
+export const embedZipFiles = async (
+    zipFile: File,
+    { signal: outerSignal, onProgress }: EmbedContext,
+): Promise<EmbeddingResult[]> => {
+    // aborted when the caller cancels or when any worker fails, so in-flight requests stop straight away
+    const controller = new AbortController();
+    const { signal } = controller;
+    const forwardAbort = () => controller.abort(outerSignal.reason);
+    if (outerSignal.aborted) forwardAbort();
+    else outerSignal.addEventListener('abort', forwardAbort, { once: true });
+
+    try {
+        onProgress(2, 'Reading archive');
+        const zip = await JSZip.loadAsync(zipFile);
+        signal.throwIfAborted();
+
+        const entries = Object.values(zip.files).filter((f) => !f.dir && !isOsMetadata(f.name));
+        if (entries.length === 0) throw new Error('The archive contains no files.');
+
+        const results: EmbeddingResult[] = [];
+        let next = 0;
+        let completed = 0;
+
+        const worker = async () => {
+            while (next < entries.length) {
+                signal.throwIfAborted();
+                const index = next++;
+                const entry = entries[index];
+                const fileName = entry.name;
+                const result = await embed(await entry.async('string'), fileName, signal);
+                results[index] = { fileName, result };
+                completed += 1;
+                onProgress(5 + Math.floor((completed / entries.length) * 90), `Embedding (${completed} of ${entries.length})`);
+            }
+        };
+
+        // the first failure rejects the whole run (with its own error) and the finally block aborts the rest
+        await Promise.all(Array.from({ length: Math.min(EMBEDDING_MAX_WORKERS, entries.length) }, worker));
+        return results;
+    } finally {
+        controller.abort();
+        outerSignal.removeEventListener('abort', forwardAbort);
+    }
+};
