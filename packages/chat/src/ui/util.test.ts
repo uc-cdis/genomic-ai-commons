@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ChatRecord } from "../core";
-import { groupChatsByDay, jsonTokens, searchChats } from "./util";
+import { groupChatsByDay, isSubmitEnter, jsonTokens, searchChats } from "./util";
 
 // clocks went forward here on 9 March 2025, so the midnight test means something on CI too
 process.env.TZ = "America/New_York";
@@ -57,6 +57,35 @@ describe("searchChats", () => {
 
   it("keeps none when nothing matches", () => {
     expect(searchChats(chats, "EGFR")).toEqual([]);
+  });
+
+  it("keeps the open chat, so a new chat doesn't seem to vanish under an old search", () => {
+    expect(searchChats(chats, "kras", "b")).toEqual(chats);
+  });
+});
+
+describe("isSubmitEnter", () => {
+  const key = (
+    key: string,
+    extra: { shiftKey?: boolean; isComposing?: boolean; keyCode?: number } = {},
+  ) => ({
+    key,
+    shiftKey: extra.shiftKey ?? false,
+    keyCode: extra.keyCode ?? (key === "Enter" ? 13 : 0),
+    nativeEvent: { isComposing: extra.isComposing ?? false },
+  });
+
+  it("sends on Enter", () => {
+    expect(isSubmitEnter(key("Enter"))).toBe(true);
+  });
+
+  it.each([
+    ["Shift+Enter, a new line", key("Enter", { shiftKey: true })],
+    ["Enter that picks an input-method candidate", key("Enter", { isComposing: true })],
+    ["Safari's Enter that ends composing (keyCode 229)", key("Enter", { keyCode: 229 })],
+    ["another key", key("a")],
+  ])("doesn't send on %s", (_case, event) => {
+    expect(isSubmitEnter(event)).toBe(false);
   });
 });
 

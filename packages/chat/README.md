@@ -72,14 +72,14 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
   - Running: still running
   - No result: the run ended without a result for this call
 
-  Click a panel to see its inputs (ARGUMENTS) and its output (RESULT, or ERROR), with JSON in colour. pydantic-ai marks a failed call in a separate event after its result; `toChatMessage` in `core/utils.ts` reads it.
+  Click a panel to see its inputs (ARGUMENTS) and its output (RESULT, or ERROR), with JSON in colour. Calls to one tool that the agent makes together in one step share a row, such as "search_fields ×4"; its status is the worst of its calls ("1 error"), and it opens to show each call. Tools with a card are never grouped. pydantic-ai marks a failed call in a separate event after its result; `toChatMessage` in `core/utils.ts` reads it.
 
-- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as small buttons. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
+- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as ordinary links. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
-- **A manifest card** under `get_file_manifest`, with Download TSV. A cohort filter downloads from the RESULT of its `create_filter` panel.
+- **A manifest card** under `get_file_manifest`, with Download TSV, and **a filter card** under `create_filter`, with its conditions in words and Download JSON. Each card is joined to its tool call, so it reads as that call's result.
 - **A header** with the open chat's title, as "Chat / title". Its menu renames or deletes the chat. The model picker is commented out in `ui/ChatHeader.tsx` while the agent offers one model; the names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
-- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running. On a computer, the arrow at its top folds it into a thin strip (new chat, search) and back; the browser remembers which. On a phone, the menu button opens it.
-- **A "Scroll to latest" button** when you scroll up while an answer streams.
+- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running, and the other chats wait until it ends or you press Stop. A search always keeps the open chat in the list. On a computer, the arrow at its top folds it into a thin strip (new chat, search) and back; the browser remembers which. On a phone, the menu button opens it.
+- **A "Scroll to latest" button**, centred at the bottom of the chat, when you scroll up while an answer streams.
 - **An error banner**, "Something went wrong. Please try again." The details are in the browser console, as `[chat-core:<source>]`.
 
 ## Stop, Retry and Edit
@@ -168,6 +168,12 @@ When you upgrade CopilotKit, set `@ag-ui/client` to the version that CopilotKit 
 
 React, Mantine, CopilotKit and AG-UI are **peer dependencies** of `@gen3/chat`: the app installs one shared copy. They hold shared state, so there must be only one copy.
 
+## Known limits
+
+- **One chat runs at a time.** While an answer runs, the other chats in the sidebar wait. The page has one live slot for the open chat, and the running answer is written into it. Switching chats mid-answer would put that answer into the wrong chat.
+- **A reload mid-answer loses the answer on screen.** The portal keeps the agent working, but the reloaded page doesn't reconnect to it. Retry in that chat fails until the old run ends (up to about a minute). Start a New conversation instead.
+- **The plan, after the demo:** give each chat its own agent, so an answer keeps running in the background while you read another chat. Then reconnect to a running answer after a reload, through CopilotKit's `connect`.
+
 ## Work in progress
 
 The move from the old QAG agent to the GDC agent happens in phases:
@@ -184,6 +190,7 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | done   |
 | 8     | Status pills, blue tool panels, sidebar fold and the last colours from the mockup              | done   |
 | 8     | Steps list from the mockup; spacing                                                            | next   |
+| Later | One agent per chat (background runs), then resume an answer after a reload                     | later  |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 

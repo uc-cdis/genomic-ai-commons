@@ -22,7 +22,7 @@ function ManifestToolResultImpl({ result }: ToolRendererProps) {
   if (!manifest) return null;
 
   return (
-    <Paper withBorder radius="md" p="sm" bg="var(--chat-tint)">
+    <Paper className="chat-tool-card" radius="sm" p="sm" bg="var(--chat-tint)">
       <Group justify="space-between" wrap="wrap" gap="xs">
         <Group gap="xs" wrap="nowrap">
           <IconFileDescription size={18} color="var(--chat-title)" />

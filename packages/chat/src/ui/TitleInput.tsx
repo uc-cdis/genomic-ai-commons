@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TextInput } from "@mantine/core";
+import { isSubmitEnter } from "./util";
 
 export function TitleInput({
   title,
@@ -32,7 +33,7 @@ export function TitleInput({
       onChange={(event) => setDraft(event.currentTarget.value)}
       onBlur={commit}
       onKeyDown={(event) => {
-        if (event.key === "Enter") {
+        if (isSubmitEnter(event)) {
           event.preventDefault();
           commit();
         }

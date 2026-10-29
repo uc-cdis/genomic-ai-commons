@@ -69,8 +69,29 @@ export function groupChatsByDay(
   return groups.filter((group) => group.chats.length > 0);
 }
 
-export function searchChats(chats: ChatRecord[], query: string): ChatRecord[] {
+export function searchChats(
+  chats: ChatRecord[],
+  query: string,
+  activeChatId?: string,
+): ChatRecord[] {
   const needle = query.trim().toLowerCase();
   if (!needle) return chats;
-  return chats.filter((chat) => chat.title.toLowerCase().includes(needle));
+  return chats.filter(
+    (chat) => chat.id === activeChatId || chat.title.toLowerCase().includes(needle),
+  );
 }
+
+export interface EnterKeyEvent {
+  key: string;
+  shiftKey: boolean;
+  keyCode: number;
+  nativeEvent: { isComposing: boolean };
+}
+
+// an Enter that picks an input-method candidate (Chinese, Japanese, Korean) isn't a send.
+// 229: Safari ends composing with an Enter whose isComposing is already false
+export const isSubmitEnter = (event: EnterKeyEvent): boolean =>
+  event.key === "Enter" &&
+  !event.shiftKey &&
+  !event.nativeEvent.isComposing &&
+  event.keyCode !== 229;

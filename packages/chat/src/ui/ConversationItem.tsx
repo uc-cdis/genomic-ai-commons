@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ActionIcon, Group, Stack, Text, UnstyledButton } from "@mantine/core";
+import { ActionIcon, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { IconDots, IconMessage } from "@tabler/icons-react";
 import { ChatActionsMenu } from "./ChatActionsMenu";
 import { TitleInput } from "./TitleInput";
@@ -12,6 +12,7 @@ export interface ConversationItemProps {
   active?: boolean;
   showActions?: boolean;
   deleteDisabled?: boolean;
+  selectDisabled?: boolean;
   onClick?: () => void;
   onRename?: (title: string) => void;
   onDelete?: () => void;
@@ -23,6 +24,7 @@ export function ConversationItem({
   active,
   showActions = true,
   deleteDisabled,
+  selectDisabled,
   onClick,
   onRename,
   onDelete,
@@ -49,28 +51,44 @@ export function ConversationItem({
         />
       ) : (
         <>
-          <UnstyledButton
-            onClick={onClick}
-            style={{ flex: 1, minWidth: 0, cursor: onClick ? "pointer" : "default" }}
+          <Tooltip
+            label="Wait for the answer or press Stop"
+            disabled={!selectDisabled}
+            position="right"
+            withArrow
           >
-            <Group gap="xs" wrap="nowrap" align="flex-start">
-              <IconMessage
-                size={16}
-                color="var(--chat-accent)"
-                style={{ marginTop: 2, flexShrink: 0 }}
-              />
-              <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
-                <Text size="sm" fw={active ? 600 : 500} truncate="end">
-                  {label}
-                </Text>
-                {hint && (
-                  <Text size="xs" c="var(--chat-muted)" truncate="end">
-                    {hint}
+            {/* aria-disabled, not disabled: a disabled button gets no hover, so no tooltip.
+                data-keep-open: on a phone, a row that can't open shouldn't close the drawer */}
+            <UnstyledButton
+              onClick={selectDisabled ? undefined : onClick}
+              aria-disabled={selectDisabled || undefined}
+              data-keep-open={selectDisabled || undefined}
+              style={{
+                flex: 1,
+                minWidth: 0,
+                cursor: selectDisabled ? "not-allowed" : onClick ? "pointer" : "default",
+                opacity: selectDisabled ? 0.6 : 1,
+              }}
+            >
+              <Group gap="xs" wrap="nowrap" align="flex-start">
+                <IconMessage
+                  size={16}
+                  color="var(--chat-accent)"
+                  style={{ marginTop: 2, flexShrink: 0 }}
+                />
+                <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
+                  <Text size="sm" fw={active ? 600 : 500} truncate="end">
+                    {label}
                   </Text>
-                )}
-              </Stack>
-            </Group>
-          </UnstyledButton>
+                  {hint && (
+                    <Text size="xs" c="var(--chat-muted)" truncate="end">
+                      {hint}
+                    </Text>
+                  )}
+                </Stack>
+              </Group>
+            </UnstyledButton>
+          </Tooltip>
 
           {showActions && (
             <ChatActionsMenu

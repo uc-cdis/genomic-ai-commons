@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, type ReactNode } from "react";
 import { Box, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { sameToolResult, type ToolRendererProps } from "../types";
 import { DownloadButton } from "../DownloadButton";
@@ -72,6 +72,14 @@ function Curve({ data }: { data: SurvivalData }) {
   );
 }
 
+function Card({ children }: { children: ReactNode }) {
+  return (
+    <Paper className="chat-tool-card" radius="sm" p="md" bg="var(--mantine-color-body)">
+      {children}
+    </Paper>
+  );
+}
+
 function SurvivalToolResultImpl({ result }: ToolRendererProps) {
   const summary = useMemo(() => (result ? readSurvivalSummary(result) : null), [result]);
   // the curve's own link, as the agent wrote it; only links the portal serves come back
@@ -80,13 +88,21 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
   const loaded = useDownload(curveLink?.url ?? null);
   const parsed = useMemo(() => (loaded?.ok ? parseSurvivalResult(loaded.text) : null), [loaded]);
 
-  if (!result) return <Skeleton height={HEIGHT} radius="sm" />;
+  if (!result) {
+    return (
+      <Card>
+        <Skeleton height={HEIGHT} radius="sm" />
+      </Card>
+    );
+  }
 
   if (!summary && !curveLink) {
     return (
-      <Text size="sm" c="var(--chat-muted)">
-        Couldn&apos;t read the survival result.
-      </Text>
+      <Card>
+        <Text size="sm" c="var(--chat-muted)">
+          Couldn&apos;t read the survival result.
+        </Text>
+      </Card>
     );
   }
 
@@ -96,7 +112,7 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
   const canDownload = curveLink && failure !== "expired" && failure !== "login";
 
   return (
-    <Paper withBorder radius="md" p="md" bg="var(--mantine-color-body)">
+    <Card>
       <Stack gap="sm">
         <Text fw={700} c="var(--chat-title)">
           Overall Survival{project ? ` — ${project}` : ""}
@@ -118,13 +134,13 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
         {summary && <Tiles summary={summary} />}
 
         {canDownload && (
-          <Group gap="xs">
+          <Group gap="xs" mt="xs">
             <DownloadButton href={curveLink.url} label="Download JSON" />
             {curveLink.csvUrl && <DownloadButton href={curveLink.csvUrl} label="Download CSV" />}
           </Group>
         )}
       </Stack>
-    </Paper>
+    </Card>
   );
 }
 

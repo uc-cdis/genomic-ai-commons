@@ -64,7 +64,7 @@ export const ChatSidebar = memo(function ChatSidebar({
   onToggleCollapsed,
 }: ChatSidebarProps) {
   const [query, setQuery] = useState("");
-  const groups = groupChatsByDay(searchChats(chats, query));
+  const groups = groupChatsByDay(searchChats(chats, query, activeChatId));
   const isDraft = !loading && !chats.some((chat) => chat.id === activeChatId);
 
   // the search box isn't rendered while collapsed, so it takes the cursor once the list expands
@@ -167,6 +167,7 @@ export const ChatSidebar = memo(function ChatSidebar({
                       label={chat.title}
                       active={chat.id === activeChatId}
                       deleteDisabled={isRunning && chat.id === activeChatId}
+                      selectDisabled={isRunning && chat.id !== activeChatId}
                       onClick={() => onSelect(chat.id)}
                       onRename={(title) => onRename(chat.id, title)}
                       onDelete={() => onDelete(chat.id)}

@@ -1,0 +1,36 @@
+"use client";
+
+import { useState, type ReactNode } from "react";
+import { Collapse, Paper, Stack } from "@mantine/core";
+import { ToolHeader } from "./ToolHeader";
+import type { ToolStatus } from "./toolStatus";
+
+export interface ToolCallGroupProps {
+  name: string;
+  count: number;
+  status: ToolStatus;
+  statusLabel?: string;
+  children: ReactNode;
+}
+
+export function ToolCallGroup({ name, count, status, statusLabel, children }: ToolCallGroupProps) {
+  const [isExpanded, setExpanded] = useState(false);
+
+  return (
+    <Paper className="chat-tool-panel" radius="sm" bg="var(--mantine-color-default)">
+      <ToolHeader
+        name={name}
+        count={count}
+        status={status}
+        statusLabel={statusLabel}
+        isExpanded={isExpanded}
+        onToggle={() => setExpanded((open) => !open)}
+      />
+      <Collapse expanded={isExpanded}>
+        <Stack p="sm" gap="xs" className="chat-tool-body">
+          {children}
+        </Stack>
+      </Collapse>
+    </Paper>
+  );
+}

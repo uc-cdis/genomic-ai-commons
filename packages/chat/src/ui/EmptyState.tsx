@@ -6,13 +6,13 @@ import { EXAMPLES_WIDTH, INTRO_WIDTH } from "./util";
 
 // the agent's own examples (gdc-mcp-demo agent/index.html), so they're questions it handles
 const EXAMPLE_QUESTIONS = [
+  "What is the 1-year survival estimate for TCGA-CHOL?",
   "What is the prevalence of BRAF SSMs in lung cancer?",
   "What is the prevalence of BRAF SSMs in lung cancer cases of non smoking women over 40?",
   "What is the average gene expression for TP53 and MUC16 in cases with lung adenocarcinoma?",
   "What is the average gene expression of BRAF in TCGA-BRCA?",
   "List the most variably expressed genes in APOLLO-LUAD.",
   "Compare the expression of TP53, MUC16, and BRAF in APOLLO-LUAD.",
-  "What is the 1-year survival estimate for TCGA-CHOL?",
 ] as const;
 
 export interface EmptyStateProps {

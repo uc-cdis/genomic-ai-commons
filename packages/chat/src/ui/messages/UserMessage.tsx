@@ -8,6 +8,7 @@ import { CopyAction } from "./CopyAction";
 import { TextAction } from "./TextAction";
 import { UserBubble } from "./UserBubble";
 import { RunStatusBanner } from "./RunStatusBanner";
+import { isSubmitEnter } from "../util";
 
 type UserChatMessage = Extract<ChatMessage, { role: "user" }>;
 
@@ -21,6 +22,8 @@ export interface UserMessageProps {
 
 export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }: UserMessageProps) {
   const [draft, setDraft] = useState<string | null>(null);
+  // a newer question went out, so this edit has nothing left to replace
+  if (draft !== null && !canRewind) setDraft(null);
   const editing = draft !== null;
 
   const startEditing = () => setDraft(message.content);
@@ -45,7 +48,7 @@ export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }:
           aria-label="Edit message"
           onChange={(event) => setDraft(event.currentTarget.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
+            if (isSubmitEnter(event)) {
               event.preventDefault();
               commit();
             }

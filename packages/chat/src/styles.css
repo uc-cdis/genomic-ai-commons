@@ -87,17 +87,14 @@ div:has(> main > [data-chat-shell]) {
 .chat-markdown ul.contains-task-list {
   list-style: none;
 }
-/* Mantine's Typography underlines links only on hover; always, so they read as links
-   (download buttons excepted) */
-.chat-markdown a:not(.chat-download) {
+/* Mantine's Typography underlines links only on hover; always, so they read as links */
+.chat-markdown a {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-/* Typography's link colour and hover underline would also reach download buttons, which are
-   links too; give them back the button's own look */
-.chat-markdown a.chat-download {
-  color: var(--button-color);
-  text-decoration: none;
+/* a long URL or inline JSON has no break points and would run past the answer card */
+.chat-markdown :is(p, li) {
+  overflow-wrap: break-word;
 }
 /* Typography sizes headings for a page (h1 34px) inside 14px text; a chat needs them close */
 .chat-markdown :is(h1, h2, h3, h4, h5, h6) {
@@ -183,6 +180,24 @@ div:has(> main > [data-chat-shell]) {
 .chat-tool-body {
   border-top: 1px solid var(--chat-rule);
   background: var(--chat-tint-light);
+}
+.chat-tool-panel {
+  overflow: hidden;
+  border: 1px solid var(--chat-rule);
+}
+.chat-tool-card {
+  border: 1px solid var(--chat-rule);
+}
+/* a tool call and its card read as one box: one shared border line, and square corners where
+   they meet. :not(:last-child), as most calls have no card */
+.chat-tool-group > .chat-tool-panel:not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.chat-tool-group > .chat-tool-card {
+  border-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 /* Mantine's Code reads --code-bg; a background here would tie with its own rule */
 .chat-code {

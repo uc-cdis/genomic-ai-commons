@@ -41,7 +41,9 @@ export function useStickToBottom(): StickToBottom {
     if (!viewport) return;
     const top = viewport.scrollHeight - viewport.clientHeight;
 
-    lastTopRef.current = top;
+    // a smooth scroll starts below its target; recording the target would read its first frames
+    // as the user scrolling up, and stop following
+    lastTopRef.current = behavior === "smooth" ? viewport.scrollTop : top;
     viewport.scrollTo({ top, behavior });
   }, []);
 
