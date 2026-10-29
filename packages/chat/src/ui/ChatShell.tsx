@@ -3,6 +3,7 @@
 import { Box, Burger, Drawer, Group, useMantineTheme } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useEffect, type ReactNode } from "react";
+import { HEADER_HEIGHT } from "./util";
 
 export interface ChatShellProps {
   sidebar: ReactNode;
@@ -10,7 +11,6 @@ export interface ChatShellProps {
   headerContent?: ReactNode;
 }
 
-const MOBILE_BAR_HEIGHT = 52;
 const SIDEBAR_WIDTH = 340;
 
 export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) {
@@ -42,7 +42,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
     <Box
       // Marker for the one global rule that gives this page a definite height.
       data-chat-shell
-      pb="md"
+      pb="sm"
       mih={0}
       miw={0}
       style={{
@@ -52,26 +52,6 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
         flexDirection: "column",
       }}
     >
-      <Group
-        hiddenFrom="sm"
-        h={MOBILE_BAR_HEIGHT}
-        px="md"
-        gap="sm"
-        wrap="nowrap"
-        style={{
-          flexShrink: 0,
-          borderBottom: "1px solid var(--mantine-color-default-border)",
-        }}
-      >
-        <Burger
-          opened={mobileOpened}
-          onClick={toggleMobile}
-          size="sm"
-          aria-label="Toggle conversation list"
-        />
-        {headerContent}
-      </Group>
-
       <Box mih={0} miw={0} style={{ flex: 1, display: "flex" }}>
         <Box
           component="aside"
@@ -79,7 +59,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           w={SIDEBAR_WIDTH}
           p="md"
           mih={0}
-          bg="var(--mantine-color-gray-0)"
+          bg="var(--chat-panel)"
           style={{
             flexShrink: 0,
             display: "flex",
@@ -104,8 +84,32 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           {sidebarBody}
         </Drawer>
 
-        <Box component="section" mih={0} miw={0} style={{ flex: 1, display: "flex" }}>
-          {children}
+        <Box
+          component="section"
+          mih={0}
+          miw={0}
+          style={{ flex: 1, display: "flex", flexDirection: "column" }}
+        >
+          <Group
+            hiddenFrom={headerContent ? undefined : "sm"}
+            h={HEADER_HEIGHT}
+            px="md"
+            gap="sm"
+            wrap="nowrap"
+            style={{ flexShrink: 0, borderBottom: "1px solid var(--chat-rule)" }}
+          >
+            <Burger
+              hiddenFrom="sm"
+              opened={mobileOpened}
+              onClick={toggleMobile}
+              size="sm"
+              aria-label="Toggle conversation list"
+            />
+            {headerContent}
+          </Group>
+          <Box mih={0} miw={0} style={{ flex: 1, display: "flex" }}>
+            {children}
+          </Box>
         </Box>
       </Box>
     </Box>

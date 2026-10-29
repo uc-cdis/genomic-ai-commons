@@ -1,6 +1,6 @@
-# @gen3/chat: the GDC chat
+# @gen3/chat: Genomics Explorer
 
-`@gen3/chat` is the chat feature of the portal. The portal (`apps/commons`) shows it on the `/Chat` page. You ask a question about GDC data, and an AI agent answers. It uses tools to look up cohorts, mutations, expression and survival.
+`@gen3/chat` is Genomics Explorer, the chat feature of the portal. The portal (`apps/commons`) shows it on the `/Chat` page. You ask a question about GDC data, and an AI agent answers. It uses tools to look up cohorts, mutations, expression and survival.
 
 This file describes how the chat works today. The move from the old QAG agent to the GDC agent is still in progress; the [Work in progress](#work-in-progress) table shows which parts are done.
 
@@ -64,7 +64,8 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Example questions** on the empty screen. Click one to send it.
 - **Answers** in Markdown, with tables and math.
 - **Reasoning**, when the model shares it: open while it thinks, then folded under "Thought for Xs". A click opens or closes it.
-- **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains. The final answer shows in a bubble.
+- **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains.
+- **The final answer** shows in a card, with a Copy button under it once it has finished. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
 - **One panel per tool call**: the tool name, how long it took, and a status:
   - ✓ the tool returned a result
   - spinner: still running
@@ -72,11 +73,11 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 
   Click a panel to see its inputs (PARAMETERS) and its output (RESULT).
 
-- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV). Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
+- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as small buttons. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
 - **A manifest card** under `get_file_manifest`, with Download TSV. A cohort filter downloads from the RESULT of its `create_filter` panel.
-- **A model picker.** The names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
-- **A sidebar** with your chats, newest first. You can start a new chat, rename one, or delete one. You can't delete the chat that is running.
+- **A header** with the open chat's title, as "Chat / title". Its menu renames or deletes the chat. The model picker is commented out in `ui/ChatHeader.tsx` while the agent offers one model; the names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
+- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running.
 - **A "Scroll to latest" button** when you scroll up while an answer streams.
 - **An error banner**, "Something went wrong. Please try again." The details are in the browser console, as `[chat-core:<source>]`.
 
@@ -103,7 +104,7 @@ Chats are saved **in your browser only** (IndexedDB), in a database called `gdc-
 | `chats`    | yes              | id, title, created and updated times                                            |
 | `messages` | yes              | the whole conversation: questions, reasoning, tool calls, tool results, answers |
 
-The title is your first question, cut to 80 characters, until you rename it.
+The title is your first question, until you rename it. A question longer than 80 characters is cut at its last whole word and ends in "…".
 
 **The rule: save only your questions and finished answers.**
 
@@ -136,20 +137,18 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 ## Colours
 
-Chat colours are CSS variables at the top of `src/styles.css`. The cards use them. The older parts (empty state, sidebar, buttons, error banner) still name Mantine colours until the Phase 8 design pass, and the survival plot keeps GDC's own curve colours.
+Chat colours are CSS variables at the top of `src/styles.css`. Most of the chat uses them. Until the Phase 8 design pass these still name Mantine colours: the tool panels, the error banner, the grey status lines under a turn, and the grey Cancel button when you edit a question. Plain white surfaces and borders use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
 
 - The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
-- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-tint`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-download`, `--chat-primary`, `--chat-accent`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
 
-1. Get an agent you can reach: run one yourself, or use a URL for the deployed one.
-2. Create `apps/commons/.env.development.local` (git ignores it) and add:
-   `GEN3_AGENT_BASE_URL=http://localhost:8080`
-3. Run `npm run dev`, then log in.
-4. Open `/Chat`. Add `?copilotInspector` to the URL to see the raw AG-UI events (dev only).
+1. Dev talks to the deployed agent through `https://genomicaicommons.org/agent` (set in `apps/commons/.env.development`). To use an agent you run yourself, put `GEN3_AGENT_BASE_URL=http://localhost:8080` in `apps/commons/.env.development.local` (git ignores it).
+2. Run `npm run dev`, then log in. It runs three processes: `chat` rebuilds the package's TypeScript, `css` copies its `styles.css` to `dist` on every save, and `app` is the portal.
+3. Open `/Chat`. Add `?copilotInspector` to the URL to see the raw AG-UI events (dev only).
 
-Before you push, run `npm run build`, then discard the regenerated `apps/commons/src/proxy.ts`.
+Before you push, run `npm run build`.
 
 ## Tests
 
@@ -180,7 +179,8 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 4     | Show each short reason _above_ its tool call                                                   | done   |
 | 5     | Make download links in answers work, through a portal route                                    | done   |
 | 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
-| 7     | New wording and example questions; hide old AI tiles                                           | next   |
+| 7     | Named Genomics Explorer; new empty screen, composer and sidebar; the agent's example questions | done   |
+| 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | next   |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 

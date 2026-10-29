@@ -29,7 +29,7 @@ const createCopilotRuntime = (agentUrl: string): CopilotRuntime =>
           url: agentUrl,
           headers: {
             ...(authorization ? { Authorization: authorization } : {}),
-            // undici would advertise gzip, and a compressing QAG batches the answer
+            // undici would advertise gzip, and a compressing agent batches the answer
             "Accept-Encoding": "identity",
           },
         }),
@@ -46,7 +46,7 @@ export const createChatHandler = ({ verifyToken, endpoint, agentBaseUrl }: ChatH
     try {
       // keeps Next from gzipping the stream - gzip batches it into one blob
       req.headers["accept-encoding"] = "identity";
-      // nginx buffers the portal route, only /qag has buffering off
+      // the revproxy buffers the portal route (unlike /agent), which would hold the stream back
       res.setHeader("X-Accel-Buffering", "no");
 
       endpointHandler ??= createCopilotNodeListener({

@@ -18,7 +18,6 @@ const LINK_FIELD: Record<DownloadKind, string> = {
   filter: "filter", // create_filter
 };
 
-/** The file of this kind a tool result links to, if it's one the portal serves. */
 export function findDownload(result: string | null, kind: DownloadKind): ToolDownload | undefined {
   const parsed = result ? parseJson(result) : undefined;
   const link = isRecord(parsed) ? parsed[LINK_FIELD[kind]] : undefined;

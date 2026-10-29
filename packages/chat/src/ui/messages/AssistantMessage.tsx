@@ -3,8 +3,8 @@
 import { Fragment, useState } from "react";
 import { Box, Stack } from "@mantine/core";
 import type { ChatMessage, Timings } from "../../core";
+import { AnswerCard } from "./AnswerCard";
 import { MarkdownContent } from "./MarkdownContent";
-import { MessageBubble } from "./MessageBubble";
 import { ToolCallPanel } from "./ToolCallPanel";
 import { ToolResultCard } from "../tools";
 
@@ -24,6 +24,7 @@ export interface AssistantMessageProps {
   timings: Timings;
   toolResults: ReadonlyMap<string, string>;
   isRunning: boolean;
+  isStreaming: boolean;
 }
 
 export function AssistantMessage({
@@ -31,6 +32,7 @@ export function AssistantMessage({
   timings,
   toolResults,
   isRunning,
+  isStreaming,
 }: AssistantMessageProps) {
   const [openedCallId, setOpenedCallId] = useState<string | null>(null);
   const toolCalls = message.toolCalls ?? [];
@@ -40,7 +42,9 @@ export function AssistantMessage({
   return (
     <Stack gap="xs">
       {message.content && isStep && <StepText content={message.content} />}
-      {message.content && !isStep && <MessageBubble message={message} />}
+      {message.content && !isStep && (
+        <AnswerCard content={message.content} isStreaming={isStreaming} />
+      )}
 
       {toolCalls.map((tc) => {
         const result = toolResults.get(tc.id) ?? null;
