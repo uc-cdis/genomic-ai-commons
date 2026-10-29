@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ActionIcon, Textarea, Tooltip } from "@mantine/core";
 import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
+import { isSubmitEnter } from "./util";
 
 export interface ChatInputProps {
   isRunning: boolean;
@@ -32,7 +33,7 @@ export function ChatInput({ isRunning, onSend, onStop, placeholder }: ChatInputP
       value={value}
       onChange={(event) => setValue(event.currentTarget.value)}
       onKeyDown={(event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
+        if (isSubmitEnter(event)) {
           event.preventDefault();
           send();
         }

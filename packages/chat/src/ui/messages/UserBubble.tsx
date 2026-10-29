@@ -9,14 +9,18 @@ export function UserBubble({ message }: UserBubbleProps) {
   return (
     <Paper
       px="md"
-      py="xs"
-      radius="lg"
+      py="sm"
       maw="80%"
       bg="var(--chat-accent)"
       c="white"
-      style={{ alignSelf: "flex-end" }}
+      style={{
+        alignSelf: "flex-end",
+        // the mockup's speech-bubble tail: the corner toward the sender is near square
+        borderRadius:
+          "var(--mantine-radius-lg) var(--mantine-radius-lg) var(--mantine-radius-xs) var(--mantine-radius-lg)",
+      }}
     >
-      <Text size="sm" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+      <Text size="md" style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
         {message.content}
       </Text>
     </Paper>

@@ -11,7 +11,10 @@ const CURVE = "/download/survival/cs_QC9thrad-x0F";
 describe("loadDownload", () => {
   it("returns the file, asking the portal with just the login cookie", async () => {
     const fetch = portalReplying('{"results":[]}', { status: 200 });
-    expect(await loadDownload(CURVE, fetch)).toEqual({ ok: true, text: '{"results":[]}' });
+    expect(await loadDownload(CURVE, { fetchImpl: fetch })).toEqual({
+      ok: true,
+      text: '{"results":[]}',
+    });
     const [url, init] = fetch.mock.calls[0];
     expect(url).toBe(CURVE);
     expect(init?.credentials).toBe("same-origin");
@@ -22,12 +25,15 @@ describe("loadDownload", () => {
     const fetch = portalReplying("cs_QC9thrad-x0F has expired. Run the tool again.", {
       status: 404,
     });
-    expect(await loadDownload(CURVE, fetch)).toEqual({ ok: false, reason: "expired" });
+    expect(await loadDownload(CURVE, { fetchImpl: fetch })).toEqual({
+      ok: false,
+      reason: "expired",
+    });
   });
 
   it("says the login ended when the portal answers 401", async () => {
     const fetch = portalReplying('{"error":"Authentication required."}', { status: 401 });
-    expect(await loadDownload(CURVE, fetch)).toEqual({ ok: false, reason: "login" });
+    expect(await loadDownload(CURVE, { fetchImpl: fetch })).toEqual({ ok: false, reason: "login" });
   });
 
   it.each([
@@ -40,6 +46,35 @@ describe("loadDownload", () => {
       }),
     ],
   ])("reports a failure, rather than throwing, when %s", async (_case, fetch) => {
-    expect(await loadDownload(CURVE, fetch)).toEqual({ ok: false, reason: "failed" });
+    expect(await loadDownload(CURVE, { fetchImpl: fetch })).toEqual({
+      ok: false,
+      reason: "failed",
+    });
+  });
+
+  // stands in for a stalled agent: answers only by failing once the request is aborted
+  const stalled = () =>
+    vi.fn(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+        }),
+    );
+
+  it("gives up and reports a failure when the portal doesn't answer in time", async () => {
+    expect(await loadDownload(CURVE, { fetchImpl: stalled(), timeoutMs: 20 })).toEqual({
+      ok: false,
+      reason: "failed",
+    });
+  });
+
+  it("stops waiting when the card goes away, without logging an error", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const controller = new AbortController();
+    const loading = loadDownload(CURVE, { fetchImpl: stalled(), signal: controller.signal });
+    controller.abort();
+    expect(await loading).toEqual({ ok: false, reason: "failed" });
+    expect(error).not.toHaveBeenCalled();
+    error.mockRestore();
   });
 });

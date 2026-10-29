@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Group, Menu, /* Select, */ Text, UnstyledButton } from "@mantine/core";
-import { IconChevronDown, IconPencil, IconTrash } from "@tabler/icons-react";
+import { Group, /* Select, */ Text, UnstyledButton } from "@mantine/core";
+import { IconChevronDown } from "@tabler/icons-react";
+import { ChatActionsMenu } from "./ChatActionsMenu";
 import { TitleInput } from "./TitleInput";
 
 export interface ChatHeaderProps {
@@ -41,38 +42,24 @@ export function ChatHeader({
             {editing ? (
               <TitleInput title={title} onRename={onRename} onDone={() => setEditing(false)} />
             ) : (
-              <Menu position="bottom-start" withinPortal>
-                <Menu.Target>
-                  <UnstyledButton aria-label={`Actions for ${title}`} title={title} miw={0}>
-                    <Group gap={4} wrap="nowrap" miw={0}>
-                      <Text size="sm" truncate="end">
-                        {title}
-                      </Text>
-                      <IconChevronDown
-                        size={16}
-                        color="var(--chat-accent)"
-                        style={{ flexShrink: 0 }}
-                      />
-                    </Group>
-                  </UnstyledButton>
-                </Menu.Target>
-                <Menu.Dropdown>
-                  <Menu.Item
-                    leftSection={<IconPencil size={14} />}
-                    onClick={() => setEditing(true)}
-                  >
-                    Rename
-                  </Menu.Item>
-                  <Menu.Item
-                    color="var(--chat-error)"
-                    leftSection={<IconTrash size={14} />}
-                    disabled={deleteDisabled}
-                    onClick={onDelete}
-                  >
-                    Delete
-                  </Menu.Item>
-                </Menu.Dropdown>
-              </Menu>
+              <ChatActionsMenu
+                deleteDisabled={deleteDisabled}
+                onRename={() => setEditing(true)}
+                onDelete={onDelete}
+              >
+                <UnstyledButton aria-label={`Actions for ${title}`} title={title} miw={0}>
+                  <Group gap={4} wrap="nowrap" miw={0}>
+                    <Text size="sm" truncate="end">
+                      {title}
+                    </Text>
+                    <IconChevronDown
+                      size={16}
+                      color="var(--chat-accent)"
+                      style={{ flexShrink: 0 }}
+                    />
+                  </Group>
+                </UnstyledButton>
+              </ChatActionsMenu>
             )}
           </>
         )}

@@ -51,7 +51,7 @@ you press Send
   2. the agent works, and the screen updates as events arrive:
        reasoning      "Thinking..." (only if the model shares its thoughts)
        a short reason "Looking up the field for lung cancer."
-       a tool call    search_fields  ✓
+       a tool call    search_fields  Completed
        ... more reasons and tool calls ...
        the answer     "About 5.43% of lung cancer cases ..."
   3. the run finishes with "success", so the whole chat is saved again
@@ -67,18 +67,19 @@ If your question is unclear (for example, "mutations" could mean SSM or CNV), th
 - **Steps**: before each tool call the agent writes one short reason. It shows in smaller grey text, above the tool panels it explains.
 - **The final answer** shows in a card, with a Copy button under it once it has finished. Copy puts the answer's Markdown on the clipboard, with download links made absolute so they still work when pasted.
 - **One panel per tool call**: the tool name, how long it took, and a status:
-  - ✓ the tool returned a result
-  - spinner: still running
-  - ⚠ the run ended without a result for this call
+  - ✓: the tool returned a result (a tick, so only problems show a coloured pill)
+  - Error: the tool failed, or it got bad arguments and the agent will retry. No card shows under it.
+  - Running: still running
+  - No result: the run ended without a result for this call
 
-  Click a panel to see its inputs (PARAMETERS) and its output (RESULT).
+  Click a panel to see its inputs (ARGUMENTS) and its output (RESULT, or ERROR), with JSON in colour. Calls to one tool that the agent makes together in one step share a row, such as "search_fields ×4"; its status is the worst of its calls ("1 error"), and it opens to its calls as numbered rows under it, each named by its arguments (`query: TCGA-CHOL`). Tools with a card are never grouped. pydantic-ai marks a failed call in a separate event after its result; `toChatMessage` in `core/utils.ts` reads it.
 
-- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as small buttons. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
+- **Download links** in answers (a file manifest as TSV, a cohort filter as JSON, a survival curve as JSON or CSV) show as ordinary links. Clicking one saves the file and keeps you on the chat page. The agent keeps each file for about 3 hours after it was last used. After that the link fails, and you ask again.
 - **A survival card** under `get_survival_data`: the curve, the number of donors and the yearly survival estimates, with Download JSON and CSV. Once the curve has expired, the card says so; ask again.
-- **A manifest card** under `get_file_manifest`, with Download TSV. A cohort filter downloads from the RESULT of its `create_filter` panel.
+- **A manifest card** under `get_file_manifest`, with Download TSV, and **a filter card** under `create_filter`, with its scope, its number of conditions and Download JSON. Each card is joined to its tool call, so it reads as that call's result.
 - **A header** with the open chat's title, as "Chat / title". Its menu renames or deletes the chat. The model picker is commented out in `ui/ChatHeader.tsx` while the agent offers one model; the names in `core/models.ts` must match the agent's `model-config.yaml` exactly.
-- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running.
-- **A "Scroll to latest" button** when you scroll up while an answer streams.
+- **A sidebar** with your chats, newest first, grouped into recent sessions (today), yesterday and earlier. You can search them by title, start a new chat, rename one, or delete one. You can't delete the chat that is running, and the other chats wait until it ends or you press Stop. A search always keeps the open chat in the list. On a computer, the arrow at its top folds it into a thin strip (new chat, search) and back; the browser remembers which. On a phone, the menu button opens it.
+- **A "Scroll to latest" button**, centred at the bottom of the chat, when you scroll up while an answer streams.
 - **An error banner**, "Something went wrong. Please try again." The details are in the browser console, as `[chat-core:<source>]`.
 
 ## Stop, Retry and Edit
@@ -137,10 +138,10 @@ Old chats from the previous agent (QAG) are still in your browser, in a database
 
 ## Colours
 
-Chat colours are CSS variables at the top of `src/styles.css`. Most of the chat uses them. Until the Phase 8 design pass these still name Mantine colours: the tool panels, the error banner, the grey status lines under a turn, and the grey Cancel button when you edit a question. Plain white surfaces and borders use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
+Chat colours are CSS variables at the top of `src/styles.css`, and the chat uses them throughout. Plain white surfaces and the cards' outlines use Mantine's body and border colours, and the survival plot keeps GDC's own curve colours.
 
-- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there.
-- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-muted`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-answer-line`, `--chat-success`, `--chat-download`, `--chat-primary`, `--chat-accent`), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey, which is below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
+- The palette (`--chat-blue`, `--chat-orange`, `--chat-green`, `--chat-red`, `--chat-red-dark`) is the designer's, from Figma. To change a colour, change its hex there. The colours under it (navy, the tints, the Error pill's red, a grey for icons and placeholders, and a darker orange for JSON strings) are the portal theme's and the wireframes' until the designer names them.
+- Components use the role variables (`--chat-title`, `--chat-value`, `--chat-error`, `--chat-error-strong`, `--chat-error-tint`, `--chat-muted`, `--chat-muted-tint`, `--chat-action`, `--chat-rule`, `--chat-panel`, `--chat-tint`, `--chat-tint-light`, `--chat-answer-line`, `--chat-success`, `--chat-success-tint`, `--chat-download`, `--chat-primary`, `--chat-tool-name`, `--chat-icon`, `--chat-guide`, `--chat-placeholder`, `--chat-accent`, and `--chat-json-*` for the JSON in tool panels), never a palette colour directly. `--chat-muted` replaces Mantine's "dimmed" grey and `--chat-placeholder` its placeholder grey; both are below the 4.5:1 contrast text needs. The portal is light-only (Mantine's default), so there are no dark-mode values. Check the contrast again when you change a colour.
 
 ## Running it locally
 
@@ -167,6 +168,12 @@ When you upgrade CopilotKit, set `@ag-ui/client` to the version that CopilotKit 
 
 React, Mantine, CopilotKit and AG-UI are **peer dependencies** of `@gen3/chat`: the app installs one shared copy. They hold shared state, so there must be only one copy.
 
+## Known limits
+
+- **One chat runs at a time.** While an answer runs, the other chats in the sidebar wait. The page has one live slot for the open chat, and the running answer is written into it. Switching chats mid-answer would put that answer into the wrong chat.
+- **A reload mid-answer loses the answer on screen.** The portal keeps the agent working, but the reloaded page doesn't reconnect to it. Retry in that chat fails until the old run ends (up to about a minute). Start a New conversation instead.
+- **The plan, after the demo:** give each chat its own agent, so an answer keeps running in the background while you read another chat. Then reconnect to a running answer after a reload, through CopilotKit's `connect`.
+
 ## Work in progress
 
 The move from the old QAG agent to the GDC agent happens in phases:
@@ -181,7 +188,9 @@ The move from the old QAG agent to the GDC agent happens in phases:
 | 6     | Survival card, manifest card and filter download for the new agent; chat colours               | done   |
 | 7     | Named Genomics Explorer; new empty screen, composer and sidebar; the agent's example questions | done   |
 | 7a    | Genomics Explorer in the nav bar; remove the Analysis page and its old AI tiles                | done   |
-| 8     | Steps list and status pills from the mockup; the rest of the design pass                       | next   |
+| 8     | Status pills, blue tool panels, sidebar fold and the last colours from the mockup              | done   |
+| 8     | Steps list from the mockup; spacing                                                            | next   |
+| Later | One agent per chat (background runs), then resume an answer after a reload                     | later  |
 
 The model picker works only after the agent reads the chosen model from `forwardedProps.model`. That is a separate change in the agent repo.
 

@@ -181,10 +181,12 @@ export function useChat({ agentId = "default" }: { agentId?: string }): UseChatA
 
   const selectChat = useCallback(
     async (id: string) => {
+      // reopening it would wipe its timings and the stop note, which live in memory only
+      if (id === chatId) return;
       if (!(await openChat(id))) return;
       resetLocalState();
     },
-    [openChat, resetLocalState],
+    [chatId, openChat, resetLocalState],
   );
 
   const deleteChat = useCallback(

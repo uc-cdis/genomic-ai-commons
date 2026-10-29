@@ -1,14 +1,16 @@
 "use client";
 
-import type { ChatMessage, Timings } from "../../core";
+import { memo } from "react";
+import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { ReasoningBlock } from "./ReasoningBlock";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
+import { sameMessageItem } from "./sameMessageItem";
 
 export interface MessageItemProps {
   message: ChatMessage;
   timings: Timings;
-  toolResults: ReadonlyMap<string, string>;
+  toolResults: ReadonlyMap<string, ToolResultMessage>;
   editableMessageId: string | null;
   isRunning: boolean;
   /** Last in the list. Only the tail can be mid-stream. */
@@ -17,7 +19,7 @@ export interface MessageItemProps {
   onRetry: () => void;
 }
 
-export function MessageItem({
+function MessageItemImpl({
   message,
   timings,
   toolResults,
@@ -64,3 +66,5 @@ export function MessageItem({
     />
   );
 }
+
+export const MessageItem = memo(MessageItemImpl, sameMessageItem);

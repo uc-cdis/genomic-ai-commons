@@ -12,7 +12,6 @@ describe("findDownload", () => {
       kind: "survival",
       url: "/download/survival/cs_QC9thrad-x0F",
       csvUrl: "/download/survival/cs_QC9thrad-x0F?format=csv",
-      fileName: "survival-cs_QC9thrad-x0F",
     });
   });
 
@@ -20,7 +19,6 @@ describe("findDownload", () => {
     expect(findDownload(fixture("get_file_manifest.json"), "manifest")).toEqual({
       kind: "manifest",
       url: "/download/manifest/fs_DamwvOAG15xa",
-      fileName: "manifest-fs_DamwvOAG15xa.tsv",
     });
   });
 
@@ -28,7 +26,6 @@ describe("findDownload", () => {
     expect(findDownload(fixture("create_filter.json"), "filter")).toEqual({
       kind: "filter",
       url: "/download/filter/flt_5RjmYszWqJkw",
-      fileName: "filter-flt_5RjmYszWqJkw.json",
     });
   });
 

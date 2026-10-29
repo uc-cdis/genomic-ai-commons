@@ -17,8 +17,8 @@ export function JumpToLatest({ onClick }: JumpToLatestProps) {
       size="lg"
       pos="absolute"
       bottom={12}
-      right={16}
-      style={{ boxShadow: "var(--mantine-shadow-md)" }}
+      left="50%"
+      style={{ transform: "translateX(-50%)", boxShadow: "var(--mantine-shadow-md)" }}
     >
       <IconArrowDown size={18} />
     </ActionIcon>

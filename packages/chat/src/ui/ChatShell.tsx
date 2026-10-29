@@ -1,28 +1,43 @@
 "use client";
 
-import { Box, Burger, Drawer, Group, useMantineTheme } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { useEffect, type ReactNode } from "react";
-import { HEADER_HEIGHT } from "./util";
+import { Box, Burger, Drawer, useMantineTheme } from "@mantine/core";
+import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
+import { useCallback, useEffect, type ReactNode } from "react";
+import { HeaderStrip } from "./HeaderStrip";
+
+export interface SidebarState {
+  collapsed: boolean;
+  /** absent in the mobile drawer, which always shows the whole list */
+  onToggleCollapsed?: () => void;
+}
 
 export interface ChatShellProps {
-  sidebar: ReactNode;
+  sidebar: (state: SidebarState) => ReactNode;
   children: ReactNode;
-  headerContent?: ReactNode;
+  headerContent: ReactNode;
 }
 
 const SIDEBAR_WIDTH = 340;
+const RAIL_WIDTH = 56;
 
 export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) {
   const theme = useMantineTheme();
   const isDesktop = useMediaQuery(`(min-width: ${theme.breakpoints.sm})`);
   const [mobileOpened, { toggle: toggleMobile, close: closeMobile }] = useDisclosure(false);
+  const [collapsed, setCollapsed] = useLocalStorage({
+    key: "gdc-chat-sidebar-collapsed",
+    defaultValue: false,
+    // the chat page only renders in the browser, so read it now instead of flashing the full list
+    getInitialValueInEffect: false,
+  });
 
   useEffect(() => {
     if (isDesktop && mobileOpened) closeMobile();
   }, [isDesktop, mobileOpened, closeMobile]);
 
-  const sidebarBody = (
+  const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), [setCollapsed]);
+
+  const sidebarBody = (state: SidebarState) => (
     <Box
       mih={0}
       style={{ flex: 1, display: "flex", flexDirection: "column" }}
@@ -34,13 +49,13 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
         closeMobile();
       }}
     >
-      {sidebar}
+      {sidebar(state)}
     </Box>
   );
 
   return (
     <Box
-      // Marker for the one global rule that gives this page a definite height.
+      // Marker for the chat's global rules in styles.css and the portal's globals.css.
       data-chat-shell
       pb="sm"
       mih={0}
@@ -56,32 +71,32 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
         <Box
           component="aside"
           visibleFrom="sm"
-          w={SIDEBAR_WIDTH}
-          p="md"
+          w={collapsed ? RAIL_WIDTH : SIDEBAR_WIDTH}
           mih={0}
           bg="var(--chat-panel)"
           style={{
             flexShrink: 0,
             display: "flex",
             flexDirection: "column",
-            borderInlineEnd: "1px solid var(--mantine-color-default-border)",
+            borderInlineEnd: "1px solid var(--chat-rule)",
           }}
         >
-          {sidebarBody}
+          {sidebarBody({ collapsed, onToggleCollapsed: toggleCollapsed })}
         </Box>
 
         <Drawer
           opened={mobileOpened}
           onClose={closeMobile}
           size={SIDEBAR_WIDTH}
-          padding="md"
+          padding={0}
+          className="chat-drawer"
           withCloseButton={false}
           styles={{
             content: { display: "flex", flexDirection: "column" },
             body: { flex: 1, minHeight: 0, display: "flex", flexDirection: "column" },
           }}
         >
-          {sidebarBody}
+          {sidebarBody({ collapsed: false })}
         </Drawer>
 
         <Box
@@ -90,14 +105,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
           miw={0}
           style={{ flex: 1, display: "flex", flexDirection: "column" }}
         >
-          <Group
-            hiddenFrom={headerContent ? undefined : "sm"}
-            h={HEADER_HEIGHT}
-            px="md"
-            gap="sm"
-            wrap="nowrap"
-            style={{ flexShrink: 0, borderBottom: "1px solid var(--chat-rule)" }}
-          >
+          <HeaderStrip>
             <Burger
               hiddenFrom="sm"
               opened={mobileOpened}
@@ -106,7 +114,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
               aria-label="Toggle conversation list"
             />
             {headerContent}
-          </Group>
+          </HeaderStrip>
           <Box mih={0} miw={0} style={{ flex: 1, display: "flex" }}>
             {children}
           </Box>

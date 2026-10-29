@@ -31,18 +31,43 @@ export function toChatMessage(message: Message): ChatMessage[] {
   }
 
   if (message.role === "tool") {
+    // tool content can be parts too; only the text is rendered
+    const content = extractText(message.content);
     return [
       {
         id: message.id,
         role: "tool",
         toolCallId: message.toolCallId,
-        // tool content can be parts too; only the text is rendered
-        content: extractText(message.content),
+        content,
+        failed:
+          message.error !== undefined ||
+          pydanticOutcome(message.encryptedValue) === "failed" ||
+          content.endsWith(RETRY_PROMPT_END),
       },
     ];
   }
 
   return [];
+}
+
+// TOOL_CALL_RESULT has no outcome, so pydantic-ai sends a failed call's outcome in a
+// REASONING_ENCRYPTED_VALUE event under its own key, which @ag-ui/client copies onto the message
+function pydanticOutcome(encryptedValue: string | undefined): unknown {
+  if (!encryptedValue) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(encryptedValue);
+    const claims = isRecord(parsed) ? parsed.pydantic_ai : undefined;
+    return isRecord(claims) ? claims.outcome : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+// bad arguments are retried rather than failed, and carry no outcome: only this ending
+const RETRY_PROMPT_END = "\n\nFix the errors and try again.";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /** Arguments arrive as a growing string, so they only parse once complete. */

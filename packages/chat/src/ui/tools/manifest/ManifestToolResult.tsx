@@ -22,20 +22,13 @@ function ManifestToolResultImpl({ result }: ToolRendererProps) {
   if (!manifest) return null;
 
   return (
-    <Paper withBorder radius="md" p="sm" bg="var(--chat-tint)">
+    <Paper className="chat-tool-card" radius="sm" p="sm" bg="var(--chat-tint)">
       <Group justify="space-between" wrap="wrap" gap="xs">
         <Group gap="xs" wrap="nowrap">
           <IconFileDescription size={18} color="var(--chat-title)" />
-          <div>
-            <Text size="sm" fw={700} c="var(--chat-title)">
-              GDC manifest{fileCount !== null ? ` · ${fileCount.toLocaleString()} files` : ""}
-            </Text>
-            {manifest.fileName && (
-              <Text size="xs" c="var(--chat-muted)">
-                {manifest.fileName}
-              </Text>
-            )}
-          </div>
+          <Text size="sm" fw={700} c="var(--chat-title)">
+            GDC manifest{fileCount !== null ? ` · ${fileCount.toLocaleString()} files` : ""}
+          </Text>
         </Group>
         <DownloadButton href={manifest.url} label="Download TSV" />
       </Group>

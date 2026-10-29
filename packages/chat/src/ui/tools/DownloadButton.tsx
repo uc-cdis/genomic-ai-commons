@@ -10,11 +10,13 @@ export function DownloadButton({ href, label }: { href: string; label: ReactNode
       component="a"
       href={href}
       download
-      className="chat-download"
       variant="outline"
       color="var(--chat-download)"
-      size="compact-xs"
-      leftSection={<IconDownload size={14} />}
+      size="compact-sm"
+      // the icon draws its tray at the bottom of its box, so it reads low beside the text:
+      // the -2px margin lifts its centre 1px
+      leftSection={<IconDownload size={16} style={{ marginTop: -2 }} />}
+      styles={{ section: { marginInlineEnd: 6 } }}
     >
       {label}
     </Button>

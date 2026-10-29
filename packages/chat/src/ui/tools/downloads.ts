@@ -7,8 +7,6 @@ export interface ToolDownload {
   url: string;
   /** survival curves also come as CSV */
   csvUrl?: string;
-  /** the name the agent gave the file, e.g. manifest-fs_….tsv */
-  fileName?: string;
 }
 
 // each tool's file sits in one known field of its result (gdc_mcp/tools/*.py)
@@ -31,6 +29,5 @@ export function findDownload(result: string | null, kind: DownloadKind): ToolDow
   const download: ToolDownload = { kind, url };
   // the portal serves JSON for any format but csv, so only the agent's exact csv link counts
   if (link.download_url_csv === `${url}?format=csv`) download.csvUrl = link.download_url_csv;
-  if (typeof link.name === "string") download.fileName = link.name;
   return download;
 }

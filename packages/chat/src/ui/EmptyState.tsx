@@ -2,16 +2,17 @@
 
 import { Stack, Text, Title, UnstyledButton, Group } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
+import { EXAMPLES_WIDTH, INTRO_WIDTH } from "./util";
 
 // the agent's own examples (gdc-mcp-demo agent/index.html), so they're questions it handles
 const EXAMPLE_QUESTIONS = [
+  "What is the 1-year survival estimate for TCGA-CHOL?",
   "What is the prevalence of BRAF SSMs in lung cancer?",
   "What is the prevalence of BRAF SSMs in lung cancer cases of non smoking women over 40?",
   "What is the average gene expression for TP53 and MUC16 in cases with lung adenocarcinoma?",
   "What is the average gene expression of BRAF in TCGA-BRCA?",
   "List the most variably expressed genes in APOLLO-LUAD.",
   "Compare the expression of TP53, MUC16, and BRAF in APOLLO-LUAD.",
-  "What is the 1-year survival estimate for TCGA-CHOL?",
 ] as const;
 
 export interface EmptyStateProps {
@@ -26,13 +27,13 @@ export function EmptyState({ onSelect, disabled }: EmptyStateProps) {
         <Title order={1} c="var(--chat-title)">
           Ask GDC About Cancer Data
         </Title>
-        <Text size="lg" maw={680} textWrap="wrap">
+        <Text size="lg" maw={INTRO_WIDTH} textWrap="wrap">
           Use <b>Genomics Explorer</b> to ask questions about harmonized GDC data: cohorts,
           mutations, gene expression, survival and files.
         </Text>
       </Stack>
 
-      <Stack gap="xs" w="100%" maw={760}>
+      <Stack gap="xs" w="100%" maw={EXAMPLES_WIDTH}>
         <Text size="xs" fw={700} c="var(--chat-accent)" lts="1px">
           EXAMPLE QUERIES
         </Text>

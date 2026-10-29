@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
-import type { ChatMessage, Timings } from "../../core";
+import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { MessageItem } from "./MessageItem";
 import { RunStatusBanner } from "./RunStatusBanner";
 import { JumpToLatest } from "./JumpToLatest";
@@ -50,9 +50,9 @@ export function MessageList({
   const lastMessageId = lastMessage?.id ?? null;
 
   const toolResults = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, ToolResultMessage>();
     for (const m of messages) {
-      if (m.role === "tool") map.set(m.toolCallId, m.content);
+      if (m.role === "tool") map.set(m.toolCallId, m);
     }
     return map;
   }, [messages]);
@@ -84,7 +84,7 @@ export function MessageList({
           {isRunning && <RunStatusBanner isRunning durationMs={null} />}
 
           {!isRunning && stopped && (
-            <Text size="xs" c="dimmed">
+            <Text size="xs" c="var(--chat-muted)">
               You stopped this response.
             </Text>
           )}

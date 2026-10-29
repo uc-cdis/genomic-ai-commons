@@ -9,6 +9,7 @@ import { Box, Stack } from "@mantine/core";
 import { EmptyState } from "./EmptyState";
 import { ErrorBanner } from "./ErrorBanner";
 import { MessageList } from "./messages";
+import { CHAT_MAX_WIDTH } from "./util";
 
 export interface ChatProps {
   agentId?: string;
@@ -55,23 +56,24 @@ export function Chat({ agentId }: ChatProps) {
           onModelChange={setModel}
         />
       }
-      sidebar={
+      sidebar={(state) => (
         <ChatSidebar
           chats={chats}
           activeChatId={chatId}
           loading={chatsLoading}
           isRunning={isRunning}
           onNewConversation={clearMessages}
-          onSelect={(id) => selectChat(id)}
-          onRename={(id, title) => renameChat(id, title)}
-          onDelete={(id) => deleteChat(id)}
+          onSelect={selectChat}
+          onRename={renameChat}
+          onDelete={deleteChat}
+          {...state}
         />
-      }
+      )}
     >
       <Stack flex={1} mih={0} miw={0} gap={0}>
         {isEmpty ? (
           <Box flex={1} mih={0} style={{ overflowY: "auto", display: "flex" }}>
-            <Box m="auto" maw={900} w="100%" px="lg" py="xl">
+            <Box m="auto" maw={CHAT_MAX_WIDTH} w="100%" px="lg" py="xl">
               <EmptyState onSelect={sendMessage} disabled={isRunning} />
             </Box>
           </Box>
@@ -88,20 +90,17 @@ export function Chat({ agentId }: ChatProps) {
           />
         )}
 
-        <Stack
-          gap="sm"
-          px="md"
-          pt="sm"
-          style={{ flexShrink: 0, borderTop: "1px solid var(--chat-rule)" }}
-        >
-          {error && <ErrorBanner error={error} onDismiss={clearError} />}
-          <ChatInput
-            isRunning={isRunning}
-            onSend={sendMessage}
-            onStop={stopRun}
-            placeholder="Ask me a question about GDC data ..."
-          />
-        </Stack>
+        <Box style={{ flexShrink: 0, borderTop: "1px solid var(--chat-rule)" }}>
+          <Stack gap="sm" px="md" pt="sm" maw={CHAT_MAX_WIDTH} mx="auto" w="100%">
+            {error && <ErrorBanner error={error} onDismiss={clearError} />}
+            <ChatInput
+              isRunning={isRunning}
+              onSend={sendMessage}
+              onStop={stopRun}
+              placeholder="Ask me a question about GDC data ..."
+            />
+          </Stack>
+        </Box>
       </Stack>
     </ChatShell>
   );
