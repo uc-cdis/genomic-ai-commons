@@ -6,6 +6,7 @@ import { PiGraphLight } from "react-icons/pi";
 import { VscServerProcess } from "react-icons/vsc";
 import { ImTable } from "react-icons/im";
 import MetadataPanel from "./MetadataPanel";
+import ProcessPanel from "./ProcessPanel";
 
 const App = () => {
   return (
@@ -32,7 +33,7 @@ const App = () => {
             </Tabs.Panel>
 
             <Tabs.Panel value="processing">
-                Messages tab content
+               <ProcessPanel/>
             </Tabs.Panel>
 
             <Tabs.Panel value="results">

@@ -1,4 +1,3 @@
-import {RunResult} from "../sketch/types";
 
 export interface InputFile {
     name: string;

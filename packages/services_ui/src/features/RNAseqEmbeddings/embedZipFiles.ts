@@ -1,9 +1,10 @@
 import JSZip from 'jszip';
-import {fetchJSONDataFromURL, HttpMethod } from '@gen3/core';
-import { EMBEDDING_MAX_WORKERS, EMBEDDING_MODEL_ENDPOINT } from './core/constants';
+import type { HttpMethod } from '@gen3/core';
+import {fetchJSONDataFromURL } from '@gen3/core';
+import { EMBEDDING_MAX_WORKERS } from './core/constants';
 import { isOsMetadata } from './isOsMetadata';
 
-const EMBEDDING_MODEL_ENDPOINT = '/api/'
+const EMBEDDING_MODEL_ENDPOINT = '/api/inference'
 
 export interface EmbeddingResult {
     fileName: string;
@@ -16,13 +17,11 @@ interface EmbedContext {
 }
 
 const embed = async (tsv: string, fileName: string, signal: AbortSignal): Promise<Record<string, any>> => {
-
    const url = EMBEDDING_MODEL_ENDPOINT;
-   const resp = await fetchJSONDataFromURL<Record<string, any>>(url, false, HttpMethod.POST, JSON.stringify({ tsv, sample_id: fileName }), signal);
-    if (!resp || resp === null)
+   const resp = await fetchJSONDataFromURL<Record<string, any>>(url, false, 'POST' as HttpMethod, JSON.stringify({ tsv: tsv, sample_id: fileName }), signal);
+    if (!resp)
         throw new Error(`null response`);
-    if (!resp.ok) throw new Error(`Embedding ${fileName} failed: ${resp.status} ${resp.statusText}`);
-    return resp.json();
+    return resp;
 };
 
 /**

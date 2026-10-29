@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next';
 import { getNavPageLayoutPropsFromConfig, ContentSource } from '@gen3/frontend';
 import type { RNASeqPageLayoutProps } from './types';
-import type { RNASeqConfiguration } from '../../features/RNAseqEmbeddings/sketch/types';
+import type { RNASeqConfiguration } from '../../features/RNAseqEmbeddings/types';
 import { GEN3_COMMONS_NAME } from '@gen3/core';
 
 const DEFAULT_RNASEQ_CONFIGURATION = {};

@@ -21,11 +21,12 @@ export default async function handler(
     if (process.env.NODE_ENV === 'development') {
         try {
             // given the sample_id load the corresponding tsv file
-            const jsonFilePath = `${MOCKED_DATA_DIR}/${sample_id}.json`;
+            const jsonFilePath = `${MOCKED_DATA_DIR}/${sample_id}`.replace(".tsv", ".json");
             const jsonContent = await readFile(jsonFilePath, 'utf8');
-            return res.status(200).json(jsonContent);
+            return res.status(200).json(JSON.parse(jsonContent));
         }
         catch (e:unknown) {
+            console.error(`inference mock failed for sample_id "${sample_id}":`, e);
             return res.status(500).json({ message: 'Internal server error' });
         }
     }
