@@ -7,6 +7,7 @@ import { AnswerCard } from "./AnswerCard";
 import { MarkdownContent } from "./MarkdownContent";
 import { ToolCallPanel } from "./ToolCallPanel";
 import { hasToolCard, ToolResultCard } from "../tools";
+import { argsSummary } from "./argsSummary";
 import { groupToolCalls } from "./groupToolCalls";
 import { ToolCallGroup } from "./ToolCallGroup";
 import { callStatus, groupStatus } from "./toolStatus";
@@ -44,10 +45,12 @@ export function AssistantMessage({
 
   const resultOf = (tc: ToolCall) => toolResults.get(tc.id)?.content ?? null;
   const failedOf = (tc: ToolCall) => toolResults.get(tc.id)?.failed ?? false;
-  const panel = (tc: ToolCall) => (
+  const panel = (tc: ToolCall, title?: string, index?: number) => (
     <ToolCallPanel
       key={tc.id}
       toolCall={tc}
+      title={title}
+      index={index}
       result={resultOf(tc)}
       failed={failedOf(tc)}
       isRunning={isRunning}
@@ -77,7 +80,7 @@ export function AssistantMessage({
               status={status}
               statusLabel={label}
             >
-              {calls.map(panel)}
+              {calls.map((tc, i) => panel(tc, argsSummary(tc.args), i + 1))}
             </ToolCallGroup>
           );
         }

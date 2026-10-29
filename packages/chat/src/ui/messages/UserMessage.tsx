@@ -39,6 +39,7 @@ export function UserMessage({ message, durationMs, canRewind, onEdit, onRetry }:
     return (
       <Stack gap="xs" w="100%" maw="80%" style={{ alignSelf: "flex-end" }}>
         <Textarea
+          size="md"
           autosize
           /* oxlint-disable-next-line jsx-a11y/no-autofocus */
           autoFocus

@@ -115,7 +115,7 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
     <Card>
       <Stack gap="sm">
         <Text fw={700} c="var(--chat-title)">
-          Overall Survival{project ? ` — ${project}` : ""}
+          Overall survival{project ? ` · ${project}` : ""}
         </Text>
 
         {curveLink && !loaded && <Skeleton height={HEIGHT} radius="sm" />}

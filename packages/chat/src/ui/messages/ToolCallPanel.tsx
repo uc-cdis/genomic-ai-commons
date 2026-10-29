@@ -8,6 +8,8 @@ import { callStatus } from "./toolStatus";
 
 export interface ToolCallPanelProps {
   toolCall: ToolCall;
+  title?: string;
+  index?: number;
   result: string | null;
   failed: boolean;
   /** A call with no result is only pending while a run is in flight. */
@@ -19,6 +21,8 @@ export interface ToolCallPanelProps {
 
 export function ToolCallPanel({
   toolCall,
+  title,
+  index,
   result,
   failed,
   isRunning,
@@ -29,7 +33,8 @@ export function ToolCallPanel({
   return (
     <Paper className="chat-tool-panel" radius="sm" bg="var(--mantine-color-default)">
       <ToolHeader
-        name={toolCall.name}
+        name={title || toolCall.name}
+        index={index}
         durationMs={durationMs}
         status={callStatus(result, failed, isRunning)}
         isExpanded={isExpanded}

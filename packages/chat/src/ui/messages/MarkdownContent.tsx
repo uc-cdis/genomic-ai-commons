@@ -40,11 +40,11 @@ const rehypePlugins: Options["rehypePlugins"] = [[rehypeKatex, { output: "mathml
 // re-parse their markdown every time a new word streams in
 export const MarkdownContent = memo(function MarkdownContent({
   content,
-  fz = "sm",
+  fz = "md",
 }: {
   content: string;
-  /** "xs" for agent steps; answers keep "sm" */
-  fz?: "xs" | "sm";
+  /** "xs" for agent steps; answers are "md" */
+  fz?: "xs" | "md";
 }) {
   return (
     <Typography fz={fz} className="chat-markdown">

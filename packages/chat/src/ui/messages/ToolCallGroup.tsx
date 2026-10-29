@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Collapse, Paper, Stack } from "@mantine/core";
+import { Collapse, Paper } from "@mantine/core";
 import { ToolHeader } from "./ToolHeader";
 import type { ToolStatus } from "./toolStatus";
 
@@ -27,9 +27,7 @@ export function ToolCallGroup({ name, count, status, statusLabel, children }: To
         onToggle={() => setExpanded((open) => !open)}
       />
       <Collapse expanded={isExpanded}>
-        <Stack p="sm" gap="xs" className="chat-tool-body">
-          {children}
-        </Stack>
+        <div className="chat-tool-list">{children}</div>
       </Collapse>
     </Paper>
   );

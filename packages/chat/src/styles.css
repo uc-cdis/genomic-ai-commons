@@ -44,6 +44,8 @@
   --chat-tool-name: var(--chat-navy);
   /* icons need 3:1; this is 4.83:1 on white */
   --chat-icon: var(--chat-gray);
+  /* 2.07:1 on white: under 3:1, as the indent and numbers carry the hierarchy too. gray-6 is 3.32:1 */
+  --chat-guide: var(--mantine-color-gray-5);
   /* 4.59:1 on the question box, 4.83:1 on white */
   --chat-placeholder: var(--chat-gray);
   /* 4.57:1 on white, only just over 4.5:1: re-check if the orange changes */
@@ -193,6 +195,27 @@ div:has(> main > [data-chat-shell]) {
 .chat-tool-group > .chat-tool-panel:not(:last-child) {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+}
+/* 17px = 10px padding + half the 16px tool icon - half the 2px line, so it drops from the icon */
+.chat-tool-list {
+  margin: 0 var(--mantine-spacing-xs) var(--mantine-spacing-xs) 17px;
+  border-left: 2px solid var(--chat-guide);
+}
+/* overflow: hidden on the panel would clip the focus ring, so draw it inside the row */
+.chat-tool-panel button[aria-expanded]:focus-visible {
+  outline-offset: -2px;
+}
+@media (hover: hover) {
+  .chat-tool-panel button[aria-expanded]:hover {
+    background: var(--chat-tint-light);
+  }
+}
+.chat-tool-list > .chat-tool-panel {
+  border: 0;
+  border-radius: 0;
+}
+.chat-tool-list > .chat-tool-panel + .chat-tool-panel {
+  border-top: 1px solid var(--chat-rule);
 }
 .chat-tool-group > .chat-tool-card {
   border-top: 0;
