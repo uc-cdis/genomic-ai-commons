@@ -63,9 +63,9 @@ export function Chat({ agentId }: ChatProps) {
           loading={chatsLoading}
           isRunning={isRunning}
           onNewConversation={clearMessages}
-          onSelect={(id) => selectChat(id)}
-          onRename={(id, title) => renameChat(id, title)}
-          onDelete={(id) => deleteChat(id)}
+          onSelect={selectChat}
+          onRename={renameChat}
+          onDelete={deleteChat}
           {...state}
         />
       )}

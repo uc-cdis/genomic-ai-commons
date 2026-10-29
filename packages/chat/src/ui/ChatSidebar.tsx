@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { memo, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ActionIcon,
   type ActionIconProps,
@@ -50,7 +50,8 @@ function SidebarIconButton({
   );
 }
 
-export function ChatSidebar({
+// memo: the chat re-renders on every streamed token, and the list has a menu per chat
+export const ChatSidebar = memo(function ChatSidebar({
   chats,
   activeChatId,
   loading,
@@ -179,4 +180,4 @@ export function ChatSidebar({
       </Stack>
     </Stack>
   );
-}
+});

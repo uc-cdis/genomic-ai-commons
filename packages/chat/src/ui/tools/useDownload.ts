@@ -9,13 +9,11 @@ export function useDownload(url: string | null): LoadedDownload | null {
 
   useEffect(() => {
     if (!url) return;
-    let alive = true;
-    void loadDownload(url).then((result) => {
-      if (alive) setLoaded({ url, result });
+    const controller = new AbortController();
+    void loadDownload(url, { signal: controller.signal }).then((result) => {
+      if (!controller.signal.aborted) setLoaded({ url, result });
     });
-    return () => {
-      alive = false;
-    };
+    return () => controller.abort();
   }, [url]);
 
   // keyed by url, so a new url never shows the last one's file

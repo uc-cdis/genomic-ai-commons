@@ -1,9 +1,11 @@
 "use client";
 
+import { memo } from "react";
 import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { ReasoningBlock } from "./ReasoningBlock";
 import { AssistantMessage } from "./AssistantMessage";
 import { UserMessage } from "./UserMessage";
+import { sameMessageItem } from "./sameMessageItem";
 
 export interface MessageItemProps {
   message: ChatMessage;
@@ -17,7 +19,7 @@ export interface MessageItemProps {
   onRetry: () => void;
 }
 
-export function MessageItem({
+function MessageItemImpl({
   message,
   timings,
   toolResults,
@@ -64,3 +66,5 @@ export function MessageItem({
     />
   );
 }
+
+export const MessageItem = memo(MessageItemImpl, sameMessageItem);

@@ -2,7 +2,7 @@
 
 import { Box, Burger, Drawer, useMantineTheme } from "@mantine/core";
 import { useDisclosure, useLocalStorage, useMediaQuery } from "@mantine/hooks";
-import { useEffect, type ReactNode } from "react";
+import { useCallback, useEffect, type ReactNode } from "react";
 import { HeaderStrip } from "./HeaderStrip";
 
 export interface SidebarState {
@@ -34,6 +34,8 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
   useEffect(() => {
     if (isDesktop && mobileOpened) closeMobile();
   }, [isDesktop, mobileOpened, closeMobile]);
+
+  const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), [setCollapsed]);
 
   const sidebarBody = (state: SidebarState) => (
     <Box
@@ -79,7 +81,7 @@ export function ChatShell({ sidebar, children, headerContent }: ChatShellProps) 
             borderInlineEnd: "1px solid var(--chat-rule)",
           }}
         >
-          {sidebarBody({ collapsed, onToggleCollapsed: () => setCollapsed(!collapsed) })}
+          {sidebarBody({ collapsed, onToggleCollapsed: toggleCollapsed })}
         </Box>
 
         <Drawer
