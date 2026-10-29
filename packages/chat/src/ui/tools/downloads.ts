@@ -1,6 +1,10 @@
 import { isAgentDownloadLink, type DownloadKind } from "../../core/downloadLinks";
 import { isRecord, parseJson } from "./json";
 
+// false: the agent's answer links every file under its result, so the cards don't repeat them.
+// true brings back the filter and manifest cards and the survival card's buttons
+export const CARD_DOWNLOADS = false;
+
 export interface ToolDownload {
   kind: DownloadKind;
   /** /download/<kind>/<handle>, as the agent wrote it */

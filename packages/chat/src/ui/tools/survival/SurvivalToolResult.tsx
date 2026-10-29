@@ -4,7 +4,7 @@ import { memo, useMemo, type ReactNode } from "react";
 import { Box, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { sameToolResult, type ToolRendererProps } from "../types";
 import { DownloadButton } from "../DownloadButton";
-import { findDownload } from "../downloads";
+import { CARD_DOWNLOADS, findDownload } from "../downloads";
 import { useDownload } from "../useDownload";
 import type { DownloadFailure } from "../loadDownload";
 import { readSurvivalSummary, type SurvivalSummary } from "./readResult";
@@ -109,7 +109,7 @@ function SurvivalToolResultImpl({ result }: ToolRendererProps) {
   const project = parsed?.ok ? projectLabel(parsed.data.curves) : null;
   const failure = loaded && !loaded.ok ? loaded.reason : null;
   // an expired handle or an ended login would only make the buttons fail too
-  const canDownload = curveLink && failure !== "expired" && failure !== "login";
+  const canDownload = CARD_DOWNLOADS && curveLink && failure !== "expired" && failure !== "login";
 
   return (
     <Card>
