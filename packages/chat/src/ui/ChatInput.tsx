@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Group, Select, Stack, Text, Textarea, Tooltip } from "@mantine/core";
+import { Button, Group, Select, Stack, Text, Textarea } from "@mantine/core";
 
 export interface ChatInputProps {
   isRunning: boolean;
-  blockedReason?: string;
   onSend: (text: string) => void;
   onStop: () => void;
   label?: string;
@@ -17,7 +16,6 @@ export interface ChatInputProps {
 
 export function ChatInput({
   isRunning,
-  blockedReason,
   onSend,
   onStop,
   label,
@@ -30,7 +28,7 @@ export function ChatInput({
 
   const send = () => {
     const trimmed = value.trim();
-    if (!trimmed || isRunning || blockedReason) return;
+    if (!trimmed || isRunning) return;
     onSend(trimmed);
     setValue("");
   };
@@ -73,15 +71,9 @@ export function ChatInput({
             Stop
           </Button>
         ) : (
-          <Tooltip label={blockedReason} disabled={!blockedReason} withArrow position="top">
-            <Button
-              onClick={send}
-              data-disabled={blockedReason ? true : undefined}
-              disabled={!blockedReason && !value.trim()}
-            >
-              Send
-            </Button>
-          </Tooltip>
+          <Button onClick={send} disabled={!value.trim()}>
+            Send
+          </Button>
         )}
       </Group>
     </Stack>

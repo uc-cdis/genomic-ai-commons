@@ -1,115 +1,131 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Divider, Group, Paper, Skeleton, Text, Tooltip } from "@mantine/core";
-import type { ToolRendererProps } from "../types";
-import { readPayloadRef, type SummaryStat } from "../payload";
-import { usePayload } from "../usePayload";
-import type { SurvivalData } from "./parse";
-import { parseSurvivalResult } from "./parse";
+import { Box, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { sameToolResult, type ToolRendererProps } from "../types";
+import { DownloadButton } from "../DownloadButton";
+import { findDownload } from "../downloads";
+import { useDownload } from "../useDownload";
+import type { DownloadFailure } from "../loadDownload";
+import { readSurvivalSummary, type SurvivalSummary } from "./readResult";
+import { parseSurvivalResult, projectLabel, type SurvivalData } from "./parse";
 import { MINIMUM_CASES, SurvivalPlot } from "./SurvivalPlot";
 
 const HEIGHT = 300;
 
-function SummaryStrip({ stats }: { stats: SummaryStat[] }) {
-  if (stats.length === 0) return null;
+const UNAVAILABLE: Record<DownloadFailure, string> = {
+  expired: "This curve has expired. Ask again to recompute it.",
+  login: "Your login has ended. Log in again to see the curve.",
+  failed: "Couldn't load the curve. Try again later.",
+};
 
+function Tile({ label, value }: { label: string; value: string }) {
   return (
-    <Group gap="xl" wrap="wrap">
-      {stats.map((stat, i) => (
-        // Labels come from the agent and could repeat, so the index keeps the key unique.
-        <div key={`${stat.label}-${i}`}>
-          <Text size="xs" c="dimmed" tt="uppercase">
-            {stat.label}
-          </Text>
-          <Text size="lg" fw={700}>
-            {`${(stat.value * 100).toFixed(1)}%`}
-          </Text>
-        </div>
+    <Box pl="xs" style={{ borderLeft: "2px solid var(--chat-rule)" }}>
+      <Text size="xs" fw={600} c="var(--chat-muted)" tt="uppercase">
+        {label}
+      </Text>
+      <Text fw={700} c="var(--chat-value)">
+        {value}
+      </Text>
+    </Box>
+  );
+}
+
+function Tiles({ summary }: { summary: SurvivalSummary }) {
+  return (
+    <Group gap="lg" wrap="wrap">
+      <Tile label="Donors" value={summary.donors.toLocaleString()} />
+      {summary.estimates.map((e) => (
+        <Tile key={e.years} label={`${e.years}-yr`} value={`${(e.value * 100).toFixed(1)}%`} />
       ))}
     </Group>
   );
 }
 
-function SurvivalBody({ data }: { data: SurvivalData }) {
+function Curve({ data }: { data: SurvivalData }) {
   const { curves, pValue } = data;
 
   // Matches GDC's enoughData(): every curve must clear MINIMUM_CASES.
   if (curves.length === 0 || curves.some((c) => c.n < MINIMUM_CASES)) {
     return (
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="var(--chat-muted)">
         Not enough survival data.
       </Text>
     );
   }
 
-  const curve = curves[0];
-
   return (
     <>
-      <Text size="sm">
-        <b>{curve.n.toLocaleString()}</b> Cases with Survival Data
-      </Text>
       {pValue !== undefined && (
         <Tooltip
           disabled={pValue !== 0}
           label="Value shows 0.00e+0 because the P-Value is extremely low and goes beyond the precision inherent in the code."
         >
-          <Text size="xs" c="dimmed">
+          <Text size="xs" c="var(--chat-muted)">
             Log-Rank Test P-Value = {pValue.toExponential(2)}
           </Text>
         </Tooltip>
       )}
-      <SurvivalPlot curve={curve} height={HEIGHT} />
+      <SurvivalPlot curve={curves[0]} height={HEIGHT} />
     </>
   );
 }
 
 function SurvivalToolResultImpl({ result }: ToolRendererProps) {
-  const ref = useMemo(() => (result ? readPayloadRef(result) : null), [result]);
-  // Unconditional: a null id just idles the hook.
-  const { data, loading, error } = usePayload(ref?.payloadId ?? null);
-  const parsed = useMemo(() => (data ? parseSurvivalResult(data) : null), [data]);
+  const summary = useMemo(() => (result ? readSurvivalSummary(result) : null), [result]);
+  // the curve's own link, as the agent wrote it; only links the portal serves come back
+  const curveLink = useMemo(() => findDownload(result, "survival"), [result]);
+  // Unconditional: a null url just idles the hook.
+  const loaded = useDownload(curveLink?.url ?? null);
+  const parsed = useMemo(() => (loaded?.ok ? parseSurvivalResult(loaded.text) : null), [loaded]);
 
   if (!result) return <Skeleton height={HEIGHT} radius="sm" />;
 
-  if (!ref) {
+  if (!summary && !curveLink) {
     return (
-      <Text size="sm" c="dimmed">
+      <Text size="sm" c="var(--chat-muted)">
         Couldn&apos;t read the survival result.
       </Text>
     );
   }
 
+  const project = parsed?.ok ? projectLabel(parsed.data.curves) : null;
+  const failure = loaded && !loaded.ok ? loaded.reason : null;
+  // an expired handle or an ended login would only make the buttons fail too
+  const canDownload = curveLink && failure !== "expired" && failure !== "login";
+
   return (
-    <Paper withBorder radius="sm" p="sm" bg="var(--mantine-color-body)">
-      <SummaryStrip stats={ref.summary} />
-
-      {loading && <Skeleton height={HEIGHT} radius="sm" mt="sm" />}
-
-      {error && (
-        <Text size="xs" c="dimmed" mt="xs">
-          {error}
+    <Paper withBorder radius="md" p="md" bg="var(--mantine-color-body)">
+      <Stack gap="sm">
+        <Text fw={700} c="var(--chat-title)">
+          Overall Survival{project ? ` — ${project}` : ""}
         </Text>
-      )}
 
-      {parsed && !parsed.ok && (
-        <Text size="xs" c="dimmed" mt="xs">
-          Couldn&apos;t read the full curve ({parsed.reason}).
-        </Text>
-      )}
+        {curveLink && !loaded && <Skeleton height={HEIGHT} radius="sm" />}
+        {failure && (
+          <Text size="sm" c={failure === "expired" ? "var(--chat-muted)" : "var(--chat-error)"}>
+            {UNAVAILABLE[failure]}
+          </Text>
+        )}
+        {parsed && !parsed.ok && (
+          <Text size="sm" c="var(--chat-error)">
+            Couldn&apos;t read the curve ({parsed.reason}).
+          </Text>
+        )}
+        {parsed?.ok && <Curve data={parsed.data} />}
 
-      {parsed?.ok && (
-        <>
-          <Divider my="sm" />
-          <SurvivalBody data={parsed.data} />
-        </>
-      )}
+        {summary && <Tiles summary={summary} />}
+
+        {canDownload && (
+          <Group gap={4}>
+            <DownloadButton href={curveLink.url} label="Download JSON" />
+            {curveLink.csvUrl && <DownloadButton href={curveLink.csvUrl} label="Download CSV" />}
+          </Group>
+        )}
+      </Stack>
     </Paper>
   );
 }
 
-export const SurvivalToolResult = memo(
-  SurvivalToolResultImpl,
-  (a, b) => a.result === b.result && a.toolCall.id === b.toolCall.id,
-);
+export const SurvivalToolResult = memo(SurvivalToolResultImpl, sameToolResult);

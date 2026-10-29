@@ -12,7 +12,9 @@ export function ReasoningBlock({
   durationMs?: number;
   isStreaming: boolean;
 }) {
-  const [opened, setOpened] = useState(false);
+  // open while it thinks, closed once it's done; a click overrides either way
+  const [userOpened, setUserOpened] = useState<boolean | null>(null);
+  const opened = userOpened ?? isStreaming;
 
   const label =
     durationMs !== undefined
@@ -23,7 +25,7 @@ export function ReasoningBlock({
 
   return (
     <>
-      <UnstyledButton onClick={() => setOpened(!opened)} aria-expanded={opened} w="fit-content">
+      <UnstyledButton onClick={() => setUserOpened(!opened)} aria-expanded={opened} w="fit-content">
         <Group>
           <IconBrain size="16" />
           <Text size="xs" fw={600} c="dimmed">

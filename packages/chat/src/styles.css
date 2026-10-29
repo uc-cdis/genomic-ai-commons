@@ -1,9 +1,59 @@
 /* rehype-katex emits KaTeX markup but no stylesheet; without this, math renders unstyled. */
 @import "katex/dist/katex.min.css";
 
+/* Chat colours: change them here. The cards and steps read these; older parts still name
+   Mantine colours until the design pass. */
+:root {
+  /* the designer's palette (Figma) */
+  --chat-blue: #2a72a5;
+  --chat-orange: #c7501a;
+  --chat-green: #15803d;
+  --chat-red: #dc2626;
+  --chat-red-dark: #991b1b; /* usually red text on a pale red background: ask the designer */
+  /* not in the designer's list yet: the portal theme's accentCool, and the wireframes' card tint */
+  --chat-navy: #0f4163;
+  --chat-surface: #edf4fa;
+
+  /* what components use */
+  --chat-title: var(--chat-navy);
+  --chat-value: var(--chat-blue);
+  --chat-error: var(--chat-red);
+  /* Mantine's "dimmed" grey is below the 4.5:1 text needs (3.3:1 on white); this is ~8:1 */
+  --chat-muted: var(--mantine-color-gray-7);
+  --chat-action: var(--chat-muted);
+  --chat-rule: var(--mantine-color-default-border);
+  --chat-tint: var(--chat-surface);
+}
+
 /* NavPageLayout's root is `h-full min-h-dvh` - an indefinite height - so main's
    `flex-basis:0%` falls back to content size and the page scrolls, not the transcript.
    Without this rule the viewport is not a scroll container and autoscroll is dead. */
 div:has(> main > [data-chat-shell]) {
   height: 100dvh;
+}
+
+/* The portal's Tailwind reset sets list-style: none on every list. Mantine's Typography puts the
+   indent back but not the marker, so answers' lists lost their bullets and numbers. */
+.chat-markdown ul {
+  list-style: disc;
+}
+.chat-markdown ul ul {
+  list-style: circle;
+}
+.chat-markdown ol {
+  list-style: decimal;
+}
+/* GFM task lists ("- [ ] …") already show a checkbox */
+.chat-markdown ul.contains-task-list {
+  list-style: none;
+}
+/* Mantine's Typography underlines links only on hover; always, so they read as links */
+.chat-markdown a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Steps are read, not skimmed, so they keep full contrast while still reading as grey. */
+.chat-step {
+  color: var(--chat-muted);
 }

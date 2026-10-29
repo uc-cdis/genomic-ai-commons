@@ -1,13 +1,9 @@
-import type { ToolRendererEntry } from "./types";
+import type { ToolRenderer } from "./types";
+import { ManifestToolResult } from "./manifest/ManifestToolResult";
 import { SurvivalToolResult } from "./survival/SurvivalToolResult";
-import { ReportToolResult } from "./report/ReportToolResult";
 
-export const toolRenderers: Record<string, ToolRendererEntry | undefined> = {
-  get_survival_data: { Component: SurvivalToolResult },
-  run_query: { Component: ReportToolResult, trailing: true },
-  start_rewoo: { Component: ReportToolResult, trailing: true },
+/** Tools whose result gets its own card under the tool call, keyed by tool name. */
+export const toolRenderers: Record<string, ToolRenderer | undefined> = {
+  get_file_manifest: ManifestToolResult,
+  get_survival_data: SurvivalToolResult,
 };
-
-export function isTrailingTool(name: string): boolean {
-  return toolRenderers[name]?.trailing === true;
-}

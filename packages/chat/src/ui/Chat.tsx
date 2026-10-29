@@ -1,8 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
 import { useChat } from "../core";
-import type { InterruptActions } from "./interrupts";
 import { ChatShell } from "./ChatShell";
 import { ChatSidebar } from "./ChatSidebar";
 import { ChatInput } from "./ChatInput";
@@ -15,8 +13,6 @@ import { CHAT_MAX_WIDTH } from "./util";
 export interface ChatProps {
   agentId?: string;
 }
-
-const BLOCKED_BY_APPROVAL = "Respond to the plan above to continue.";
 
 export function Chat({ agentId }: ChatProps) {
   const {
@@ -38,26 +34,12 @@ export function Chat({ agentId }: ChatProps) {
     retry,
     editableMessageId,
     editAndRerun,
-    interrupts,
-    awaitingApproval,
-    resolvedInterrupts,
-    interruptSubmitting,
-    answerInterrupt,
     models,
     model,
     setModel,
   } = useChat({ agentId });
 
   const isEmpty = messages.length === 0 && !isRunning;
-
-  const interruptActions = useMemo<InterruptActions>(
-    () => ({
-      onApprove: (id) => answerInterrupt(id, { approved: true }),
-      onDeny: (id, reason) => answerInterrupt(id, { approved: false, reason }),
-      submitting: interruptSubmitting,
-    }),
-    [answerInterrupt, interruptSubmitting],
-  );
 
   return (
     <ChatShell
@@ -100,9 +82,6 @@ export function Chat({ agentId }: ChatProps) {
               timings={timings}
               stopped={stopped}
               chatId={chatId}
-              interrupts={interrupts}
-              resolvedInterrupts={resolvedInterrupts}
-              interruptActions={interruptActions}
               editableMessageId={editableMessageId}
               onRetry={retry}
               onEdit={editAndRerun}
@@ -122,12 +101,9 @@ export function Chat({ agentId }: ChatProps) {
 
               <ChatInput
                 isRunning={isRunning}
-                blockedReason={awaitingApproval ? BLOCKED_BY_APPROVAL : undefined}
                 onSend={sendMessage}
                 onStop={stopRun}
-                placeholder={
-                  awaitingApproval ? BLOCKED_BY_APPROVAL : "Ask me a question about GDC data ..."
-                }
+                placeholder="Ask me a question about GDC data ..."
                 models={models}
                 model={model}
                 onModelChange={setModel}
