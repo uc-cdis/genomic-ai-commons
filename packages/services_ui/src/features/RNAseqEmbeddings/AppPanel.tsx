@@ -7,6 +7,7 @@ import { VscServerProcess } from "react-icons/vsc";
 import { ImTable } from "react-icons/im";
 import MetadataPanel from "./MetadataPanel";
 import ProcessPanel from "./ProcessPanel";
+import VisPanel from "./VisualizationPanel";
 
 const App = () => {
   return (
@@ -36,8 +37,8 @@ const App = () => {
                <ProcessPanel/>
             </Tabs.Panel>
 
-            <Tabs.Panel value="results">
-                Settings tab content
+            <Tabs.Panel value="results" className="min-h-0">
+               <VisPanel/>
             </Tabs.Panel>
         </Tabs>
     </div>

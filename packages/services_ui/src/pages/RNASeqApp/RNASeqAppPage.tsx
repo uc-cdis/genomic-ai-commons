@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 import React from 'react';
-import { NavPageLayout } from '@gen3/frontend';
+import { FixedNavPageLayout } from '@gen3/frontend';
 import type { RNASeqPageLayoutProps } from './types';
 import {RNASeqEmbeddingsApp} from "../../features/RNAseqEmbeddings";
 
@@ -10,7 +10,7 @@ const RNASeqAppPage = ({
   configuration,
 }: RNASeqPageLayoutProps): JSX.Element => {
   return (
-    <NavPageLayout
+    <FixedNavPageLayout
       {...{ headerProps, footerProps }}
       headerMetadata={{
         title: 'RNA Sequence Embeddings App',
@@ -20,7 +20,7 @@ const RNASeqAppPage = ({
       }}
     >
       <RNASeqEmbeddingsApp />
-    </NavPageLayout>
+    </FixedNavPageLayout>
   );
 };
 

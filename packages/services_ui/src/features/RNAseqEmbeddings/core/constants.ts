@@ -7,5 +7,7 @@ export const GEN3_INFERENCE_SERVICE =
 export const EMBEDDING_MODEL_ENDPOINT = `${GEN3_INFERENCE_SERVICE}/rna-seq-transformer/v1/models/bulkrnabert:predict`;
 export const EMBEDDING_MAX_WORKERS = 8;
 
+export const GEN3_EMBEDDINGS_SERVICE = `${`https://genomicaicommons.org`}/ai/vectorstore/collections`;
+
 // JSZip reads the whole archive into memory, so larger zips risk exhausting the tab
 export const MAX_ZIP_BYTES = 1024 ** 3;
