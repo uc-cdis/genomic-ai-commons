@@ -7,14 +7,30 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import { Typography } from "@mantine/core";
 import { isAgentDownloadLink } from "../../core/downloadLinks";
+import { DownloadButton } from "../tools/DownloadButton";
+import { readParagraph } from "./markdownParagraph";
 import { normalizeMath } from "./normalizeMath";
 
 const components: Components = {
   table: ({ children }) => (
-    <div style={{ overflowX: "auto", maxWidth: "100%" }}>
+    <div className="chat-table" style={{ overflowX: "auto", maxWidth: "100%" }}>
       <table>{children}</table>
     </div>
   ),
+  p: ({ node, children, ...props }) => {
+    const paragraph = readParagraph(node);
+    if (paragraph.kind === "download")
+      return (
+        <p {...props} className="chat-download-row">
+          <DownloadButton href={paragraph.href} label={paragraph.label} />
+        </p>
+      );
+    return (
+      <p {...props} className={paragraph.kind === "headline" ? "chat-headline" : undefined}>
+        {children}
+      </p>
+    );
+  },
   a: ({ node: _node, children, ...props }) => {
     // `download` saves in place, so an expired link can't navigate away from the chat
     if (props.href && isAgentDownloadLink(props.href))

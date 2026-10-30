@@ -12,11 +12,13 @@ export function toChatMessage(message: Message): ChatMessage[] {
 
   if (message.role === "assistant") {
     const text = extractText(message.content);
-    const toolCalls: ToolCall[] = (message.toolCalls ?? []).map((tc) => ({
-      id: tc.id,
-      name: tc.function.name,
-      args: parseArgs(tc.function.arguments),
-    }));
+    const toolCalls: ToolCall[] = (message.toolCalls ?? [])
+      .filter((tc) => tc.function.name !== ANSWER_TOOL)
+      .map((tc) => ({
+        id: tc.id,
+        name: tc.function.name,
+        args: parseArgs(tc.function.arguments),
+      }));
 
     if (!text && toolCalls.length === 0) return [];
 
@@ -49,6 +51,10 @@ export function toChatMessage(message: Message): ChatMessage[] {
 
   return [];
 }
+
+// pydantic-ai's output tool: its arguments are a draft the agent may still reject; the
+// checked answer arrives after it as a text message
+const ANSWER_TOOL = "final_result";
 
 // TOOL_CALL_RESULT has no outcome, so pydantic-ai sends a failed call's outcome in a
 // REASONING_ENCRYPTED_VALUE event under its own key, which @ag-ui/client copies onto the message

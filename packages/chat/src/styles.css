@@ -94,6 +94,12 @@ div:has(> main > [data-chat-shell]) {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+.chat-markdown .chat-download-row a {
+  text-decoration: none;
+}
+.chat-answer .chat-headline {
+  color: var(--chat-title);
+}
 /* a long URL or inline JSON has no break points and would run past the answer card */
 .chat-markdown :is(p, li) {
   overflow-wrap: break-word;
@@ -114,6 +120,10 @@ div:has(> main > [data-chat-shell]) {
 }
 .chat-markdown table {
   width: auto;
+}
+/* a table's scroll box gets a paragraph's gap; Typography gives the table none (it is the box's last child) */
+.chat-markdown .chat-table {
+  margin-bottom: var(--mantine-spacing-lg);
 }
 .chat-markdown :is(th, td) {
   border: 1px solid var(--chat-rule);
