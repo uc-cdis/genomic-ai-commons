@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useState } from "react";
 import { ActionIcon, Textarea, Tooltip } from "@mantine/core";
 import { IconPlayerStopFilled, IconSend } from "@tabler/icons-react";
 import { isSubmitEnter } from "./util";
@@ -12,7 +12,13 @@ export interface ChatInputProps {
   placeholder?: string;
 }
 
-export function ChatInput({ isRunning, onSend, onStop, placeholder }: ChatInputProps) {
+// memo: the chat re-renders as answers stream, and each render makes the textarea re-measure
+export const ChatInput = memo(function ChatInput({
+  isRunning,
+  onSend,
+  onStop,
+  placeholder,
+}: ChatInputProps) {
   const [value, setValue] = useState("");
 
   const send = () => {
@@ -68,4 +74,4 @@ export function ChatInput({ isRunning, onSend, onStop, placeholder }: ChatInputP
       }
     />
   );
-}
+});

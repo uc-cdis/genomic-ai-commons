@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, ScrollArea, Stack, Text, Transition } from "@mantine/core";
 import { useIsomorphicEffect } from "@mantine/hooks";
 import type { ChatMessage, Timings, ToolResultMessage } from "../../core";
 import { MessageItem } from "./MessageItem";
@@ -91,7 +91,9 @@ export function MessageList({
         </Stack>
       </ScrollArea>
 
-      {!following && <JumpToLatest onClick={() => scrollToBottom()} />}
+      <Transition mounted={!following} transition="fade-up" duration={150}>
+        {(style) => <JumpToLatest style={style} onClick={() => scrollToBottom()} />}
+      </Transition>
     </Box>
   );
 }
