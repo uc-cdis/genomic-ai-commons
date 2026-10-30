@@ -43,7 +43,8 @@ export interface UseChatApi {
 
 // headless facade for the chat UI - /ui imports this and ChatMessage, nothing else
 export function useChat({ agentId = "default" }: { agentId?: string }): UseChatApi {
-  const { agent } = useAgent({ agentId });
+  // unthrottled, every streamed token re-renders the chat and re-parses the whole answer
+  const { agent } = useAgent({ agentId, throttleMs: 50 });
   const { copilotkit } = useCopilotKit();
 
   const [error, setError] = useState<ChatError | null>(null);
