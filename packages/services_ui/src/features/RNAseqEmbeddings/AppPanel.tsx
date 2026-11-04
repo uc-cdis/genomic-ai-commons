@@ -42,9 +42,9 @@ const App = ({ demoFilesUrl }: AppPanelProps) => {
           </div>
         )}
       </div>
-      <div className="flex flex-col w-3/4 h-full">
+      <div className="flex flex-col w-3/4 h-full min-h-0">
         <ProcessAllPanel />
-        <Tabs defaultValue="results">
+        <Tabs defaultValue="results" className="flex flex-col flex-1 min-h-0">
           <Tabs.List>
             <Tabs.Tab value="metadata" leftSection={<ImTable size={12} />}>
               Input Metadata
@@ -59,7 +59,7 @@ const App = ({ demoFilesUrl }: AppPanelProps) => {
           <Tabs.Panel value="metadata">
             <MetadataPanel />
           </Tabs.Panel>
-          <Tabs.Panel value="results" className="min-h-0">
+          <Tabs.Panel value="results" className="flex-1 min-h-0">
             <VisPanel />
           </Tabs.Panel>
           <Tabs.Panel value="embeddingsSummary" className="min-h-0">

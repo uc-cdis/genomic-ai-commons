@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Group, LoadingOverlay, MultiSelect, Select, Text} from "@mantine/core";
+import { Accordion, Group, LoadingOverlay, MultiSelect, Select, Text} from "@mantine/core";
 import NeighborsTable from "./NeighborsTable";
 import UMAPComparisonPlot from "./charts/UMAPComparisonPlot";
 import {useVisualization} from "./core/VisualizationContext";
@@ -36,7 +36,7 @@ const VisPanel = () => {
   </div>);
 
   return (
-    <div className="flex flex-col space-y-2 m-2 p-1 h-full ">
+    <div className="flex flex-col space-y-2 m-2 p-1 h-full min-h-0">
 
       {isProcessingError && (
         <Text c="red">Processing failed. See the console for details.</Text>
@@ -90,12 +90,21 @@ const VisPanel = () => {
         </Group>
       )}
       {plotData && (
-        <div className="relative flex-1 min-h-[1024px] w-full">
+        <div className="relative flex-1 min-h-[400px] w-full">
           <LoadingOverlay visible={isProcessing}  />
           <UMAPComparisonPlot data={plotData} metadataFilter={metadataFilter} tcgaColoring={tcgaColoring} />
         </div>
       )}
-      {neighbors && <NeighborsTable rows={neighbors} />}
+      {neighbors && (
+        <Accordion variant="contained" className="shrink-0">
+          <Accordion.Item value="neighbors">
+            <Accordion.Control>Nearest TCGA neighbors ({neighbors.length} samples)</Accordion.Control>
+            <Accordion.Panel>
+              <NeighborsTable rows={neighbors} />
+            </Accordion.Panel>
+          </Accordion.Item>
+        </Accordion>
+      )}
     </div>
   );
 };
