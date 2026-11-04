@@ -2,7 +2,7 @@
 # docker run -p 3000:3000 -it gen3:gac
 # Build from the repo root, not this folder: npm workspaces need the root lockfile
 # Dependency stage
-FROM --platform=$BUILDPLATFORM node:24.18.1-alpine3.23 AS deps
+FROM --platform=$BUILDPLATFORM node:24.22.1-alpine3.23 AS deps
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -14,6 +14,7 @@ WORKDIR /gen3
 COPY package.json package-lock.json ./
 COPY apps/commons/package.json ./apps/commons/
 COPY packages/chat/package.json ./packages/chat/
+COPY packages/services_ui/package.json ./packages/services_ui/
 
 # Install ALL dependencies once (including dev deps for build)
 RUN npm config set fetch-retries 5 && \
@@ -48,6 +49,10 @@ RUN LITE_DIR=node_modules/@gen3/workspaces/dist/jupyterlite-builds/remote-privat
       curl -fsSL "$URL" | tar -xj -C "$WASM_ENV"; \
     done
 
+# Sample notebooks for the free tier. jupyter-lite build picks up <lite-dir>/files as
+# contents and generates the contents index, so they show in the file browser
+COPY apps/commons/data/free_files node_modules/@gen3/workspaces/dist/jupyterlite-builds/free-private/files
+
 # Build JupyterLite static assets
 # Run from apps/commons so builds/ and jupyter-workspaces/ both end up there
 RUN cd apps/commons && npm run build:jupyterlite
@@ -64,21 +69,28 @@ COPY apps/commons/.env.production ./apps/commons/
 # Copy source files
 COPY packages/chat/tsconfig.build.json ./packages/chat/
 COPY packages/chat/src ./packages/chat/src
+COPY packages/services_ui/tsconfig.build.json ./packages/services_ui/
+COPY packages/services_ui/src ./packages/services_ui/src
 COPY apps/commons/src ./apps/commons/src
 COPY apps/commons/public ./apps/commons/public
 COPY apps/commons/config ./apps/commons/config
 COPY apps/commons/start.sh ./apps/commons/
 
-# The app imports @gen3/chat from dist/, so build it first
+# The app imports @gen3/chat and @gen3/services_ui from dist/, so build them first
 RUN npm run build -w @gen3/chat
+RUN npm run build -w @gen3/services_ui
 
 # Build
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build -w @gen3/commons-portal-app-base
+RUN NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base
 
 # Production stage
-FROM node:24.18.1-alpine3.23 AS runner
+FROM node:24.22.1-alpine3.23 AS runner
 
 WORKDIR /gen3
+
+# TEMPORARY: curl for testing outbound access from the container, remove when done
+RUN apk add --no-cache curl
+
 # server.js lives here inside the standalone output
 ARG APP=.next/standalone/apps/commons
 
@@ -104,7 +116,8 @@ RUN mkdir -p $APP/.next/cache/images && \
     rm -rf $APP/config && \
     ln -s "$(pwd)/config" $APP/config && \
     ln -s "$(pwd)/public" $APP/public && \
-    ln -s "$(pwd)/jupyter-workspaces" $APP/jupyter-workspaces
+    ln -s "$(pwd)/jupyter-workspaces" $APP/jupyter-workspaces && \
+    ln -s "$(pwd)/jupyter-workspaces/assets/free" "$(pwd)/public/jupyter"
 
 USER nextjs:nextjs
 

@@ -37,6 +37,19 @@ const withMDX = require("@next/mdx")({
   },
 });
 
+// Workspace packages are compiled from src so edits hot-reload without a tsc --watch step.
+// services_ui is always aliased (the root build never produces its dist); chat only in dev,
+// where prod keeps using its built dist. Keep in sync with "paths" in tsconfig.json.
+const workspaceSources = {
+  "@gen3/services_ui": "../../packages/services_ui/src/index.ts",
+  ...(isDev && {
+    "@gen3/chat": "../../packages/chat/src/index.ts",
+    "@gen3/chat/ui": "../../packages/chat/src/ui/index.ts",
+    "@gen3/chat/server": "../../packages/chat/src/server/index.ts",
+    "@gen3/chat/styles.css": "../../packages/chat/src/styles.css",
+  }),
+};
+
 // get the version of the frontend package
 const packageJson = require(path.join(pkgDir("@gen3/frontend"), "package.json"));
 
@@ -48,9 +61,11 @@ const nextConfig = {
   env: {
     version: process.env.npm_package_version,
     NEXT_PUBLIC_GEN3_VERSION: packageJson.version,
+    NEXT_PUBLIC_BASE_PATH: basePath,
   },
   reactStrictMode: true,
   pageExtensions: ["mdx", "md", "jsx", "js", "tsx", "ts"],
+  productionBrowserSourceMaps: true,
   basePath: basePath,
   // Both are barrel files - importing one name otherwise compiles the whole package.
   experimental: {
@@ -58,12 +73,15 @@ const nextConfig = {
     // Off by default because of our webpack() hook; frees the compiler's memory before page data
     webpackBuildWorker: true,
     // Docker builds cap page-data workers: the default 7 ran an 8 GB builder out of memory
-    ...(process.env.NEXT_BUILD_WORKERS && { cpus: Number(process.env.NEXT_BUILD_WORKERS) }),
+    ...(process.env.NEXT_BUILD_WORKERS && {
+      cpus: Number(process.env.NEXT_BUILD_WORKERS),
+    }),
   },
   // Turbopack ignores the webpack() hook, so kill the CopilotKit stylesheet here too.
   turbopack: {
     resolveAlias: {
       "@copilotkit/react-core/dist/v2/index.css": "./empty.css",
+      ...workspaceSources,
     },
   },
   logging: {
@@ -82,6 +100,12 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       [path.join(pkgDir("@copilotkit/react-core"), "dist/v2/index.css")]: false,
+      ...Object.fromEntries(
+        Object.entries(workspaceSources).map(([spec, file]) => [
+          `${spec}$`,
+          path.resolve(__dirname, file),
+        ]),
+      ),
     };
     return config;
   },
@@ -92,7 +116,8 @@ const nextConfig = {
         destination: "/api/:path*",
       },
       {
-        source: "/lw-workspace/proxy/jeg-proxy/kernelspecs/python_tf_kubernetes/logo-64x64.png",
+        source:
+          "/lw-workspace/proxy/jeg-proxy/kernelspecs/python_tf_kubernetes/logo-64x64.png",
         destination: "/icons/kernels/logo-64.png",
       },
     ];
@@ -103,6 +128,11 @@ const nextConfig = {
       {
         source: "/chat-runtime",
         destination: "/api/chat-runtime",
+      },
+      // same reason: the RNA-seq embeddings proxy (src/pages/api/inference.ts)
+      {
+        source: "/inference-runtime",
+        destination: "/api/inference",
       },
       {
         source: "/chat-models",
@@ -117,7 +147,8 @@ const nextConfig = {
     ];
 
     if (isDev) {
-      const GEN3_TARGET = process.env.NEXT_PUBLIC_GEN3_API_TARGET || "https://localhost";
+      const GEN3_TARGET =
+        process.env.NEXT_PUBLIC_GEN3_API_TARGET || "https://localhost";
 
       return [
         ...workspaceApiRewrite,
@@ -167,6 +198,10 @@ const nextConfig = {
           source: "/login",
           destination: `${GEN3_TARGET}/login`,
         },
+        {
+          source: "/ai/:path*",
+          destination: `${GEN3_TARGET}/ai/:path*`,
+        }
       ];
     } else {
       return [...workspaceApiRewrite, ...chatRuntimeRewrite];

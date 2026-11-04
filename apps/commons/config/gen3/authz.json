@@ -12,6 +12,21 @@
     "/Chat": {
       "loginRequired": true
     },
+    "/Models": {
+      "loginRequired": true
+    },
+    "/Embeddings": {
+      "loginRequired": true
+    },
+    "/RNASequenceEmbeddings": {
+      "loginRequired": true
+    },
+    "/Analysis": {
+      "loginRequired": true
+    },
+    "/notebook/(.*)": {
+      "loginRequired": true
+    },
     "*": {
       "loginRequired": false
     }

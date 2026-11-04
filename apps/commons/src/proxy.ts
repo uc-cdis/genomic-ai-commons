@@ -7,6 +7,12 @@ export const config = {
   "/DataLibrary",
   "/Workspace",
   "/Profile",
-  "/Chat"
+  "/Chat",
+  "/Models",
+  "/Embeddings",
+  "/RNASequenceEmbeddings",
+  "/Analysis",
+  "/notebook/(.*)",
+  "/Login"
 ],
 };

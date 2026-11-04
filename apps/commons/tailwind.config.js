@@ -31,6 +31,8 @@ module.exports = {
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
     "./src/features/**/*.{js,ts,jsx,tsx}",
+    "../../packages/services_ui/src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/chat/src/**/*.{js,ts,jsx,tsx}",
     `${pkgDir("@gen3/frontend")}/dist/index/esm/*.js`,
     `${pkgDir("@gen3/workspaces")}/dist/index/esm/*.js`,
   ],

@@ -1,31 +1,36 @@
 {
   "name": "genomic-ai-commons",
   "private": true,
+  "engines": {
+    "npm": ">=11.19.1",
+    "node": ">=24.22.1"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
-    "predev": "npm run build -w @gen3/chat",
-    "dev": "concurrently -k -n chat,css,app -c blue,magenta,green \"npm:dev:chat\" \"npm:dev:chat:css\" \"npm:dev:app\"",
-    "dev:chat": "npm run dev -w @gen3/chat",
-    "dev:chat:css": "npm run dev:css -w @gen3/chat",
+    "dev": "npm run dev:app",
     "dev:app": "npm run dev -w @gen3/commons-portal-app-base",
-    "build": "npm run build -w @gen3/chat && npm run build -w @gen3/commons-portal-app-base",
+    "build": "npm run build -w @gen3/chat && npm run build -w @gen3/services_ui && npm run build -w @gen3/commons-portal-app-base",
     "lint": "oxlint .",
-    "typecheck": "npm run typecheck -w @gen3/chat && tsc --noEmit -p apps/commons",
+    "typecheck": "npm run typecheck -w @gen3/chat && npm run typecheck -w @gen3/services_ui && tsc --noEmit -p apps/commons",
     "test": "npm run test -w @gen3/chat && npm run test -w @gen3/commons-portal-app-base",
     "lint-fix": "oxlint --fix .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "build:turbopack": "npm run build -w @gen3/chat && npm run build:turbopack -w @gen3/commons-portal-app-base",
-    "dev:webpack": "concurrently -k -n chat,css,app -c blue,magenta,green \"npm:dev:chat\" \"npm:dev:chat:css\" \"npm:dev:app:webpack\"",
-    "dev:app:webpack": "npm run dev:webpack -w @gen3/commons-portal-app-base"
+    "build:turbopack": "npm run build -w @gen3/chat && npm run build -w @gen3/services_ui && npm run build:turbopack -w @gen3/commons-portal-app-base",
+    "dev:webpack": "npm run dev:app:webpack",
+    "dev:app:webpack": "npm run dev:webpack -w @gen3/commons-portal-app-base",
+    "storybook": "npm run storybook -w @gen3/commons-portal-app-base"
   },
   "devDependencies": {
     "concurrently": "^10.0.5",
     "oxfmt": "^0.68.0",
-    "oxlint": "^1.82.0"
+    "oxlint": "^1.82.0",
+    "vite": "^8.3.0",
+    "vite-plugin-svgr": "^5.2.0",
+    "vitest": "^4.1.11"
   },
   "allowScripts": {
     "esbuild": true,

@@ -1,7 +1,11 @@
 {
   "name": "@gen3/commons-portal-app-base",
-  "version": "0.12.69",
+  "version": "0.13.2",
   "private": "true",
+  "engines": {
+    "npm": ">=11.19.1",
+    "node": ">=24.22.1"
+  },
   "scripts": {
     "lint": "oxlint .",
     "lint-fix": "oxlint --fix .",
@@ -16,8 +20,8 @@
     "build-storybook": "storybook build",
     "setupCommons": "npm run buildColors && npm run getSchema && npm run getDRSToHostname && npm run buildIcons && npm run build:middlewarePaths",
     "build:docker": "docker build -t gen3:fef_app -f Dockerfile.production ../..",
-    "build:colors": "buildColors --themeFile=config/$npm_config_commons/colors.json --out=config/$npm_config_commons",
-    "build:icons": "bundleIcons --inpath=config/icons --outpath=config/icons",
+    "build:colors": "node ../../node_modules/@gen3/toolsff/dist/buildColors.esm.js --themeFile=config/${GEN3_COMMONS_NAME:-gen3}/colors.json --out=config/${GEN3_COMMONS_NAME:-gen3}",
+    "build:icons": "node ../../node_modules/@gen3/toolsff/dist/bundleIcons.esm.js --inpath=config/icons --outpath=config/icons",
     "build:middlewarePaths": "scanSitePaths",
     "build:middlewarePathsMatchAll": "scanSitePaths --forceMatchAll",
     "getSchema": "getSchema --out=config/",
@@ -41,9 +45,10 @@
     "@fontsource/poppins": "^5.2.7",
     "@fontsource/source-sans-pro": "^5.2.5",
     "@gen3/chat": "^0.1.0",
-    "@gen3/core": "^0.12.69",
-    "@gen3/frontend": "^0.12.69",
-    "@gen3/workspaces": "^0.12.69",
+    "@gen3/services_ui": "^0.1.0",
+    "@gen3/core": "^0.13.2",
+    "@gen3/frontend": "^0.13.2",
+    "@gen3/workspaces": "^0.13.2",
     "@mantine/core": "^9.4.0",
     "@mantine/dates": "^9.4.0",
     "@mantine/form": "^9.4.0",
@@ -74,13 +79,13 @@
   "devDependencies": {
     "@axe-core/react": "^4.10.2",
     "@chromatic-com/storybook": "^5.3.1",
-    "@gen3/toolsff": "^0.12.69",
+    "@gen3/toolsff": "^0.13.2",
     "@graphiql/react": "^0.37.7",
-    "@storybook/addon-a11y": "^10.6.0",
-    "@storybook/addon-docs": "^10.6.0",
-    "@storybook/addon-onboarding": "^10.6.0",
-    "@storybook/nextjs": "^10.6.0",
-    "@storybook/test-runner": "^0.24.5",
+    "@storybook/addon-a11y": "^10.6.5",
+    "@storybook/addon-docs": "^10.6.5",
+    "@storybook/addon-onboarding": "^10.6.5",
+    "@storybook/addon-vitest": "^10.6.5",
+    "@storybook/nextjs-vite": "^10.6.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/line-clamp": "^0.4.4",
@@ -97,7 +102,7 @@
     "jest-fixed-jsdom": "^0.0.10",
     "msw": "^2.11.5",
     "msw-storybook-addon": "^2.0.4",
-    "next": "^16.3.0",
+    "next": "^16.4.3",
     "next-router-mock": "^1.0.5",
     "oxlint-tsgolint": "^7.0.2001",
     "postcss": "^8.5.6",
@@ -108,7 +113,7 @@
     "postcss-preset-mantine": "^1.18.0",
     "prettier": "^3.6.2",
     "sharp": "^0.35.0",
-    "storybook": "^10.6.0",
+    "storybook": "^10.6.5",
     "storybook-addon-deep-controls": "^0.10.0",
     "swr": "^2.3.6",
     "tailwindcss": "^3.4.18",
@@ -117,9 +122,5 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1",
     "vitest": "^5.0.5"
-  },
-  "engines": {
-    "node": ">=24.18.1",
-    "npm": ">=11.16.0"
   }
 }
