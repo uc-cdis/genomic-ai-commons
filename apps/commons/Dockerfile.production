@@ -81,7 +81,12 @@ RUN npm run build -w @gen3/chat
 RUN npm run build -w @gen3/services_ui
 
 # Build
-RUN NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base
+# .next/cache (GBs of build cache) goes in a cache mount, so it stays out of the layer and the CI cache upload
+# build:turbopack has no pre-hook, so prebuild (middleware paths) runs explicitly
+ARG TARGETARCH
+RUN --mount=type=cache,id=next-cache-$TARGETARCH,target=/gen3/apps/commons/.next/cache \
+    npm run prebuild -w @gen3/commons-portal-app-base && \
+    NODE_OPTIONS="--max-old-space-size=6144" npm run build:turbopack -w @gen3/commons-portal-app-base
 
 # Production stage
 FROM node:24.22.1-alpine3.23 AS runner
