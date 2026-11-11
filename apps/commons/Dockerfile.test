@@ -77,7 +77,10 @@ ENV NODE_ENV=test
 RUN npm run build -w @gen3/chat
 
 # Build
-RUN NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base
+# .next/cache is a cache mount, so its GBs stay out of the layer and the CI cache
+ARG TARGETARCH
+RUN --mount=type=cache,id=next-cache-$TARGETARCH,target=/ci/apps/commons/.next/cache \
+    NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base
 
 # Production stage
 FROM node:24.22.1-alpine3.23 AS runner

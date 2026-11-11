@@ -62,26 +62,31 @@ FROM deps AS builder
 # 2 page-data workers instead of 7, so next build fits alongside jupyterlite in 8 GB
 ARG NEXT_BUILD_WORKERS=2
 
+# Packages build before the app is copied, so app-only changes reuse them. services_ui first: chat changes more often
+COPY packages/services_ui/tsconfig.build.json ./packages/services_ui/
+COPY packages/services_ui/src ./packages/services_ui/src
+RUN npm run build -w @gen3/services_ui
+COPY packages/chat/tsconfig.build.json ./packages/chat/
+COPY packages/chat/src ./packages/chat/src
+RUN npm run build -w @gen3/chat
+
 # Copy necessary config files
 COPY apps/commons/next.config.js apps/commons/tsconfig.json apps/commons/tailwind.config.js apps/commons/postcss.config.js ./apps/commons/
 COPY apps/commons/.env.production ./apps/commons/
 
 # Copy source files
-COPY packages/chat/tsconfig.build.json ./packages/chat/
-COPY packages/chat/src ./packages/chat/src
-COPY packages/services_ui/tsconfig.build.json ./packages/services_ui/
-COPY packages/services_ui/src ./packages/services_ui/src
 COPY apps/commons/src ./apps/commons/src
 COPY apps/commons/public ./apps/commons/public
 COPY apps/commons/config ./apps/commons/config
 COPY apps/commons/start.sh ./apps/commons/
 
-# The app imports @gen3/chat and @gen3/services_ui from dist/, so build them first
-RUN npm run build -w @gen3/chat
-RUN npm run build -w @gen3/services_ui
-
 # Build
-RUN NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base
+# .next/cache is a cache mount, so its GBs stay out of the layer and the CI cache
+# build:turbopack has no pre-hook, so prebuild runs first
+ARG TARGETARCH
+RUN --mount=type=cache,id=next-cache-$TARGETARCH,target=/gen3/apps/commons/.next/cache \
+    npm run prebuild -w @gen3/commons-portal-app-base && \
+    NODE_OPTIONS="--max-old-space-size=6144" npm run build:turbopack -w @gen3/commons-portal-app-base
 
 # Production stage
 FROM node:24.22.1-alpine3.23 AS runner
@@ -97,14 +102,15 @@ ARG APP=.next/standalone/apps/commons
 RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 
+# Stable copies first, so new build output doesn't invalidate them
+# Keep this at /gen3/jupyter-workspaces: @gen3/workspaces reads assets from that path
+COPY --from=jupyterlite --chown=nextjs:nextjs /gen3/apps/commons/jupyter-workspaces ./jupyter-workspaces
+COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/public ./public
+COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/config ./config
+COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/start.sh ./start.sh
 # The standalone output mirrors the repo, so server.js is at standalone/apps/commons/
 COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/.next/standalone ./.next/standalone
 COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/.next/static $APP/.next/static
-COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/start.sh ./start.sh
-COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/public ./public
-COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/config ./config
-# Keep this at /gen3/jupyter-workspaces: @gen3/workspaces reads assets from that path
-COPY --from=jupyterlite --chown=nextjs:nextjs /gen3/apps/commons/jupyter-workspaces ./jupyter-workspaces
 
 # server.js runs from $APP, so the image cache and links go there (absolute, so depth doesn't matter)
 # The traced config/ has only 1 of 26 files, so swap it for a link to the full copy
