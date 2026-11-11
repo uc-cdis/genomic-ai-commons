@@ -77,7 +77,7 @@ ENV NODE_ENV=test
 RUN npm run build -w @gen3/chat
 
 # Build
-# .next/cache (GBs of webpack cache) goes in a cache mount, so it stays out of the layer and the CI cache upload
+# .next/cache is a cache mount, so its GBs stay out of the layer and the CI cache
 ARG TARGETARCH
 RUN --mount=type=cache,id=next-cache-$TARGETARCH,target=/ci/apps/commons/.next/cache \
     NODE_OPTIONS="--max-old-space-size=6144" npm run build -w @gen3/commons-portal-app-base

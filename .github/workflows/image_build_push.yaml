@@ -44,7 +44,7 @@ jobs:
     needs:
       - compute_tag
       - select_build
-    uses: uc-cdis/.github/.github/workflows/image_build_push_native.yaml@fix/gha-cache-scope-per-arch
+    uses: uc-cdis/.github/.github/workflows/image_build_push_native.yaml@master
     with:
       USE_QUAY_ONLY: true
       DOCKERFILE_LOCATION: ${{ needs.select_build.outputs.DOCKERFILE_LOCATION }}

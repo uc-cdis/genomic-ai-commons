@@ -62,8 +62,7 @@ FROM deps AS builder
 # 2 page-data workers instead of 7, so next build fits alongside jupyterlite in 8 GB
 ARG NEXT_BUILD_WORKERS=2
 
-# The app imports @gen3/chat and @gen3/services_ui from dist/, so build them first.
-# They come before the app COPYs so app-only changes reuse them; services_ui (slower) goes first since chat changes more often
+# Packages build before the app is copied, so app-only changes reuse them. services_ui first: chat changes more often
 COPY packages/services_ui/tsconfig.build.json ./packages/services_ui/
 COPY packages/services_ui/src ./packages/services_ui/src
 RUN npm run build -w @gen3/services_ui
@@ -82,8 +81,8 @@ COPY apps/commons/config ./apps/commons/config
 COPY apps/commons/start.sh ./apps/commons/
 
 # Build
-# .next/cache (GBs of build cache) goes in a cache mount, so it stays out of the layer and the CI cache upload
-# build:turbopack has no pre-hook, so prebuild (middleware paths) runs explicitly
+# .next/cache is a cache mount, so its GBs stay out of the layer and the CI cache
+# build:turbopack has no pre-hook, so prebuild runs first
 ARG TARGETARCH
 RUN --mount=type=cache,id=next-cache-$TARGETARCH,target=/gen3/apps/commons/.next/cache \
     npm run prebuild -w @gen3/commons-portal-app-base && \
@@ -103,7 +102,7 @@ ARG APP=.next/standalone/apps/commons
 RUN addgroup --system --gid 1001 nextjs && \
     adduser --system --uid 1001 nextjs
 
-# Copies that rarely change go first: once a layer changes, every layer after it is rebuilt
+# Stable copies first, so new build output doesn't invalidate them
 # Keep this at /gen3/jupyter-workspaces: @gen3/workspaces reads assets from that path
 COPY --from=jupyterlite --chown=nextjs:nextjs /gen3/apps/commons/jupyter-workspaces ./jupyter-workspaces
 COPY --from=builder --chown=nextjs:nextjs /gen3/apps/commons/public ./public
