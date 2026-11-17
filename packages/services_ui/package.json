@@ -47,7 +47,7 @@
     "@mantine/notifications": ">=9",
     "@tabler/icons-react": "*",
     "mantine-react-table-open": ">=9",
-    "next": "^16",
+    "next": "^16.4.6",
     "react": "^19.2",
     "react-dom": "^19.2",
     "recharts": ">=3"
